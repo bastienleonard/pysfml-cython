@@ -1714,7 +1714,7 @@ cdef class Text(Drawable):
     ITALIC = declstyle.Italic
     UNDERLINED = declstyle.Underlined
 
-    def __cinit__(self, string=None, Font font=None, int character_size=0):
+    def __init__(self, string=None, Font font=None, int character_size=0):
         cdef decl.String cpp_string
         cdef char* c_string = NULL
 
