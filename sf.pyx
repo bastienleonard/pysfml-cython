@@ -133,7 +133,8 @@ cdef class Mouse:
         if window is None:
             declmouse.SetPosition(cpp_pos)
         else:
-            declmouse.SetPosition(cpp_pos, (<decl.RenderWindow*>window.p_this)[0])
+            declmouse.SetPosition(cpp_pos,
+                                  (<decl.RenderWindow*>window.p_this)[0])
 
 
 
@@ -1535,9 +1536,12 @@ cdef class Texture:
                 self.p_this.Update((<Image>source).p_this[0], p1, p2)
         elif isinstance(source, RenderWindow):
             if p1 == -1:
-                self.p_this.Update((<decl.RenderWindow*>(<RenderWindow>source).p_this)[0])
+                self.p_this.Update(
+                    (<decl.RenderWindow*>(<RenderWindow>source).p_this)[0])
             else:
-                self.p_this.Update((<decl.RenderWindow*>(<RenderWindow>source).p_this)[0], p1, p2)
+                self.p_this.Update(
+                    (<decl.RenderWindow*>(<RenderWindow>source).p_this)[0],
+                    p1, p2)
         else:
             raise TypeError(
                 "The source argument should be of type str / bytes(py3k), "
@@ -2445,7 +2449,8 @@ cdef class RenderTarget:
         self.p_this.SaveGLStates()
 
 
-cdef extern RenderTarget wrap_render_target_instance(decl.RenderTarget *p_cpp_instance):
+cdef extern RenderTarget
+wrap_render_target_instance(decl.RenderTarget *p_cpp_instance):
     cdef RenderTarget ret = RenderTarget.__new__(RenderTarget)
     ret.p_this = p_cpp_instance
 
@@ -2456,9 +2461,11 @@ cdef class RenderWindow(RenderTarget):
     def __init__(self, VideoMode mode, char* title, int style=Style.DEFAULT,
                   ContextSettings settings=None):
         if settings is None:
-            self.p_this = <decl.RenderTarget*>new decl.RenderWindow(mode.p_this[0], title, style)
+            self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
+                mode.p_this[0], title, style)
         else:
-            self.p_this = <decl.RenderTarget*>new decl.RenderWindow(mode.p_this[0], title, style, settings.p_this[0])
+            self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
+                mode.p_this[0], title, style, settings.p_this[0])
 
     def __dealloc__(self):
         del self.p_this
@@ -2539,7 +2546,8 @@ cdef class RenderWindow(RenderTarget):
 
     property system_handle:
         def __get__(self):
-            return <unsigned long>(<decl.RenderWindow*>self.p_this).GetSystemHandle()
+            return (<unsigned long>(<decl.RenderWindow*>self.p_this)
+                    .GetSystemHandle())
 
     property title:
         def __set__(self, char* value):
@@ -2568,9 +2576,11 @@ cdef class RenderWindow(RenderTarget):
     def create(self, VideoMode mode, char* title, int style=Style.DEFAULT,
                ContextSettings settings=None):
         if settings is None:
-            (<decl.RenderWindow*>self.p_this).Create(mode.p_this[0], title, style)
+            (<decl.RenderWindow*>self.p_this).Create(mode.p_this[0], title,
+                                                     style)
         else:
-            (<decl.RenderWindow*>self.p_this).Create(mode.p_this[0], title, style, settings.p_this[0])
+            (<decl.RenderWindow*>self.p_this).Create(mode.p_this[0], title,
+                                                     style, settings.p_this[0])
 
     def display(self):
         (<decl.RenderWindow*>self.p_this).Display()
@@ -2593,7 +2603,8 @@ cdef class RenderWindow(RenderTarget):
             return wrap_event_instance(p)
 
     def set_icon(self, unsigned int width, unsigned int height, char* pixels):
-        (<decl.RenderWindow*>self.p_this).SetIcon(width, height, <decl.Uint8*>pixels)
+        (<decl.RenderWindow*>self.p_this).SetIcon(width, height,
+                                                  <decl.Uint8*>pixels)
 
     def show(self, bint show):
         (<decl.RenderWindow*>self.p_this).Show(show)
@@ -2632,7 +2643,8 @@ cdef class RenderTexture(RenderTarget):
     property texture:
         def __get__(self):
             return wrap_texture_instance(
-                <decl.Texture*>&(<decl.RenderTexture*>self.p_this).GetTexture(), False)
+                <decl.Texture*>&(<decl.RenderTexture*>self.p_this).GetTexture(),
+                False)
 
     property width:
         def __get__(self):
