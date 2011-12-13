@@ -90,17 +90,29 @@ void replace_error_handler()
 
 
 
-PyDrawable::PyDrawable(void* obj):
-sf::Drawable (),
-m_obj (obj)
+CppDrawable::CppDrawable()
+{
+}
+
+CppDrawable::CppDrawable(void* drawable):
+    sf::Drawable(),
+    drawable(drawable)
 {
 };
 
-void PyDrawable::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void CppDrawable::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
     PyObject* pyTarget = (PyObject*)(wrap_render_target_instance(&target));
     PyObject* pyRenderer = (PyObject*)(wrap_renderer_instance(&renderer));
     
-    PyObject_CallMethod(static_cast<PyObject*>(m_obj), "render", "(O, O)",
-                        pyTarget, pyRenderer);
+    // The caller needs to use PyErr_Occurred() to know if this
+    // function failed
+    PyObject* ret = PyObject_CallMethod(
+        static_cast<PyObject*>(drawable), "render", "(O, O)",
+        pyTarget, pyRenderer);
+
+    if (ret != NULL)
+    {
+        Py_DECREF(ret);
+    }
 }

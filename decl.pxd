@@ -47,8 +47,11 @@ cimport declprimitive
 
 cdef extern from "hacks.hpp":
     void replace_error_handler()
-    cdef cppclass PyDrawable:
-        PyDrawable(void*)
+    cdef cppclass CppDrawable:
+        CppDrawable()
+        # This is a PyObject*, but for some reason Cython doesn't
+        # accept ``object''
+        void* drawable
 
 
 # Useful sometimes to print values for debugging

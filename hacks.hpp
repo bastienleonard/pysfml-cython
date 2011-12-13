@@ -10,7 +10,8 @@ void replace_error_handler();
 
 extern "C"
 {
-    struct __pyx_obj_2sf_RenderTarget* wrap_render_target_instance(sf::RenderTarget*);
+    struct __pyx_obj_2sf_RenderTarget* wrap_render_target_instance(
+        sf::RenderTarget*);
     struct __pyx_obj_2sf_Renderer* wrap_renderer_instance(sf::Renderer*);
 }
 
@@ -19,15 +20,15 @@ extern "C"
 // python, this virtual method has to be defined too which can not be
 // done with cython. Therefore this class is needed to call the suitable
 // python method; render(self, target, renderer)
-class PyDrawable : public sf::Drawable
+class CppDrawable : public sf::Drawable
 {
 public :
-  PyDrawable(void* obj);
+    CppDrawable();
+    CppDrawable(void* drawable);
+    void* drawable; // this is a PyObject pointer
 
 private :
-	virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
-
-	void* m_obj; // this is a PyObject pointer
+    virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
 };
 
 #endif

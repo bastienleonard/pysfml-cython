@@ -50,12 +50,15 @@ cimport declstyle
 cimport declprimitive
 
 
-
-
 # Forward declarations
 cdef class RenderTarget
 cdef class RenderWindow
 
+
+# If you add a class that inherits drawables to the module, you *must*
+# add it to this list.  It used in RenderTarget.Draw(), to know
+# whether a drawable is ``built-in'' or user-defined.
+cdef sfml_drawables = [Shape, Sprite, Text]
 
 cdef error_messages = {}
 cdef error_messages_lock = threading.Lock()
@@ -1690,21 +1693,6 @@ class ScaleWrapper(tuple):
         self.drawable._scale(x, y)
 
 
-cdef class DerivableDrawable(Drawable):
-
-    def __cinit__(self):
-        self.p_this = <decl.Drawable*>new decl.PyDrawable(<void*>self)
-
-    def __init__(self, *args, **kwargs):
-        if self.__class__ == Drawable:
-            raise NotImplementedError('DerivableDrawable is abstact')
-
-    def __dealloc__(self):
-        del self.p_this
-
-    def render(self, target, renderer):
-        raise NotImplementedError("You must override this method!")
-
 
 cdef class Text(Drawable):
     cdef bint is_unicode
@@ -2429,9 +2417,15 @@ cdef class RenderTarget:
 
     def draw(self, Drawable drawable, Shader shader=None):
         if shader is None:
-            self.p_this.Draw(drawable.p_this[0])
+            if drawable.__class__ in sfml_drawables:
+                self.p_this.Draw(drawable.p_this[0])
+            else:
+                call_render(self, drawable)
         else:
-            self.p_this.Draw(drawable.p_this[0], shader.p_this[0])
+            if drawable.__class__ in sfml_drawables:
+                self.p_this.Draw(drawable.p_this[0], shader.p_this[0])
+            else:
+                call_render(self, drawable)
 
     def get_viewport(self, View view):
         cdef decl.IntRect *p = new decl.IntRect()
@@ -2457,12 +2451,25 @@ cdef class RenderTarget:
         self.p_this.SaveGLStates()
 
 
+# Wraps the code that will call the render() method of a drawable.
+# This is called in RenderTaget.draw(). The goal is to force Cython to
+# check if an error occured (with except *), because the C++ Render()
+# method can't return any status code.
+cdef void call_render(RenderTarget target, Drawable drawable) except *:
+    cdef decl.CppDrawable cpp_drawable
+
+    cpp_drawable.drawable = <void*>drawable;
+    target.p_this.Draw((<decl.Drawable*>&cpp_drawable)[0])
+
+
 cdef extern RenderTarget wrap_render_target_instance(decl.RenderTarget
                                                      *p_cpp_instance):
     cdef RenderTarget ret = RenderTarget.__new__(RenderTarget)
     ret.p_this = p_cpp_instance
 
     return ret
+
+
     
     
 cdef class RenderWindow(RenderTarget):
