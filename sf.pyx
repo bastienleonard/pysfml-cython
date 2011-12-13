@@ -1708,6 +1708,7 @@ cdef class DerivableDrawable(Drawable):
 
 cdef class Text(Drawable):
     cdef bint is_unicode
+    cdef Font font
 
     REGULAR = declstyle.Regular
     BOLD = declstyle.Bold
@@ -1725,12 +1726,16 @@ cdef class Text(Drawable):
         elif isinstance(string, bytes):
             if font is None:
                 self.p_this = <decl.Drawable*>new decl.Text(<char*>string)
+                self.font = wrap_font_instance(
+                    <decl.Font*>&(<decl.Text*>self.p_this).GetFont(), False)
             elif character_size == 0:
                 self.p_this = <decl.Drawable*>new decl.Text(
                     <char*>string, font.p_this[0])
+                self.font = font
             else:
                 self.p_this = <decl.Drawable*>new decl.Text(
                     <char*>string, font.p_this[0], character_size)
+                self.font = font
         elif isinstance(string, unicode):
             self.is_unicode = True
             string += '\x00'
@@ -1740,12 +1745,16 @@ cdef class Text(Drawable):
 
             if font is None:
                 self.p_this = <decl.Drawable*>new decl.Text(cpp_string)
+                self.font = wrap_font_instance(
+                    <decl.Font*>&(<decl.Text*>self.p_this).GetFont(), False)
             elif character_size == 0:
                 self.p_this = <decl.Drawable*>new decl.Text(
                     cpp_string, font.p_this[0])
+                self.font = font
             else:
                 self.p_this = <decl.Drawable*>new decl.Text(
                     cpp_string, font.p_this[0], character_size)
+                self.font = font
         else:
             raise TypeError("Expected bytes/str or unicode for string, got {0}"
                             .format(type(string)))
@@ -1762,12 +1771,11 @@ cdef class Text(Drawable):
 
     property font:
         def __get__(self):
-            cdef decl.Font *p = <decl.Font*>&(<decl.Text*>self.p_this).GetFont()
-
-            return wrap_font_instance(p, False)
+            return self.font
 
         def __set__(self, Font value):
             (<decl.Text*>self.p_this).SetFont(value.p_this[0])
+            self.font = value
 
     property rect:
         def __get__(self):
@@ -2449,8 +2457,8 @@ cdef class RenderTarget:
         self.p_this.SaveGLStates()
 
 
-cdef extern RenderTarget
-wrap_render_target_instance(decl.RenderTarget *p_cpp_instance):
+cdef extern RenderTarget wrap_render_target_instance(decl.RenderTarget
+                                                     *p_cpp_instance):
     cdef RenderTarget ret = RenderTarget.__new__(RenderTarget)
     ret.p_this = p_cpp_instance
 
