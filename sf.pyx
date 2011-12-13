@@ -2658,23 +2658,13 @@ cdef class RenderTexture(RenderTarget):
         def __get__(self):
             return self.p_this.GetWidth()
 
-        def __set__(self, unsigned int value):
-            self.size = (value, self.height)
-
     property height:
         def __get__(self):
             return self.p_this.GetHeight()
-        
-        def __set__(self, unsigned int value):
-            self.size = (self.width, value)
 
     property size:
         def __get__(self):
             return (self.width, self.height)
-
-        def __set__(self, tuple value):
-            x, y = value
-            self.create(x, y)
 
     property smooth:
         def __get__(self):
