@@ -50,6 +50,13 @@ cimport declstyle
 cimport declprimitive
 
 
+
+
+# Forward declarations
+cdef class RenderTarget
+cdef class RenderWindow
+
+
 cdef error_messages = {}
 cdef error_messages_lock = threading.Lock()
 
@@ -80,13 +87,6 @@ cdef object get_last_error_message():
             return message
 
     return None
-
-
-
-
-# Forward declarations
-cdef class RenderTarget
-cdef class RenderWindow
 
 
 
