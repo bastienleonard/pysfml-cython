@@ -102,13 +102,17 @@ CppDrawable::CppDrawable(void* drawable):
 
 void CppDrawable::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
 {
+    // The string parameters to PyObject_CallMethod() are char*, so in
+    // theory they can be modified, and string litterals are const char*
+    char method_name[] = "render";
+    char format[] = "(O, O)";
     PyObject* pyTarget = (PyObject*)(wrap_render_target_instance(&target));
     PyObject* pyRenderer = (PyObject*)(wrap_renderer_instance(&renderer));
     
     // The caller needs to use PyErr_Occurred() to know if this
     // function failed
     PyObject* ret = PyObject_CallMethod(
-        static_cast<PyObject*>(drawable), "render", "(O, O)",
+        static_cast<PyObject*>(drawable), method_name, format,
         pyTarget, pyRenderer);
 
     if (ret != NULL)
