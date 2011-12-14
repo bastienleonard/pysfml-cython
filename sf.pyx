@@ -2695,17 +2695,51 @@ cdef class Renderer:
     
     cdef decl.Renderer *p_this
 
-    def initialize(self):
-        self.p_this.Initialize()
+    property blend_mode:
+        def __set__(self, int value):
+            self.p_this.SetBlendMode(<declblendmode.Mode>value)
         
-    def save_gl_states(self):
-        self.p_this.SaveGLStates()
+    property color:
+        def __set__(self, Color value):
+            self.p_this.SetColor(value.p_this[0])
+
+    property model_view:
+        def __set__(self, Matrix3 value):
+            self.p_this.SetModelView(value.p_this[0])
+
+    property projection:
+        def __set__(self, Matrix3 value):
+            self.p_this.SetProjection(value.p_this[0])
         
-    def restore_gl_states(self):
-        self.p_this.RestoreGLStates()
+    property shader:
+        def __set__(self, Shader value):
+            self.p_this.SetShader(value.p_this)
+        
+    property texture:
+        def __set__(self, Texture value):
+            self.p_this.SetTexture(value.p_this)
+
+    property viewport:
+        def __set__(self, IntRect value):
+            self.p_this.SetViewport(value.p_this[0])
+    
+    def apply_color(self, Color color):
+        self.p_this.SetColor(color.p_this[0])
+
+    def apply_model_view(self, Matrix3 matrix):
+        self.p_this.ApplyModelView(matrix.p_this[0])
+
+    def begin(self, int value):
+        self.p_this.Begin(<declprimitive.PrimitiveType>value)
         
     def clear(self, Color color):
         self.p_this.Clear(color.p_this[0])
+        
+    def end(self):
+        self.p_this.End()
+        
+    def initialize(self):
+        self.p_this.Initialize()
         
     def push_states(self):
         self.p_this.PushStates()
@@ -2713,38 +2747,11 @@ cdef class Renderer:
     def pop_states(self):
         self.p_this.PopStates()
         
-    def set_model_view(self, Matrix3 matrix):
-        self.p_this.SetModelView(matrix.p_this[0])
-    
-    def apply_model_view(self, Matrix3 matrix):
-        self.p_this.ApplyModelView(matrix.p_this[0])
+    def restore_gl_states(self):
+        self.p_this.RestoreGLStates()
         
-    def set_projection(self, Matrix3 matrix):
-        self.p_this.SetProjection(matrix.p_this[0])
-        
-    def set_color(self, Color color):
-        self.p_this.SetColor(color.p_this[0])
-        
-    def apply_color(self, Color color):
-        self.p_this.SetColor(color.p_this[0])
-        
-    def set_viewport(self, IntRect viewport):
-        self.p_this.SetViewport(viewport.p_this[0])
-        
-    def set_blend_mode(self, int value):
-        self.p_this.SetBlendMode(<declblendmode.Mode>value)
-        
-    def set_texture(self, Texture texture):
-        self.p_this.SetTexture(texture.p_this)
-        
-    def set_shader(self, Shader shader):
-        self.p_this.SetShader(shader.p_this)
-        
-    def begin(self, int value):
-        self.p_this.Begin(<declprimitive.PrimitiveType>value)
-        
-    def end(self):
-        self.p_this.End()
+    def save_gl_states(self):
+        self.p_this.SaveGLStates()
     
 
 cdef extern Renderer wrap_renderer_instance(decl.Renderer *p_cpp_instance):
