@@ -2415,6 +2415,16 @@ cdef class RenderTarget:
         else:
             self.p_this.Clear(color.p_this[0])
 
+    def convert_coords(self, unsigned int x, unsigned int y, View view=None):
+        cdef decl.Vector2f res
+
+        if view is None:
+            res = self.p_this.ConvertCoords(x, y)
+        else:
+            res = self.p_this.ConvertCoords(x, y, view.p_this[0])
+
+        return (res.x, res.y)
+
     def draw(self, Drawable drawable, Shader shader=None):
         if shader is None:
             if drawable.__class__ in sfml_drawables:
@@ -2433,16 +2443,6 @@ cdef class RenderTarget:
         p[0] = self.p_this.GetViewport(view.p_this[0])
 
         return wrap_int_rect_instance(p)
-
-    def convert_coords(self, unsigned int x, unsigned int y, View view=None):
-        cdef decl.Vector2f res
-
-        if view is None:
-            res = self.p_this.ConvertCoords(x, y)
-        else:
-            res = self.p_this.ConvertCoords(x, y, view.p_this[0])
-
-        return (res.x, res.y)
 
     def restore_gl_states(self):
         self.p_this.RestoreGLStates()

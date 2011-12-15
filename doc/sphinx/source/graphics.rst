@@ -36,9 +36,30 @@ Misc
 
 .. class:: Drawable
 
-   Base class for classes like :class:`Sprite` or :class:`Text`. Creating your
-   own drawables by deriving this class currently isn't supported, so you
-   shouldn't need to directly interact with it.
+   Base class for classes like :class:`Sprite` or :class:`Text`. You
+   can create your own drawables by inheriting this class and
+   overriding the ``render`` method::
+
+      class Drawable(sf.Drawable):
+          def __init__(self):
+              self.princess = sf.Sprite(sf.Texture.load_from_file(
+                  'examples/princess.png'))
+              self.logo = sf.Sprite(sf.Texture.load_from_file(
+                  'examples/python-logo.png'))
+
+          def render(self, target, renderer):
+              target.draw(self.logo)
+              target.draw(self.princess)
+
+   .. note::
+
+      To do: add a low-level rendering examples once it's fully supported.
+
+   You can then draw the drawable by passing as an argument to
+   :meth:`RenderWindow.draw`. For a runnable example, see
+   ``examples/customdrawable.py``. For more information, read the SFML
+   documentation:
+   http://sfml-dev.org/documentation/2.0/classsf_1_1Drawable.php#details.
 
    .. attribute:: blend_mode
    .. attribute:: color
@@ -65,6 +86,24 @@ Misc
    .. method:: move(float x, float y)
    .. method:: rotate(float angle)
    .. method:: scale(float x, float y)
+
+
+
+.. class:: RenderTarget
+
+   Base class for :class:`RenderWindow` and :class:`RenderTexture`. It
+   is abstract; the constructor will raise ``NotImplementedError`` if
+   you call it.
+
+   .. attribute:: default_view
+   .. attribute:: view
+
+   .. method:: clear
+   .. method:: convert_coords
+   .. method:: draw
+   .. method:: get_viewport
+   .. method:: restore_gl_states
+   .. method:: save_gl_states
 
 
 
@@ -332,6 +371,34 @@ Image display and effects
    .. method:: restore_gl_states()
    .. method:: save_gl_states()
 
+
+
+
+.. class:: Renderer
+
+   .. attribute:: TRIANGLE_LIST
+   .. attribute:: TRIANGLE_STRIP
+   .. attribute:: TRIANGLE_FAN
+   .. attribute:: QUAD_LIST
+
+   .. attribute:: blend_mode
+   .. attribute:: color
+   .. attribute:: model_view
+   .. attribute:: projection
+   .. attribute:: shader
+   .. attribute:: texture
+   .. attribute:: viewport
+ 
+   .. method:: apply_color(color)
+   .. method:: apply_model_view(matrix)
+   .. method:: begin(int value)
+   .. method:: clear(color)
+   .. method:: end()
+   .. method:: initialize()
+   .. method:: push_states()
+   .. method:: pop_states()
+   .. method:: restore_gl_states()
+   .. method:: save_gl_states()
 
 
 
