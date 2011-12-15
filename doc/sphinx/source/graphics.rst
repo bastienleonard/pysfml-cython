@@ -51,14 +51,11 @@ Misc
               target.draw(self.logo)
               target.draw(self.princess)
 
-   .. note::
-
-      To do: add a low-level rendering examples once it's fully supported.
-
    You can then draw the drawable by passing as an argument to
    :meth:`RenderWindow.draw`. For a runnable example, see
-   ``examples/customdrawable.py``. For more information, read the SFML
-   documentation:
+   ``examples/customdrawable.py``. There is also a low level rendering
+   example in ``examples/lowleveldrawable.py``. For more information,
+   read the SFML documentation:
    http://sfml-dev.org/documentation/2.0/classsf_1_1Drawable.php#details.
 
    .. attribute:: blend_mode
@@ -389,6 +386,15 @@ Image display and effects
    .. attribute:: texture
    .. attribute:: viewport
  
+   .. method:: add_vertex(...)
+
+      This method can be called in the same ways as in C++::
+
+         add_vertex(x, y)  # position only
+         add_vertex(x, y, color)  # position and color
+         add_vertex(x, y, u, v) # position and texture coordinates
+         add_vertex(x, y, u, v, color)  # position, texture coordinates and color
+
    .. method:: apply_color(color)
    .. method:: apply_model_view(matrix)
    .. method:: begin(int value)

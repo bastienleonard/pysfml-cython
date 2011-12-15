@@ -2723,6 +2723,18 @@ cdef class Renderer:
         def __set__(self, IntRect value):
             self.p_this.SetViewport(value.p_this[0])
     
+    def add_vertex(self, float x, float y, object a=None, object b=None,
+                   object c=None):
+        if a is None:
+            self.p_this.AddVertex(x, y)
+        elif b is None:
+            self.p_this.AddVertex(x, y, (<Color>a).p_this[0])
+        elif c is None:
+            self.p_this.AddVertex(x, y, <float>a, <float>b)
+        else:
+            self.p_this.AddVertex(x, y, <float>a, <float>b,
+                                  (<Color>c).p_this[0])
+
     def apply_color(self, Color color):
         self.p_this.SetColor(color.p_this[0])
 

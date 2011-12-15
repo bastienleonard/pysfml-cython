@@ -6,17 +6,15 @@ import sf
 
 class Drawable(sf.Drawable):
     def __init__(self):
-        self.princess = sf.Sprite(sf.Texture.load_from_file(
-            'examples/princess.png'))
-        self.logo = sf.Sprite(sf.Texture.load_from_file(
-            'examples/python-logo.png'))
+        self.princess = sf.Sprite(sf.Texture.load_from_file('princess.png'))
+        self.logo = sf.Sprite(sf.Texture.load_from_file('python-logo.png'))
 
     def render(self, target, renderer):
         target.draw(self.logo)
         target.draw(self.princess)
 
 
-window = sf.RenderWindow(sf.VideoMode(640, 480), 'Test')
+window = sf.RenderWindow(sf.VideoMode(640, 480), 'User defined drawable')
 window.framerate_limit = 60
 running = True
 drawable = Drawable()
