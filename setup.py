@@ -31,11 +31,12 @@
 # Set to False if you don't have Cython installed. The script will
 # then build the extension module from the sf.cpp file, like a regular
 # extension.
-USE_CYTHON = True
+USE_CYTHON = False
 
 
 from distutils.core import setup
 from distutils.extension import Extension
+from distutils.command.build_ext import build_ext
 
 if USE_CYTHON:
     import Cython.Distutils
@@ -74,7 +75,23 @@ kwargs = dict(name='PySFML 2',
                   'Topic :: Software Development :: Libraries :: Python Modules'
                   ])
 
+
 if USE_CYTHON:
     kwargs.update(cmdclass={'build_ext': Cython.Distutils.build_ext})
+else:
+    class CustomBuildExt(build_ext):
+        """This class is used to build the Windows binary releases."""
+
+        def build_extensions(self):
+            cc = self.compiler.compiler_type
+
+            if cc == 'mingw32':
+                for e in self.extensions:
+                    # e.extra_compile_args = []
+                    e.extra_link_args = ['-static-libgcc', '-static-libstdc++']
+
+            build_ext.build_extensions(self)
+
+    kwargs.update(cmdclass={'build_ext': CustomBuildExt})
 
 setup(**kwargs)
