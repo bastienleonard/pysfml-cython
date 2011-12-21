@@ -1,8 +1,27 @@
 Building the module
 ===================
 
-Binary packages will probably be available in the future, but currently you need
-to build the ``sf`` module from source.
+Binary releases
+---------------
+
+If you're on Windows, you download the current binary release at
+https://github.com/bastienleonard/pysfml2-cython/downloads, and ignore
+most of this section.  There are two zip files named
+``python2-sfml2-cython-win32.zip`` and
+``python3-sfml2-cython-win32.zip``. They contain the compiled module,
+the dependencies as well as the docs and the examples (note that the
+Python 3 version still contains examples written for Python 2,
+though).
+
+You should be able to use pySFML 2 without installig anything
+else. Feedback is welcome.
+
+On other platforms, there may still be easier ways to build the
+module. Someone has written AUR scripts for Arch Linux users:
+
+* https://aur.archlinux.org/packages.php?ID=50841
+
+* https://aur.archlinux.org/packages.php?ID=50842
 
 
 Getting SFML 2
