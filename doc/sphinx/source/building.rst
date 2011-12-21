@@ -127,8 +127,8 @@ version of the interpreter, but I'm not sure that's the case for all
 of them as well as Windows.)
 
 (Also note that on GNU/Linux, the generated file won't be called
-``sf.so`` but something like ``sf.cpython-32mu.so``. I don't know
-about Windows.)
+``sf.so`` but something like ``sf.cpython-32mu.so``. Apparently, on
+Windows it's still ``sf.pyd``.)
 
 The second problem is that the SFML API uses raw strings a lot. This
 maps well into Python 2: you just use normal string litterals most of
