@@ -1,9 +1,9 @@
-.. PySFML 2 - Cython documentation master file, created by
+.. pySFML 2 - Cython documentation master file, created by
    sphinx-quickstart on Fri Feb 18 08:41:37 2011.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PySFML 2 - Cython's documentation!
+Welcome to pySFML 2 - Cython's documentation!
 =============================================
 
 A new Python binding for SFML 2, made with `Cython
