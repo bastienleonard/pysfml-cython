@@ -1,7 +1,7 @@
 # -*- python -*-
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Bastien Léonard. All rights reserved.
+# Copyright 2012 Bastien Léonard. All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -29,10 +29,13 @@
 # SUCH DAMAGE.
 
 
-cdef extern from "SFML/Graphics.hpp" namespace "sf::Blend":
-    cdef cppclass Mode
+# This file declares the shader constants, in order to avoid clashes
+# with other enums which have the same members
 
-    int Alpha
-    int Add
-    int Multiply
-    int None
+
+cdef extern from "SFML/Graphics.hpp" namespace "sf::Shader":
+    cdef cppclass Type
+    cdef cppclass CurrentTexture
+
+    int Fragment
+    int Vertex

@@ -21,6 +21,13 @@ extern "C"
 // This should be big enough to contain any message error
 static const int ERROR_MESSAGE_BUFFER_SIZE = 512;
 
+
+
+sf::Drawable* transformable_to_drawable(sf::Transformable *t)
+{
+    return dynamic_cast<sf::Drawable*>(t);
+}
+
 // A custom streambuf that will put error messages in a Python dict
 class MyBuff : public std::streambuf
 {
@@ -100,20 +107,20 @@ CppDrawable::CppDrawable(void* drawable):
 {
 };
 
-void CppDrawable::Render(sf::RenderTarget& target, sf::Renderer& renderer) const
+void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     // The string parameters to PyObject_CallMethod() are char*, so in
     // theory they can be modified, and string litterals are const char*
     char method_name[] = "render";
     char format[] = "(O, O)";
-    PyObject* pyTarget = (PyObject*)(wrap_render_target_instance(&target));
-    PyObject* pyRenderer = (PyObject*)(wrap_renderer_instance(&renderer));
+    PyObject* py_target = (PyObject*)(wrap_render_target_instance(&target));
+    PyObject* py_states = (PyObject*)(wrap_render_states_instance(&states));
     
     // The caller needs to use PyErr_Occurred() to know if this
     // function failed
     PyObject* ret = PyObject_CallMethod(
         static_cast<PyObject*>(drawable), method_name, format,
-        pyTarget, pyRenderer);
+        py_target, py_states);
 
     if (ret != NULL)
     {

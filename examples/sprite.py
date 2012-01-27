@@ -19,6 +19,7 @@ def main():
         window.clear(sf.Color.WHITE)
         window.draw(sprite)
         window.display()
+
     window.close()
 
 

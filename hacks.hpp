@@ -7,12 +7,16 @@
 
 void replace_error_handler();
 
+// This function simply does a dynamic cast, as it's not available in
+// Cython, apparently
+sf::Drawable* transformable_to_drawable(sf::Transformable *t);
 
 extern "C"
 {
     struct __pyx_obj_2sf_RenderTarget* wrap_render_target_instance(
         sf::RenderTarget*);
-    struct __pyx_obj_2sf_Renderer* wrap_renderer_instance(sf::Renderer*);
+    struct __pyx_obj_2sf_RenderStates* wrap_render_states_instance(
+        sf::RenderStates*);
 }
 
 // See this class like Shape, Sprite and Text. They have already defined
@@ -28,7 +32,7 @@ public :
     void* drawable; // this is a PyObject pointer
 
 private :
-    virtual void Render(sf::RenderTarget& target, sf::Renderer& renderer) const;
+    virtual void Draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 
 #endif

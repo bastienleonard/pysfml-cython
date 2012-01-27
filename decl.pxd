@@ -1,7 +1,7 @@
 # -*- python -*-
 # -*- coding: utf-8 -*-
 
-# Copyright 2010, 2011 Bastien Léonard. All rights reserved.
+# Copyright 2010, 2011, 2012 Bastien Léonard. All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -38,25 +38,22 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cppclass Vector2i
 
 
-cimport declblendmode
 cimport declkey
 cimport decljoy
 cimport declmouse
 cimport declprimitive
+cimport declshader
 
 
 cdef extern from "hacks.hpp":
     void replace_error_handler()
+    Drawable* transformable_to_drawable(Transformable*)
+
     cdef cppclass CppDrawable:
         CppDrawable()
         # This is a PyObject*, but for some reason Cython doesn't
         # accept ``object''
         void* drawable
-
-
-# Useful sometimes to print values for debugging
-cdef extern from "stdio.h":
-    void printf(char*, ...)
 
 
 
@@ -116,13 +113,35 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Event":
 cdef extern from "SFML/System.hpp" namespace "sf":
     ctypedef short Int16
     ctypedef unsigned char Uint8
+    ctypedef int Int32
     ctypedef unsigned int Uint32
+    ctypedef long int Int64
+    ctypedef unsigned long int Uint64
 
 
 
 cdef extern from "SFML/Graphics.hpp" namespace "sf":
     # Forward declarations
     cdef cppclass RenderWindow
+
+    cdef cppclass BlendMode:
+        pass
+
+    cdef int BlendAlpha
+    cdef int BlendAdd
+    cdef int BlendMultiply
+    cdef int BlendNone
+
+    cdef cppclass PrimitiveType:
+        pass
+
+    cdef int Points
+    cdef int Lines
+    cdef int LinesStrip
+    cdef int Triangles
+    cdef int TrianglesStrip
+    cdef int TrianglesFan
+    cdef int Quads
 
     cdef cppclass Vector2f:
         Vector2f()
@@ -165,26 +184,49 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         float Width
         float Height
 
-    cdef cppclass Matrix3:
-        Matrix3()
-        Matrix3(float, float, float,
-                float, float, float,
-                float, float, float)
-        Vector2f Transform(Vector2f&)
-        Matrix3 GetInverse()
-        float* Get4x4Elements()
+    cdef cppclass Transform:
+        Transform()
+        Transform(float, float, float,
+                  float, float, float,
+                  float, float, float)
+        Transform(Transform&)
+        Transform Combine(Transform&)
+        Transform GetInverse()
+        float* GetMatrix()
+        Transform& Rotate(float)
+        Transform& Rotate(float, float, float)
+        Transform& Rotate(float, Vector2f&)
+        Transform& Scale(float, float)
+        Transform& Scale(float, float, float, float)
+        Transform& Scale(Vector2f&)
+        Transform& Scale(Vector2f&, Vector2f&)
+        Vector2f TransformPoint(float, float)
+        Vector2f TransformPoint(Vector2f&)
+        FloatRect TransformRect(FloatRect&)
+        Transform& Translate(float, float)
+        Transform& Translate(Vector2f&)
 
-        Matrix3 operator*(Matrix3&)
+        Transform operator*(Transform&)
+        Transform operator*(Transform&, Vector2f&)
+        # Transform operator*=(Transform&, Transform&)
+
+    cdef cppclass Time:
+        Time()
+        Time(Time)
+        float AsSeconds()
+        Uint32 AsMilliseconds()
+        Int64 AsMicroseconds()
 
     cdef cppclass Clock:
         Clock()
-        Uint32 GetElapsedTime()
-        void Reset()
+        Time GetElapsedTime()
+        Time Restart()
 
     cdef cppclass Color:
         Color()
         Color(unsigned int r, unsigned int g, unsigned b)
         Color(unsigned int r, unsigned int g, unsigned b, unsigned int a)
+        Color(Color&)
         unsigned int r
         unsigned int g
         unsigned int b
@@ -242,8 +284,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Image CopyToImage()
         bint Create(unsigned int, unsigned int)
         unsigned int GetHeight()
-        FloatRect GetTexCoords(IntRect&)
         unsigned int GetWidth()
+        bint IsRepeated()
         bint IsSmooth()
         bint LoadFromFile(char*)
         bint LoadFromFile(char*, IntRect&)
@@ -253,6 +295,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         bint LoadFromMemory(void*, size_t, IntRect&)
         # bint LoadFromStream(InputStream&)
         # bint LoadFromStream(InputStream&, IntRect&)
+        void SetRepeated(bint)
         void SetSmooth(bint)
         void Update(Uint8*)
         void Update(Uint8*, unsigned int, unsigned int, unsigned int,
@@ -273,7 +316,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Glyph()
         int Advance
         IntRect Bounds
-        IntRect SubRect
+        IntRect TextureRect
 
     cdef cppclass Font:
         Font()
@@ -286,33 +329,28 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         bint LoadFromMemory(void*, size_t)
 
     cdef cppclass Drawable:
-        Drawable()
-        declblendmode.Mode GetBlendMode()
-        Color& GetColor()
+        pass
+
+    cdef cppclass Transformable:
+        Transformable()
         Vector2f& GetOrigin()
         Vector2f& GetPosition()
         float GetRotation()
         Vector2f& GetScale()
+        Transform& GetTransform()
+        Transform& GetInverseTransform()
         void Move(float, float)
         void Move(Vector2f&)
         void Rotate(float)
         void Scale(float, float)
         void Scale(Vector2f&)
-        void SetBlendMode(declblendmode.Mode)
-        void SetColor(Color&)
         void SetOrigin(float, float)
         void SetOrigin(Vector2f&)
         void SetPosition(float, float)
         void SetPosition(Vector2f&)
         void SetRotation(float)
         void SetScale(float, float)
-        void SetScale(Vector2f&)
-        void SetScaleX(float)
-        void SetScaleY(float)
-        void SetX(float)
-        void SetY(float)
-        Vector2f TransformToGlobal(Vector2f&)
-        Vector2f TransformToLocal(Vector2f&)
+        void SetScale(Vector2f&)        
 
     cdef cppclass Text:
         Text()
@@ -322,15 +360,15 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Text(String&)
         Text(String&, Font&)
         Text(String&, Font&, unsigned int)
-        Vector2f GetCharacterPos(size_t)
+        Vector2f FindCharacterPos(size_t)
         unsigned int GetCharacterSize()
-#        Color& GetColor()
+        Color& GetColor()
         Font& GetFont()
-        FloatRect GetRect()
+        FloatRect GetLocalBounds()
         String& GetString()
         unsigned long GetStyle()
         void SetCharacterSize(unsigned int)
-#        void SetColor(Color&)
+        void SetColor(Color&)
         void SetFont(Font&)
         void SetString(char*)
         void SetString(String&)
@@ -339,26 +377,24 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass Sprite:
         Sprite()
         Sprite(Texture&)
-        void FlipX(bint)
-        void FlipY(bint)
-#        Color& GetColor()
-        Vector2f GetSize()
-        IntRect& GetSubRect()
+        Sprite(Texture&, IntRect&)
+        Color& GetColor()
+        FloatRect GetGlobalBounds()
+        FloatRect GetLocalBounds()
         Texture* GetTexture()
-        void Resize(float, float)
-        void Resize(Vector2f&)
-#        void SetColor(Color&)
-        void SetSubRect(IntRect&)
+        IntRect& GetTextureRect()
+        void SetColor(Color&)
         void SetTexture(Texture&)
         void SetTexture(Texture&, bint)
+        void SetTextureRect(IntRect&)
 
     cdef cppclass View:
         View()
         View(FloatRect&)
         View(Vector2f&, Vector2f&)
         Vector2f& GetCenter()
-        Matrix3& GetInverseMatrix()
-        Matrix3& GetMatrix()
+        Transform& GetInverseTransform()
+        Transform& GetTransform()
         float GetRotation()
         FloatRect& GetViewport()
         Vector2f& GetSize()
@@ -378,8 +414,12 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass Shader:
         Shader()
         void Bind()
-        bint LoadFromFile(char*)
-        bint LoadFromMemory(char*)
+        bint LoadFromFile(char*, declshader.Type)
+        bint LoadFromFile(char*, char*)
+        bint LoadFromMemory(char*, declshader.Type)
+        bint LoadFromMemory(char*, char*)
+        # bint LoadFromStream(InputStream&, declshader.Type)
+        # bint LoadFromStream(InputStream&, InputStream&)
         void SetCurrentTexture(char*)
         void SetParameter(char*, float)
         void SetParameter(char*, float, float)
@@ -387,7 +427,10 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void SetParameter(char*, float, float, float, float)
         void SetParameter(char*, Vector2f&)
         void SetParameter(char*, Vector3f&)
-        void SetTexture(char*, Texture&)
+        void SetParameter(char*, Color&)
+        void SetParameter(char*, Transform&)
+        void SetParameter(char*, Texture&)
+        void SetParameter(char*, declshader.CurrentTexture)
         void Unbind()
 
     cdef cppclass ContextSettings:
@@ -407,11 +450,44 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass WindowHandle:
         pass
 
+    cdef cppclass RenderStates:
+        RenderStates()
+        RenderStates(RenderStates&)
+        BlendMode BlendMode
+        Shader* Shader
+        Texture* Texture
+        Transform Transform
+
+    cdef cppclass Vertex:
+        Vertex()
+        Vertex(Vector2f&)
+        Vertex(Vector2f&, Color&)
+        Vertex(Vector2f&, Vector2f&)
+        Vertex(Vector2f&, Color&, Vector2f&)
+        Vector2f Position
+        Color Color
+        Vector2f TexCoords
+
+    cdef cppclass VertexArray:
+        VertexArray()
+        VertexArray(PrimitiveType, unsigned int)
+        Vertex& operator[](unsigned int)
+        void Append(Vertex&)
+        void Clear()
+        FloatRect GetBounds()
+        PrimitiveType GetPrimitiveType()
+        unsigned int GetVertexCount()
+        void Resize(unsigned int)
+        void SetPrimitiveType(PrimitiveType)
+
     cdef cppclass RenderTarget:
         void Clear()
         void Clear(Color&)
         void Draw(Drawable&)
-        void Draw(Drawable&, Shader&)
+        void Draw(Drawable&, Shader*)
+        void Draw(Drawable&, RenderStates&)
+        void Draw(Vertex*, unsigned int, PrimitiveType)
+        void Draw(Vertex*, unsigned int, PrimitiveType, RenderStates&)
         unsigned int GetHeight()
         unsigned int GetWidth()
         void SetView(View&)
@@ -420,8 +496,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         IntRect GetViewport(View&)
         Vector2f ConvertCoords(unsigned int, unsigned int)
         Vector2f ConvertCoords(unsigned int, unsigned int, View&)
-        void RestoreGLStates()
-        void SaveGLStates()
+        void PopGLStates()
+        void PushGLStates()
+        void ResetGLStates()
 
     cdef cppclass RenderWindow:
         RenderWindow()
@@ -437,10 +514,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void Display()
         void EnableKeyRepeat(bint)
         void EnableVerticalSync(bint)
-        Uint32 GetFrameTime()
         ContextSettings& GetSettings()
         unsigned long GetSystemHandle()
-        bint IsOpened()
+        bint IsOpen()
         bint PollEvent(Event&)
         void SetActive()
         void SetActive(bint)
@@ -467,64 +543,80 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Texture& GetTexture()
         bint IsAvailable()
     
-    cdef cppclass Renderer:
-        Renderer(RenderTarget&)
-        void Initialize()
-        void SaveGLStates()
-        void RestoreGLStates()
-        void Clear(Color&)
-        void PushStates()
-        void PopStates()
-        void SetModelView(Matrix3&)
-        void ApplyModelView(Matrix3&)
-        void SetProjection(Matrix3&)
-        void SetColor(Color&)
-        void ApplyColor(Color&)
-        void SetViewport(IntRect&)
-        void SetBlendMode(declblendmode.Mode)
-        void SetTexture(Texture*)
-        void SetShader(Shader*)
-        void Begin(declprimitive.PrimitiveType)
-        void End()
-        void AddVertex(float x, float y)
-        void AddVertex(float x, float y, float u, float v)
-        void AddVertex(float x, float y, Color&)
-        void AddVertex(float x, float y, float u, float v, Color&)        
-
     cdef cppclass Shape:
         Shape()
-        void AddPoint(float, float)
-        void AddPoint(float, float, Color&)
-        void AddPoint(float, float, Color&, Color&)
-        void AddPoint(Vector2f&)
-        void AddPoint(Vector2f&, Color&)
-        void AddPoint(Vector2f&, Color&, Color&)
-        void EnableFill(bint)
-        void EnableOutline(bint)
-        Image* GetImage()
+        Color& GetFillColor()
+        FloatRect GetLocalBounds()
+        FloatRect GetGlobalBounds()
+        Transform& GetInverseTransform()
+        Vector2f& GetOrigin()
+        Color& GetOutlineColor()
         float GetOutlineThickness()
-        Color GetPixel(unsigned int, unsigned int)
-        Color& GetPointColor(unsigned int)
-        unsigned int GetPointsCount()
-        Color& GetPointOutlineColor(unsigned int)
-        Vector2f& GetPointPosition(unsigned int)
-        IntRect& GetSubRect()
+        Vector2f GetPoint(unsigned int)
+        unsigned int GetPointCount()
+        Vector2f& GetPosition()
+        float GetRotation()
+        Vector2f& GetScale()
+        Texture* GetTexture()
+        IntRect& GetTextureRect()
+        Transform& GetTransform()
+        void Move(float, float)
+        void Move(Vector2f&)
+        void Rotate(float)
+        void SetFillColor(Color&)
+        void Scale(float, float)
+        void Scale(Vector2f&)
+        void SetOrigin(float, float)
+        void SetOrigin(Vector2f&)
+        void SetOutlineColor(Color&)
         void SetOutlineThickness(float)
-        void SetPointPosition(unsigned int, Vector2f&)
-        void SetPointPosition(unsigned int, float, float)
-        void SetPointColor(unsigned int, Color&)
-        void SetPointOutlineColor(unsigned int, Color&)
+        void SetPosition(float, float)
+        void SetPosition(Vector2f&)
+        void SetRotation(float)
+        void SetScale(float, float)
+        void SetScale(Vector2f&)
+        void SetTexture(Texture*)
+        void SetTexture(Texture*, bint)
+        void SetTextureRect(IntRect&)
+
+    cdef cppclass RectangleShape:
+        RectangleShape()
+
+    cdef cppclass CircleShape:
+        CircleShape()
+        CircleShape(float)
+        CircleShape(float, unsigned int)
+        unsigned int GetPointCount()
+        float GetRadius()
+        void SetPointCount(unsigned int)
+        void SetRadius(float)
+
+    cdef cppclass ConvexShape:
+        ConvexShape()
+        ConvexShape(unsigned int)
+        unsigned int GetPointCount()
+        void SetPointCount(unsigned int)
 
 
-# Hacks for static methods
+# Hacks for static methods and attributes. Some similar hacks are
+# created in seperate files, mainly for enums, e.g. declevents.pxd
+cdef extern from "SFML/Graphics.hpp":
+    cdef Time Time_Zero "sf::Time::Zero"
+
+cdef extern from "SFML/Graphics.hpp" namespace "sf":
+    cdef Time Seconds(float)
+    cdef Time Milliseconds(Int32)
+    cdef Time Microseconds(Int64)
+
+cdef extern from "SFML/Graphics.hpp":
+    RenderStates RenderStates_Default "sf::RenderStates::Default"
+
 cdef extern from "SFML/Graphics.hpp" namespace "sf::VideoMode":
     cdef VideoMode& GetDesktopMode()
     cdef vector[VideoMode]& GetFullscreenModes()
 
-cdef extern from "SFML/Graphics.hpp" namespace "sf::Matrix3":
-    cdef Matrix3 Transformation(Vector2f&, Vector2f&, float, Vector2f&)
-    cdef Matrix3 Projection(Vector2f&, Vector2f&, float)
-    cdef Matrix3 Identity
+cdef extern from "SFML/Graphics.hpp" namespace "sf::Transform":
+    cdef Transform Identity
 
 cdef extern from "SFML/Graphics.hpp":
     cdef unsigned int Texture_GetMaximumSize "sf::Texture::GetMaximumSize"()
@@ -534,14 +626,3 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Font":
 
 cdef extern from "SFML/Graphics.hpp" namespace "sf::Shader":
     cdef bint IsAvailable()
-
-cdef extern from "SFML/Graphics.hpp" namespace "sf::Shape":
-    cdef Shape Line(float, float, float, float, float, Color&, float)
-    cdef Shape Line(float, float, float, float, float, Color&, float, Color&)
-    cdef Shape Line(Vector2f&, Vector2f&, float, Color&, float, Color&)
-    cdef Shape Rectangle(float, float, float, float, Color&, float)
-    cdef Shape Rectangle(float, float, float, float, Color&, float, Color&)
-    cdef Shape Rectangle(FloatRect&, Color&, float, Color&)
-    cdef Shape Circle(float, float, float, Color&, float)
-    cdef Shape Circle(float, float, float, Color&, float, Color&)
-    cdef Shape Circle(Vector2f&, float, Color&, float, Color&)

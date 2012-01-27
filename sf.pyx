@@ -1,7 +1,7 @@
 # -*- python -*-
 # -*- coding: utf-8 -*-
 
-# Copyright 2011 Bastien Léonard. All rights reserved.
+# Copyright 2011, 2012 Bastien Léonard. All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -34,6 +34,7 @@ Multimedia Library)."""
 
 
 from libc.stdlib cimport malloc, free
+from libc.stdio cimport printf
 from libcpp.vector cimport vector
 from cython.operator cimport preincrement as preinc, dereference as deref
 
@@ -41,11 +42,11 @@ import threading
 
 cimport decl
 cimport declaudio
-cimport declblendmode
 cimport declevent
 cimport decljoy
 cimport declkey
 cimport declmouse
+cimport declshader
 cimport declstyle
 cimport declprimitive
 
@@ -56,9 +57,10 @@ cdef class RenderWindow
 
 
 # If you add a class that inherits drawables to the module, you *must*
-# add it to this list.  It used in RenderTarget.Draw(), to know
+# add it to this list. It used in RenderTarget.draw(), to know
 # whether a drawable is ``built-in'' or user-defined.
-cdef sfml_drawables = [Shape, Sprite, Text]
+cdef sfml_drawables = [Shape, Sprite, Text, VertexArray]
+
 
 cdef error_messages = {}
 cdef error_messages_lock = threading.Lock()
@@ -103,6 +105,19 @@ class PySFMLException(Exception):
             Exception.__init__(self, message)
 
 
+
+BLEND_ALPHA = decl.BlendAlpha
+BLEND_ADD = decl.BlendAdd
+BLEND_MULTIPLY = decl.BlendMultiply
+BLEND_NONE = decl.BlendNone
+
+POINTS = decl.Points
+LINES = decl.Lines
+LINES_STRIP = decl.LinesStrip
+TRIANGLES = decl.Triangles
+TRIANGLES_STRIP = decl.TrianglesStrip
+TRIANGLES_FAN = decl.TrianglesFan
+QUADS = decl.Quads
 
 cdef class Mouse:
     LEFT = declmouse.Left
@@ -284,13 +299,6 @@ cdef class Keyboard:
     @classmethod
     def is_key_pressed(cls, int key):
         return declkey.IsKeyPressed(<declkey.Key>key)
-
-
-cdef class BlendMode:
-    ALPHA = declblendmode.Alpha
-    ADD = declblendmode.Add
-    MULTIPLY = declblendmode.Multiply
-    NONE = declblendmode.None
 
 
 
@@ -548,17 +556,17 @@ cdef decl.Vector2f convert_to_vector2f(value):
 
 
 
-cdef class Matrix3:
-    cdef decl.Matrix3 *p_this
+cdef class Transform:
+    cdef decl.Transform *p_this
 
-    IDENTITY = wrap_matrix_instance(<decl.Matrix3*>&decl.Identity)
+    IDENTITY = wrap_transform_instance(<decl.Transform*>&decl.Identity)
 
     def __init__(self, float a00, float a01, float a02,
                   float a10, float a11, float a12,
                   float a20, float a21, float a22):
-        self.p_this = new decl.Matrix3(a00, a01, a02,
-                                       a10, a11, a12,
-                                       a20, a21, a22)
+        self.p_this = new decl.Transform(a00, a01, a02,
+                                         a10, a11, a12,
+                                         a20, a21, a22)
 
     def __dealloc__(self):
         del self.p_this
@@ -566,7 +574,7 @@ cdef class Matrix3:
     def __str__(self):
         cdef float *p
 
-        p = <float*>self.p_this.Get4x4Elements()
+        p = <float*>self.p_this.GetMatrix()
 
         return ('[{0} {4} {8} {12}]\n'
                 '[{1} {5} {9} {13}]\n'
@@ -577,60 +585,140 @@ cdef class Matrix3:
                         p[8], p[9], p[10], p[11],
                         p[12], p[13], p[14], p[15]))
 
-    def __mul__(Matrix3 self, Matrix3 other):
-        cdef decl.Matrix3 *p = new decl.Matrix3()
+    def __mul__(Transform self, Transform other):
+        cdef decl.Transform *p = new decl.Transform()
 
         p[0] = self.p_this[0] * other.p_this[0]
 
-        return wrap_matrix_instance(p)
+        return wrap_transform_instance(p)
 
-    @classmethod
-    def projection(cls, center, size, float rotation):
-        cdef decl.Vector2f cpp_center = convert_to_vector2f(center)
-        cdef decl.Vector2f cpp_size = convert_to_vector2f(size)
-        cdef decl.Matrix3 *p = new decl.Matrix3()
+    property matrix:
+        def __get__(self):
+            cdef float *p = <float*>self.p_this.GetMatrix()
+            cdef ret = []
 
-        p[0] = decl.Projection(cpp_center, cpp_size, rotation)
+            for i in range(16):
+                ret.append(p[0])
+                p += 1
 
-        return wrap_matrix_instance(p)
-        
-    @classmethod
-    def transformation(cls, origin, translation, float rotation, scale):
-        cdef decl.Vector2f cpp_origin = convert_to_vector2f(origin)
-        cdef decl.Vector2f cpp_translation = convert_to_vector2f(translation)
-        cdef decl.Vector2f cpp_scale = convert_to_vector2f(scale)
-        cdef decl.Matrix3 *p = new decl.Matrix3()
+            return ret
 
-        p[0] = decl.Transformation(cpp_origin, cpp_translation, rotation,
-                                   cpp_scale)
+    def combine(self, Transform transform):
+        cdef decl.Transform *p = new decl.Transform()
 
-        return wrap_matrix_instance(p)
+        p[0] = self.p_this.Combine(transform.p_this[0])
+
+        return wrap_transform_instance(p)
 
     def get_inverse(self):
-        cdef decl.Matrix3 m = self.p_this.GetInverse()
-        cdef decl.Matrix3 *p = new decl.Matrix3()
+        cdef decl.Transform *p = new decl.Transform()
 
-        p[0] = m
+        p[0] = self.p_this.GetInverse()
 
-        return wrap_matrix_instance(p)
+        return wrap_transform_instance(p)
 
-    def transform(self, point):
-        cdef decl.Vector2f cpp_point = convert_to_vector2f(point)
-        cdef decl.Vector2f res
+    def rotate(self, object angle, object center_x=None, object center_y=None):
+        if center_x is None and center_y is None:
+            self.p_this.Rotate(<float?>angle)
+        elif center_x is not None and center_y is not None:
+            self.p_this.Rotate(<float?>angle, <float?>center_x,
+                               <float?>center_y)
+        else:
+            raise PySFMLException(
+                "You must provide either 1 float or 3 floats are arguments")
 
-        res = self.p_this.Transform(cpp_point)
+        return self
 
-        return (res.x, res.y)
+    def scale(self, float scale_x, float scale_y,
+              object center_x=None, object center_y=None):
+        if center_x is None and center_y is None:
+            self.p_this.Scale(scale_x, scale_y)
+        elif center_x is not None and center_y is not None:
+            self.p_this.Scale(scale_x, scale_y, <float?>center_x,
+                              <float?>center_y)
+        else:
+            raise PySFMLException(
+                "You must provide either 2 floats or 4 floats as arguments")
+
+        return self
+
+    def transform_point(self, float x, float y):
+        cdef decl.Vector2f v = self.p_this.TransformPoint(x, y)
+
+        return (v.x, v.y)
+
+    def transform_rect(self, FloatRect rectangle):
+        cdef decl.FloatRect *p = new decl.FloatRect()
+
+        p[0] = self.p_this.TransformRect(rectangle.p_this[0])
+
+        return wrap_float_rect_instance(p)
+
+    def translate(self, float x, float y):
+        self.p_this.Translate(x, y)
+
+        return self
 
 
-cdef Matrix3 wrap_matrix_instance(decl.Matrix3 *p_cpp_instance):
-    cdef Matrix3 ret = Matrix3.__new__(Matrix3)
+cdef Transform wrap_transform_instance(decl.Transform *p_cpp_instance):
+    cdef Transform ret = Transform.__new__(Transform)
 
     ret.p_this = p_cpp_instance
 
     return ret
 
 
+
+
+
+cdef class Time:
+    cdef decl.Time *p_this
+    ZERO = wrap_time_instance(new decl.Time(decl.Time_Zero))
+
+    def __init__(self):
+        self.p_this = new decl.Time()
+
+    def __dealloc__(self):
+        del self.p_this
+
+    def as_seconds(self):
+        return self.p_this.AsSeconds()
+
+    def as_milliseconds(self):
+        return self.p_this.AsMilliseconds()
+
+    def as_microseconds(self):
+        return self.p_this.AsMicroseconds()
+
+
+cdef Time wrap_time_instance(decl.Time *p_cpp_instance):
+    cdef Time ret = Time.__new__(Time)
+
+    ret.p_this = p_cpp_instance
+
+    return ret
+
+
+cdef Time seconds(float seconds):
+    cdef decl.Time *p = new decl.Time()
+
+    p[0] = decl.Seconds(seconds)
+
+    return wrap_time_instance(p)
+
+cdef Time milliseconds(int milliseconds):
+    cdef decl.Time *p = new decl.Time()
+
+    p[0] = decl.Milliseconds(milliseconds)
+
+    return wrap_time_instance(p)
+
+cdef Time microseconds(int microseconds):
+    cdef decl.Time *p = new decl.Time()
+
+    p[0] = decl.Microseconds(microseconds)
+
+    return wrap_time_instance(p)
 
 
 
@@ -645,10 +733,14 @@ cdef class Clock:
 
     property elapsed_time:
         def __get__(self):
-            return self.p_this.GetElapsedTime()
+            cdef decl.Time *p = new decl.Time()
 
-    def reset(self):
-        self.p_this.Reset()
+            p[0] = self.p_this.GetElapsedTime()
+
+            return wrap_time_instance(p)
+
+    def restart(self):
+        self.p_this.Restart()
 
 
 
@@ -727,7 +819,7 @@ cdef class Color:
             self.p_this.a = value
 
 
-cdef wrap_color_instance(decl.Color *p_cpp_instance):
+cdef Color wrap_color_instance(decl.Color *p_cpp_instance):
     cdef Color ret = Color.__new__(Color)
     ret.p_this = p_cpp_instance
 
@@ -749,13 +841,17 @@ cdef class SoundBuffer:
         if self.delete_this:
             del self.p_this
 
-    property channels_count:
+    property channel_count:
         def __get__(self):
-            return self.p_this.GetChannelsCount()
+            return self.p_this.GetChannelCount()
 
     property duration:
         def __get__(self):
-            return self.p_this.GetDuration()
+            cdef decl.Time *p = new decl.Time()
+
+            p[0] = self.p_this.GetDuration()
+
+            return wrap_time_instance(p)
 
     property sample_rate:
         def __get__(self):
@@ -767,14 +863,14 @@ cdef class SoundBuffer:
             cdef unsigned int i
             ret = []
 
-            for i in range(self.p_this.GetSamplesCount()):
+            for i in range(self.p_this.GetSampleCount()):
                 ret.append(int(p[i]))
 
             return ret
 
-    property samples_count:
+    property sample_count:
         def __get__(self):
-            return self.p_this.GetSamplesCount()
+            return self.p_this.GetSampleCount()
 
     @classmethod
     def load_from_file(cls, char* filename):
@@ -892,10 +988,14 @@ cdef class Sound:
 
     property playing_offset:
         def __get__(self):
-            return self.p_this.GetPlayingOffset()
+            cdef decl.Time *p = new decl.Time()
 
-        def __set__(self, int value):
-            self.p_this.SetPlayingOffset(value)
+            p[0] = self.p_this.GetPlayingOffset()
+
+            return wrap_time_instance(p)
+
+        def __set__(self, Time value):
+            self.p_this.SetPlayingOffset(value.p_this[0])
 
     property position:
         def __get__(self):
@@ -959,13 +1059,17 @@ cdef class Music:
         def __set__(self, float value):
             self.p_this.SetAttenuation(value)
 
-    property channels_count:
+    property channel_count:
         def __get__(self):
-            return self.p_this.GetChannelsCount()
+            return self.p_this.GetChannelCount()
 
     property duration:
         def __get__(self):
-            return self.p_this.GetDuration()
+            cdef decl.Time *p = new decl.Time()
+
+            p[0] = self.p_this.GetDuration()
+
+            return wrap_time_instance(p)
 
     property loop:
         def __get__(self):
@@ -990,10 +1094,14 @@ cdef class Music:
 
     property playing_offset:
         def __get__(self):
-            return self.p_this.GetPlayingOffset()
+            cdef decl.Time *p = new decl.Time()
 
-        def __set__(self, float value):
-            self.p_this.SetPlayingOffset(value)
+            p[0] = self.p_this.GetPlayingOffset()
+
+            return wrap_time_instance(p)
+
+        def __set__(self, Time value):
+            self.p_this.SetPlayingOffset(value.p_this[0])
 
     property position:
         def __get__(self):
@@ -1221,11 +1329,11 @@ cdef class Glyph:
 
             return wrap_int_rect_instance(p)
 
-    property sub_rect:
+    property texture_rect:
         def __get__(self):
             cdef decl.IntRect *p = new decl.IntRect()
 
-            p[0] = self.p_this.SubRect
+            p[0] = self.p_this.TextureRect
 
             return wrap_int_rect_instance(p)
 
@@ -1454,6 +1562,13 @@ cdef class Texture:
         def __get__(self):
             return self.p_this.GetHeight()
 
+    property repeated:
+        def __get__(self):
+            return self.IsRepeated()
+
+        def __set__(self, bint value):
+            self.SetRepeated(value)
+
     property smooth:
         def __get__(self):
             return self.p_this.IsSmooth()
@@ -1516,15 +1631,6 @@ cdef class Texture:
     def bind(self):
         self.p_this.Bind()
 
-    def get_tex_coords(self, rect):
-        cdef decl.IntRect cpp_rect = convert_to_int_rect(rect)
-        cdef decl.FloatRect res = self.p_this.GetTexCoords(cpp_rect)
-        cdef decl.FloatRect *p = new decl.FloatRect()
-
-        p[0] = res
-
-        return wrap_float_rect_instance(p)
-
     def update(self, object source, int p1=-1, int p2=-1, int p3=-1, int p4=-1):
         if isinstance(source, bytes):
             if p1 == -1:
@@ -1563,34 +1669,16 @@ cdef Texture wrap_texture_instance(decl.Texture *p_cpp_instance,
 
 
 
-cdef class Drawable:
-    cdef decl.Drawable *p_this
+cdef class Transformable:
+    cdef decl.Transformable *p_this
 
     def __cinit__(self, *args, **kwargs):
         pass
 
     def __init__(self, *args, **kwargs):
-        if self.__class__ == Drawable:
-            raise NotImplementedError('Drawable is abstact')
+        if self.__class__ == Transformable:
+            raise NotImplementedError('Transformable is abstact')
     
-    property blend_mode:
-        def __get__(self):
-            return <int>self.p_this.GetBlendMode()
-
-        def __set__(self, int value):
-            self.p_this.SetBlendMode(<declblendmode.Mode>value)
-
-    property color:
-        def __get__(self):
-            cdef decl.Color *p = new decl.Color()
-
-            p[0] = self.p_this.GetColor()
-
-            return wrap_color_instance(p)
-
-        def __set__(self, Color value):
-            self.p_this.SetColor(value.p_this[0])
-
     property origin:
         def __get__(self):
             cdef decl.Vector2f origin = self.p_this.GetOrigin()
@@ -1636,34 +1724,29 @@ cdef class Drawable:
             return self.position[0]
 
         def __set__(self, float value):
-            self.p_this.SetX(value)
+            self.position = (value, self.y)
 
     property y:
         def __get__(self):
             return self.position[1]
 
         def __set__(self, float value):
-            self.p_this.SetY(value)
+            self.position = (self.x, value)
 
-    def transform_to_local(self, float x, float y):
-        cdef decl.Vector2f cpp_point
-        cdef decl.Vector2f res
+    def get_inverse_transform(self):
+        cdef decl.Transform *p = new decl.Transform()
 
-        cpp_point.x = x
-        cpp_point.y = y
-        res = self.p_this.TransformToLocal(cpp_point)
+        p[0] = self.p_this.GetInverseTransform()
 
-        return (res.x, res.y)
+        return wrap_transform_instance(p)
 
-    def transform_to_global(self, float x, float y):
-        cdef decl.Vector2f cpp_point
-        cdef decl.Vector2f res
 
-        cpp_point.x = x
-        cpp_point.y = y
-        res = self.p_this.TransformToGlobal(cpp_point)
+    def get_transform(self):
+        cdef decl.Transform *p = new decl.Transform()
 
-        return (res.x, res.y)
+        p[0] = self.p_this.GetTransform()
+
+        return wrap_transform_instance(p)
 
     def move(self, float x, float y):
         self.p_this.Move(x, y)
@@ -1676,27 +1759,28 @@ cdef class Drawable:
 
 
 
-# This class allows the user to use the Drawable.scale attribute both
-# for GetScale()/SetScale() property and the Scale() method.  When the
-# user calls the getter for Drawable.scale, the object returned is an
-# instance of this class. It will behave like a tuple, except that the
-# call overrides __call__() so that the C++ Scale() method is called
-# when the user types some_drawable.scale().
+# This class allows the user to use the Transformable.scale attribute
+# both for GetScale()/SetScale() property and the Scale() method.
+# When the user calls the getter for Transformable.scale, the object
+# returned is an instance of this class. It will behave like a tuple,
+# except that the call overrides __call__() so that the C++ Scale()
+# method is called when the user types some_transformable.scale().
 class ScaleWrapper(tuple):
-    def __new__(cls, Drawable drawable, float x, float y):
+    def __new__(cls, Transformable transformable, float x, float y):
         return tuple.__new__(cls, (x, y))
 
-    def __init__(self, Drawable drawable, float x, float y):
-        self.drawable = drawable
+    def __init__(self, Transformable transformable, float x, float y):
+        self.transformable = transformable
 
     def __call__(self, float x, float y):
-        self.drawable._scale(x, y)
+        self.transformable._scale(x, y)
 
 
 
-cdef class Text(Drawable):
+cdef class Text(Transformable):
     cdef bint is_unicode
     cdef Font font
+    cdef Color color
 
     REGULAR = declstyle.Regular
     BOLD = declstyle.Bold
@@ -1710,18 +1794,18 @@ cdef class Text(Drawable):
         self.is_unicode = False
 
         if string is None:
-            self.p_this = <decl.Drawable*>new decl.Text()
+            self.p_this = <decl.Transformable*>new decl.Text()
         elif isinstance(string, bytes):
             if font is None:
-                self.p_this = <decl.Drawable*>new decl.Text(<char*>string)
+                self.p_this = <decl.Transformable*>new decl.Text(<char*>string)
                 self.font = wrap_font_instance(
                     <decl.Font*>&(<decl.Text*>self.p_this).GetFont(), False)
             elif character_size == 0:
-                self.p_this = <decl.Drawable*>new decl.Text(
+                self.p_this = <decl.Transformable*>new decl.Text(
                     <char*>string, font.p_this[0])
                 self.font = font
             else:
-                self.p_this = <decl.Drawable*>new decl.Text(
+                self.p_this = <decl.Transformable*>new decl.Text(
                     <char*>string, font.p_this[0], character_size)
                 self.font = font
         elif isinstance(string, unicode):
@@ -1732,20 +1816,23 @@ cdef class Text(Drawable):
             cpp_string = decl.String(<decl.Uint32*>c_string)
 
             if font is None:
-                self.p_this = <decl.Drawable*>new decl.Text(cpp_string)
+                self.p_this = <decl.Transformable*>new decl.Text(cpp_string)
                 self.font = wrap_font_instance(
                     <decl.Font*>&(<decl.Text*>self.p_this).GetFont(), False)
             elif character_size == 0:
-                self.p_this = <decl.Drawable*>new decl.Text(
+                self.p_this = <decl.Transformable*>new decl.Text(
                     cpp_string, font.p_this[0])
                 self.font = font
             else:
-                self.p_this = <decl.Drawable*>new decl.Text(
+                self.p_this = <decl.Transformable*>new decl.Text(
                     cpp_string, font.p_this[0], character_size)
                 self.font = font
         else:
             raise TypeError("Expected bytes/str or unicode for string, got {0}"
                             .format(type(string)))
+
+        self.color = wrap_color_instance(
+            new decl.Color((<decl.Text*>self.p_this).GetColor()))
 
     def __dealloc__(self):
         del self.p_this
@@ -1757,6 +1844,14 @@ cdef class Text(Drawable):
         def __set__(self, int value):
             (<decl.Text*>self.p_this).SetCharacterSize(value)
 
+    property color:
+        def __get__(self):
+            return self.color
+
+        def __set__(self, Color value):
+            self.color = value
+            (<decl.Text*>self.p_this).SetColor(value.p_this[0])
+
     property font:
         def __get__(self):
             return self.font
@@ -1765,11 +1860,11 @@ cdef class Text(Drawable):
             (<decl.Text*>self.p_this).SetFont(value.p_this[0])
             self.font = value
 
-    property rect:
+    property local_bounds:
         def __get__(self):
             cdef decl.FloatRect *p = new decl.FloatRect()
 
-            p[0] = (<decl.Text*>self.p_this).GetRect()
+            p[0] = (<decl.Text*>self.p_this).GetLocalBounds()
 
             return wrap_float_rect_instance(p)
 
@@ -1815,8 +1910,8 @@ cdef class Text(Drawable):
         def __set__(self, int value):
             (<decl.Text*>self.p_this).SetStyle(value)
 
-    def get_character_pos(self, int index):
-        cdef decl.Vector2f res = (<decl.Text*>self.p_this).GetCharacterPos(
+    def find_character_pos(self, int index):
+        cdef decl.Vector2f res = (<decl.Text*>self.p_this).FindCharacterPos(
             index)
 
         return (res.x, res.y)
@@ -1825,16 +1920,21 @@ cdef class Text(Drawable):
 
 
 
-cdef class Sprite(Drawable):
+cdef class Sprite(Transformable):
     cdef Texture texture
 
-    def __cinit__(self, Texture texture=None):
+    def __cinit__(self, Texture texture=None, IntRect rectangle=None):
         if texture is None:
             self.texture = None
-            self.p_this = <decl.Drawable*>new decl.Sprite()
+            self.p_this = <decl.Transformable*>new decl.Sprite()
+        elif rectangle is None:
+            self.texture = texture
+            self.p_this = <decl.Transformable*>new decl.Sprite(
+                texture.p_this[0])
         else:
             self.texture = texture
-            self.p_this = <decl.Drawable*>new decl.Sprite(texture.p_this[0])
+            self.p_this = <decl.Transformable*>new decl.Sprite(
+                texture.p_this[0], rectangle.p_this[0])
 
     def __dealloc__(self):
         del self.p_this
@@ -1844,13 +1944,27 @@ cdef class Sprite(Drawable):
 
         return self.get_pixel(v.x, v.y)
 
-    property height:
+    property color:
         def __get__(self):
-            return (<decl.Sprite*>self.p_this).GetSize().y
+            return wrap_color_instance(new decl.Color(
+                (<decl.Sprite*>self.p_this).GetColor()))
 
-    property size:
+        def __set__(self, Color value):
+            (<decl.Sprite*>self.p_this).SetColor(value.p_this[0])
+
+    property global_bounds:
         def __get__(self):
-            return (self.width, self.height)
+            cdef decl.FloatRect r = ((<decl.Sprite*>self.p_this)
+                                     .GetGlobalBounds())
+
+            return FloatRect(r.Left, r.Top, r.Width, r.Height)
+
+    property local_bounds:
+        def __get__(self):
+            cdef decl.FloatRect r = ((<decl.Sprite*>self.p_this)
+                                     .GetLocalBounds())
+
+            return FloatRect(r.Left, r.Top, r.Width, r.Height)
 
     property texture:
         def __get__(self):
@@ -1860,51 +1974,79 @@ cdef class Sprite(Drawable):
             self.texture = value
             (<decl.Sprite*>self.p_this).SetTexture(value.p_this[0])
 
-    property width:
-        def __get__(self):
-            return (<decl.Sprite*>self.p_this).GetSize().x
+    property texture_rect:
+        def __get__(self): 
+            cdef decl.IntRect r = (<decl.Sprite*>self.p_this).GetTextureRect()
 
-    def get_sub_rect(self):
-        cdef decl.IntRect r = (<decl.Sprite*>self.p_this).GetSubRect()
+            return IntRect(r.Left, r.Top, r.Width, r.Height)
+           
+        def __set__(self, IntRect value):
+            cdef decl.IntRect r = convert_to_int_rect(value)
 
-        return IntRect(r.Left, r.Top, r.Width, r.Height)
+            (<decl.Sprite*>self.p_this).SetTextureRect(r)
 
-    def flip_x(self, bint flipped):
-        (<decl.Sprite*>self.p_this).FlipX(flipped)
-
-    def flip_y(self, bint flipped):
-        (<decl.Sprite*>self.p_this).FlipY(flipped)
-
-    def resize(self, float width, float height):
-        (<decl.Sprite*>self.p_this).Resize(width, height)
-
-    def set_sub_rect(self, object rect):
-        cdef decl.IntRect r = convert_to_int_rect(rect)
-
-        (<decl.Sprite*>self.p_this).SetSubRect(r)
-
-    def set_texture(self, Texture texture, bint adjust_to_new_size=False):
+    def set_texture(self, Texture texture, bint reset_rect=False):
         self.texture = texture
         (<decl.Sprite*>self.p_this).SetTexture(texture.p_this[0],
-                                               adjust_to_new_size)
+                                               reset_rect)
 
 
 
 
-cdef class Shape(Drawable):
-    def __init__(self):
-        self.p_this = <decl.Drawable*>new decl.Shape()
-    
-    def __dealloc__(self):
-        del self.p_this
-    
-    property fill_enabled:
-        def __set__(self, bint value):
-            (<decl.Shape*>self.p_this).EnableFill(value)
+cdef class Shape(Transformable):
+    cdef Texture texture
 
-    property outline_enabled:
-        def __set__(self, bint value):
-            (<decl.Shape*>self.p_this).EnableOutline(value)
+    def __init__(self, *args, **kwargs):
+        if self.__class__ == Shape:
+            raise NotImplementedError("Shape is abstract")
+
+        self.texture = None
+
+    property fill_color:
+        def __get__(self):
+            return wrap_color_instance(new decl.Color(
+                (<decl.Shape*>self.p_this).GetFillColor()))
+
+        def __set__(self, Color value):
+            (<decl.Shape*>self.p_this).SetFillColor(value.p_this[0])
+
+    property global_bounds:
+        def __get__(self):
+            cdef decl.FloatRect r = (<decl.Shape*>self.p_this).GetGlobalBounds()
+
+            return FloatRect(r.Left, r.Top, r.Width, r.Height)
+
+    property local_bounds:
+        def __get__(self):
+            cdef decl.FloatRect r = (<decl.Shape*>self.p_this).GetLocalBounds()
+
+            return FloatRect(r.Left, r.Top, r.Width, r.Height)
+
+    property texture:
+        def __get__(self):
+            return self.texture
+
+        def __set__(self, Texture value):
+            self.texture = value
+            (<decl.Shape*>self.p_this).SetTexture(value.p_this)
+
+    property texture_rect:
+        def __get__(self):
+            cdef decl.IntRect r = (<decl.Shape*>self.p_this).GetTextureRect()
+
+            return IntRect(r.Left, r.Top, r.Width, r.Height)
+
+        def __set__(self, object value):
+            (<decl.Shape*>self.p_this).SetTextureRect(
+                convert_to_int_rect(value))
+
+    property outline_color:
+        def __get__(self):
+            return wrap_color_instance(new decl.Color(
+                (<decl.Shape*>self.p_this).GetOutlineColor()))
+
+        def __set__(self, Color value):
+            (<decl.Shape*>self.p_this).SetOutlineColor(value.p_this[0])
 
     property outline_thickness:
         def __get__(self):
@@ -1913,98 +2055,178 @@ cdef class Shape(Drawable):
         def __set__(self, float value):
             (<decl.Shape*>self.p_this).SetOutlineThickness(value)
 
-    property points_count:
+    def get_point(self, int index):
+        raise NotImplementedError("get_point() is abstract")
+
+    def get_point_count(self):
+        raise NotImplementedError("get_point_count() is abstract")
+
+    def set_texture(self, Texture texture, bint reset_rect=False):
+        self.texture = texture
+        (<decl.Shape*>self.p_this).SetTexture(texture.p_this, reset_rect)
+
+
+
+
+
+cdef class Rectangle(Shape):
+    def __cinit__(self):
+        self.p_this = <decl.Transformable*>new decl.RectangleShape()
+
+
+
+
+cdef class CircleShape(Shape):
+    def __cinit__(self, radius=None, point_count=None):
+        self.p_this = <decl.Transformable*>new decl.CircleShape()
+
+        if radius is not None:
+            (<decl.CircleShape*>self.p_this).SetRadius(<float?>radius)
+
+        if point_count is not None:
+            (<decl.CircleShape*>self.p_this).SetPointCount(<int?>point_count)
+
+    property point_count:
         def __get__(self):
-            return (<decl.Shape*>self.p_this).GetPointsCount()
+            return (<decl.CircleShape*>self.p_this).GetPointCount()
 
-    @classmethod
-    def line(cls, float p1x, float p1y, float p2x, float p2y, float thickness,
-             Color color, float outline=0.0, Color outline_color=None):
-        cdef decl.Shape *p = new decl.Shape()
+        def __set__(self, int value):
+            (<decl.CircleShape*>self.p_this).SetPointCount(value)
 
-        if outline_color is None:
-            p[0] = decl.Line(p1x, p1y, p2x, p2y, thickness, color.p_this[0],
-                             outline)
-        else:
-            p[0] = decl.Line(p1x, p1y, p2x, p2y, thickness, color.p_this[0],
-                             outline, outline_color.p_this[0])
+    property radius:
+        def __get__(self):
+            return (<decl.CircleShape*>self.p_this).GetRadius()
 
-        return wrap_shape_instance(p)
+        def __set__(self, float value):
+            (<decl.CircleShape*>self.p_this).SetRadius(value)
 
-    @classmethod
-    def rectangle(cls, float left, float top, float width, float height,
-                  Color color, float outline=0.0, Color outline_color=None):
-        cdef decl.Shape *p = new decl.Shape()
 
-        if outline_color is None:
-            p[0] = decl.Rectangle(left, top, width, height, color.p_this[0],
-                                  outline)
-        else:
-            p[0] = decl.Rectangle(left, top, width, height, color.p_this[0],
-                                  outline, outline_color.p_this[0])
 
-        return wrap_shape_instance(p)
+cdef class ConvexShape(Shape):
+    def __cinit__(self, point_count=None):
+        self.p_this = <decl.Transformable*>new decl.ConvexShape()
 
-    @classmethod
-    def circle(cls, float x, float y, float radius, Color color,
-               float outline=0.0, Color outline_color=None):
-        cdef decl.Shape *p = new decl.Shape()
+        if point_count is not None:
+            (<decl.ConvexShape*>self.p_this).SetPointCount(<int?>point_count)
 
-        if outline_color is None:
-            p[0] = decl.Circle(x, y, radius, color.p_this[0], outline)
-        else:
-            p[0] = decl.Circle(x, y, radius, color.p_this[0], outline,
-                               outline_color.p_this[0])
+    property point_count:
+        def __get__(self):
+            return (<decl.ConvexShape*>self.p_this).GetPointCount()
 
-        return wrap_shape_instance(p)
+        def __set__(self, int value):
+            (<decl.ConvexShape*>self.p_this).SetPointCount(value)
 
-    def add_point(self, float x, float y, Color color=None,
-                  Color outline_color=None):
-        if color is None:
-            (<decl.Shape*>self.p_this).AddPoint(x, y)
-        elif outline_color is None:
-            (<decl.Shape*>self.p_this).AddPoint(x, y, color.p_this[0])
-        else:
-            (<decl.Shape*>self.p_this).AddPoint(x, y, color.p_this[0],
-                                                outline_color.p_this[0])
 
-    def get_point_color(self, unsigned int index):
-        cdef decl.Color *p = new decl.Color()
 
-        p[0] = (<decl.Shape*>self.p_this).GetPointColor(index)
+cdef class Vertex:
+    cdef decl.Vertex *p_this
+    cdef Color color
 
-        return wrap_color_instance(p)
+    def __init__(self, object position=None, Color color=None,
+                 object tex_coords=None):
+        self.p_this = new decl.Vertex()
 
-    def get_point_outline_color(self, unsigned int index):
-        cdef decl.Color *p = new decl.Color()
+        if position is not None:
+            self.p_this.Position = convert_to_vector2f(position)
 
-        p[0] = (<decl.Shape*>self.p_this).GetPointOutlineColor(index)
+        if color is not None:
+            self.p_this.Color = color.p_this[0]
+            self.color = color
 
-        return wrap_color_instance(p)
+        if tex_coords is not None:
+            self.p_this.TexCoords = convert_to_vector2f(tex_coords)
 
-    def get_point_position(self, unsigned int index):
-        cdef decl.Vector2f pos
+    def __dealloc__(self):
+        del self.p_this
 
-        pos = (<decl.Shape*>self.p_this).GetPointPosition(index)
+    property color:
+        def __get__(self):
+            return self.color
 
-        return (pos.x, pos.y)
+        def __set__(self, Color value):
+            self.color = value
+            self.p_this.Color = value.p_this[0]
 
-    def set_point_color(self, unsigned int index, Color color):
-        (<decl.Shape*>self.p_this).SetPointColor(index, color.p_this[0])
+    property position:
+        def __get__(self):
+            cdef decl.Vector2f v = self.p_this.Position
 
-    def set_point_outline_color(self, unsigned int index, Color color):
-        (<decl.Shape*>self.p_this).SetPointOutlineColor(index, color.p_this[0])
+            return (v.x, v.y)
 
-    def set_point_position(self, unsigned int index, float x, float y):
-        (<decl.Shape*>self.p_this).SetPointPosition(index, x, y)
-    
+        def __set__(self, object value):
+            self.p_this.Position = convert_to_vector2f(value)
 
-cdef Shape wrap_shape_instance(decl.Shape *p_cpp_instance):
-    cdef Shape ret = Shape.__new__(Shape)
+    property tex_coords:
+        def __get__(self):
+            cdef decl.Vector2f v = self.p_this.TexCoords
 
-    ret.p_this = <decl.Drawable*>p_cpp_instance
-    
+            return (v.x, v.y)
+
+        def __set__(self, object value):
+            self.p_this.TexCoords = convert_to_vector2f(value)
+
+
+cdef Vertex wrap_vertex_instance(decl.Vertex *p):
+    cdef Vertex ret = Vertex.__new__(Vertex)
+
+    ret.p_this = p
+
     return ret
+
+
+cdef class VertexArray:
+    cdef decl.VertexArray *p_this
+
+    def __init__(self, int primitive_type=-1, int vertex_count=-1):
+        if primitive_type != -1 and vertex_count != -1:
+            self.p_this = new decl.VertexArray(
+                <decl.PrimitiveType>primitive_type, vertex_count)
+        else:
+            self.p_this = new decl.VertexArray()
+
+            if primitive_type != -1:
+                self.primitive_type = primitive_type
+
+    def __dealloc__(self):
+        del self.p_this
+
+    def __len__(self):
+        return self.p_this.GetVertexCount()
+
+    def __getitem__(self, int x):
+        cdef decl.Vertex *p = new decl.Vertex()
+
+        if not 0 <= x < self.p_this.GetVertexCount():
+            raise IndexError(
+                "VertexArray index out of range "
+                "(must be 0 <= x <= {0}, got {1})"
+                .format(len(self) - 1, x))
+
+        p[0] = <decl.Vertex&>((self.p_this)[x])
+
+        return wrap_vertex_instance(p)
+
+    property bounds:
+        def __get__(self):
+            cdef decl.FloatRect r = self.p_this.GetBounds()
+
+            return FloatRect(r.Left, r.Top, r.Width, r.Height)
+
+    property primitive_type:
+        def __get__(self):
+            return <int>self.p_this.GetPrimitiveType()
+
+        def __set__(self, int value):
+            self.p_this.SetPrimitiveType(<decl.PrimitiveType>value)
+
+    def append(self, Vertex vertex):
+        self.p_this.Append(vertex.p_this[0])
+
+    def clear(self):
+        self.p_this.Clear()
+
+    def resize(self, int vertex_count):
+        self.p_this.Resize(vertex_count)
 
 
 
@@ -2135,7 +2357,8 @@ cdef class View:
     # bound to the view. Every time the view is changed, the target
     # will be automatically updated. The target object must have a
     # view property.  This is used so that code like
-    # window.view.move(10, 10) works as expected.
+    # window.view.move(10, 10) works as expected, since window.view
+    # returns a copy of the view.
     cdef object render_target
 
     def __init__(self):
@@ -2221,9 +2444,19 @@ cdef class View:
 
         return wrap_view_instance(p, None)
 
-    def _update_target(self):
-        if self.render_target is not None:
-            self.render_target.view = self
+    def get_inverse_transform(self):
+        cdef decl.Transform *p = new decl.Transform()
+
+        p[0] = self.p_this.GetInverseTransform()
+
+        return wrap_transform_instance(p)
+
+    def get_transform(self):
+        cdef decl.Transform *p = new decl.Transform()
+
+        p[0] = self.p_this.GetTransform()
+
+        return wrap_transform_instance(p)
 
     def move(self, float x, float y):
         self.p_this.Move(x, y)
@@ -2240,6 +2473,10 @@ cdef class View:
     def zoom(self, float factor):
         self.p_this.Zoom(factor)
         self._update_target()
+
+    def _update_target(self):
+        if self.render_target is not None:
+            self.render_target.view = self
 
 
 cdef View wrap_view_instance(decl.View *p_cpp_view, object window):
@@ -2258,6 +2495,7 @@ cdef class Shader:
     cdef decl.Shader *p_this
 
     IS_AVAILABLE = decl.IsAvailable()
+    CURRENT_TEXTURE = object()
 
     def __init__(self):
         raise NotImplementedError(
@@ -2267,46 +2505,72 @@ cdef class Shader:
     def __dealloc__(self):
         del self.p_this
 
-    property current_texture:
-        def __set__(self, char* value):
-            self.p_this.SetCurrentTexture(value)
-
     @classmethod
-    def load_from_file(cls, char *filename):
+    def load_both_types_from_file(cls, char *vertex_shader_filename,
+                                  char *fragment_shader_filename):
         cdef decl.Shader *p = new decl.Shader()
 
-        if p.LoadFromFile(filename):
+        if p.LoadFromFile(vertex_shader_filename,
+                          fragment_shader_filename):
             return wrap_shader_instance(p)
-        else:
-            raise PySFMLException()
+
+        raise PySFMLException()
 
     @classmethod
-    def load_from_memory(cls, char* shader):
+    def load_both_types_from_memory(cls, char *vertex_shader,
+                                    char *fragment_shader):
         cdef decl.Shader *p = new decl.Shader()
 
-        if p.LoadFromMemory(shader):
+        if p.LoadFromMemory(vertex_shader, fragment_shader):
             return wrap_shader_instance(p)
-        else:
-            raise PySFMLException()
+
+        raise PySFMLException()
+
+    @classmethod
+    def load_from_file(cls, char *filename, int type):
+        cdef decl.Shader *p = new decl.Shader()
+
+        if p.LoadFromFile(filename, <declshader.Type>type):
+            return wrap_shader_instance(p)
+
+        raise PySFMLException()
+
+    @classmethod
+    def load_from_memory(cls, char* shader, int type):
+        cdef decl.Shader *p = new decl.Shader()
+
+        if p.LoadFromMemory(shader, <declshader.Type>type):
+            return wrap_shader_instance(p)
+
+        raise PySFMLException()
 
     def bind(self):
         self.p_this.Bind()
 
-    def set_parameter(self, char *name, float x, y=None, z=None, w=None):
+    def set_parameter(self, char *name, x, y=None, z=None, w=None):
         if y is None:
-            self.p_this.SetParameter(name, x)
+            if x is self.CURRENT_TEXTURE:
+                self.p_this.SetParameter(name, declshader.CurrentTexture)
+            elif isinstance(x, float):
+                self.p_this.SetParameter(name, <float>x)
+            elif isinstance(x, Color):
+                self.p_this.SetParameter(name, (<Color>x).p_this[0])
+            elif isinstance(x, Transform):
+                self.p_this.SetParameter(name, (<Transform>x).p_this[0])
+            elif isinstance(x, Texture):
+                self.p_this.SetParameter(name, (<Texture>x).p_this[0])
+            else:
+                raise TypeError(
+                    "Second argument has type {0}. "
+                    "It should be one of: float, Color, Transform, Texture, "
+                    "sf.Shader.CURRENT_TEXTURE"
+                    .format(type(x)))
         elif z is None:
             self.p_this.SetParameter(name, x, y)
         elif w is None:
             self.p_this.SetParameter(name, x, y, z)
         else:
             self.p_this.SetParameter(name, x, y, z, w)
-    
-    def set_texture(self, char *name, Texture texture):
-        self.p_this.SetTexture(name, texture.p_this[0])
-
-    def set_current_texture(self, char* name):
-        self.p_this.SetCurrentTexture(name)
 
     def unbind(self):
         self.p_this.Unbind()
@@ -2380,6 +2644,84 @@ cdef ContextSettings wrap_context_settings_instance(
     return ret
 
 
+
+
+cdef class RenderStates:
+    cdef decl.RenderStates *p_this
+    cdef Transform transform
+    cdef Texture texture
+    cdef Shader shader
+
+    DEFAULT = wrap_render_states_instance(
+        new decl.RenderStates(decl.RenderStates_Default))
+
+    def __init__(self, Shader shader=None, Texture texture=None,
+                  Transform transform=None):
+        self.p_this = new decl.RenderStates()
+        self.shader = shader
+        self.texture = texture
+
+        if transform is None:
+            self.transform = Transform()
+        else:
+            self.transform = transform
+
+    def __dealloc__(self):
+        del self.p_this
+
+    property blend_mode:
+        def __get__(self):
+            return <int>self.p_this.BlendMode
+
+        def __set__(self, int value):
+            self.p_this.BlendMode = <decl.BlendMode>value
+
+    property shader:
+        def __get__(self):
+            return self.shader
+
+        def __set__(self, Shader value):
+            self.shader = value
+            self.p_this.Shader = value.p_this
+
+    property texture:
+        def __get__(self):
+            return self.texture
+
+        def __set__(self, Texture value):
+            self.texture = value
+            self.p_this.Texture = value.p_this
+
+    property transform:
+        def __get__(self):
+            return self.transform
+
+        def __set__(self, Transform value):
+            self.transform = value
+            self.p_this.Transform = value.p_this[0]
+
+
+cdef extern RenderStates wrap_render_states_instance(decl.RenderStates *p):
+    cdef RenderStates ret = RenderStates.__new__(RenderStates)
+
+    ret.p_this = p
+
+    if p.Shader == NULL:
+        ret.shader = None
+    else:
+        ret.shader = wrap_shader_instance(<decl.Shader*>p.Shader)
+
+    if p.Texture == NULL:
+        ret.texture = None
+    else:
+        ret.texture = wrap_texture_instance(<decl.Texture*>p.Texture, False)
+
+    ret.transform = wrap_transform_instance(new decl.Transform(p.Transform))
+
+    return ret
+
+
+
 cdef class RenderTarget:
     cdef decl.RenderTarget *p_this
 
@@ -2398,6 +2740,10 @@ cdef class RenderTarget:
 
             return wrap_view_instance(p, None)
 
+    property height:
+        def __get__(self):
+            return self.p_this.GetHeight()
+
     property view:
         def __get__(self):
             cdef decl.View *p = new decl.View()
@@ -2408,6 +2754,10 @@ cdef class RenderTarget:
 
         def __set__(self, View value):
             self.p_this.SetView(value.p_this[0])
+
+    property width:
+        def __get__(self):
+            return self.p_this.GetWidth()
 
     def clear(self, Color color=None):
         if color is None:
@@ -2425,17 +2775,62 @@ cdef class RenderTarget:
 
         return (res.x, res.y)
 
-    def draw(self, Drawable drawable, Shader shader=None):
-        if shader is None:
-            if drawable.__class__ in sfml_drawables:
-                self.p_this.Draw(drawable.p_this[0])
+    def draw(self, object drawable, object x=None, object primitive_type=None,
+             RenderStates states=None):
+        cdef decl.Vertex *vertex
+        cdef unsigned int vertex_count
+        cdef int the_type
+
+        if x is None:
+            if (isinstance(drawable, Transformable) and
+                drawable.__class__ in sfml_drawables):
+                self.p_this.Draw(decl.transformable_to_drawable(
+                                 (<Transformable>drawable).p_this)[0])
             else:
-                call_render(self, drawable)
+                call_render(self, drawable, x)
+        elif isinstance(x, Shader):
+            if (isinstance(drawable, Transformable) and
+                drawable.__class__ in sfml_drawables):
+                self.p_this.Draw(decl.transformable_to_drawable(
+                                 (<Transformable>drawable).p_this)[0],
+                                 (<Shader>x).p_this)
+            else:
+                call_render(self, drawable, x)
+        elif isinstance(x, RenderStates):
+            if (isinstance(drawable, Transformable) and
+                drawable.__class__ in sfml_drawables):
+                self.p_this.Draw(decl.transformable_to_drawable(
+                                 (<Transformable>drawable).p_this)[0],
+                                 (<RenderStates>x).p_this[0])
+            else:
+                call_render(self, drawable, x)
+        elif isinstance(x, list):
+            vertex_count = len(<list>x)
+            vertex = <decl.Vertex*>malloc(vertex_count * sizeof(decl.Vertex))
+            the_type = <int?>primitive_type
+
+            for i in range(vertex_count):
+                if not isinstance(list[i], Vertex):
+                    free(vertex)
+                    raise TypeError(
+                        "The list should contain vertex objects, {0} found"
+                        .format(type(list[i])))
+
+                vertex[i] = (<Vertex>list[i]).p_this[0]
+
+            if states is None:
+                self.p_this.Draw(vertex, vertex_count,
+                                 <decl.PrimitiveType>the_type)
+            else:
+                self.p_this.Draw(vertex, vertex_count,
+                                 <decl.PrimitiveType>the_type, states.p_this[0])
+
+            free(vertex)
         else:
-            if drawable.__class__ in sfml_drawables:
-                self.p_this.Draw(drawable.p_this[0], shader.p_this[0])
-            else:
-                call_render(self, drawable)
+            raise TypeError(
+                "The optional second argument has type {0}. "
+                "Only Shader, RenderStates, and list of Vertex are supported."
+                .format(type(x)))
 
     def get_viewport(self, View view):
         cdef decl.IntRect *p = new decl.IntRect()
@@ -2444,22 +2839,33 @@ cdef class RenderTarget:
 
         return wrap_int_rect_instance(p)
 
-    def restore_gl_states(self):
-        self.p_this.RestoreGLStates()
+    def pop_gl_states(self):
+        self.p_this.PopGLStates()
 
-    def save_gl_states(self):
-        self.p_this.SaveGLStates()
+    def push_gl_states(self):
+        self.p_this.PushGLStates()
+
+    def reset_gl_states(self):
+        self.p_this.ResetGLStates()
 
 
 # Wraps the code that will call the render() method of a drawable.
 # This is called in RenderTaget.draw(). The goal is to force Cython to
 # check if an error occured (with except *), because the C++ Render()
 # method can't return any status code.
-cdef void call_render(RenderTarget target, Drawable drawable) except *:
+cdef void call_render(RenderTarget target, object drawable, object x) except *:
     cdef decl.CppDrawable cpp_drawable
 
     cpp_drawable.drawable = <void*>drawable;
-    target.p_this.Draw((<decl.Drawable*>&cpp_drawable)[0])
+
+    if isinstance(x, Shader):
+        target.p_this.Draw((<decl.Drawable*>&cpp_drawable)[0],
+                           (<Shader>x).p_this)
+    elif isinstance(x, RenderStates):
+        target.p_this.Draw((<decl.Drawable*>&cpp_drawable)[0],
+                           (<RenderStates>x).p_this[0])
+    else:
+        target.p_this.Draw((<decl.Drawable*>&cpp_drawable)[0])
 
 
 cdef extern RenderTarget wrap_render_target_instance(decl.RenderTarget
@@ -2504,10 +2910,6 @@ cdef class RenderWindow(RenderTarget):
         def __set__(self, int value):
             (<decl.RenderWindow*>self.p_this).SetFramerateLimit(value)
 
-    property frame_time:
-        def __get__(self):
-            return (<decl.RenderWindow*>self.p_this).GetFrameTime()
-
     property width:
         def __get__(self):
             return self.p_this.GetWidth()
@@ -2538,9 +2940,9 @@ cdef class RenderWindow(RenderTarget):
         def __set__(self, bint value):
             (<decl.RenderWindow*>self.p_this).EnableKeyRepeat(value)
 
-    property opened:
+    property open:
         def __get__(self):
-            return (<decl.RenderWindow*>self.p_this).IsOpened()
+            return (<decl.RenderWindow*>self.p_this).IsOpen()
 
     property position:
         def __set__(self, tuple value):
@@ -2685,90 +3087,3 @@ cdef class RenderTexture(RenderTarget):
 
     def display(self):
         (<decl.RenderTexture*>self.p_this).Display()
-
-
-cdef class Renderer:
-    TRIANGLE_LIST = declprimitive.TriangleList
-    TRIANGLE_STRIP = declprimitive.TriangleStrip
-    TRIANGLE_FAN = declprimitive.TriangleFan
-    QUAD_LIST = declprimitive.QuadList
-    
-    cdef decl.Renderer *p_this
-
-    property blend_mode:
-        def __set__(self, int value):
-            self.p_this.SetBlendMode(<declblendmode.Mode>value)
-        
-    property color:
-        def __set__(self, Color value):
-            self.p_this.SetColor(value.p_this[0])
-
-    property model_view:
-        def __set__(self, Matrix3 value):
-            self.p_this.SetModelView(value.p_this[0])
-
-    property projection:
-        def __set__(self, Matrix3 value):
-            self.p_this.SetProjection(value.p_this[0])
-        
-    property shader:
-        def __set__(self, Shader value):
-            self.p_this.SetShader(value.p_this)
-        
-    property texture:
-        def __set__(self, Texture value):
-            self.p_this.SetTexture(value.p_this)
-
-    property viewport:
-        def __set__(self, IntRect value):
-            self.p_this.SetViewport(value.p_this[0])
-    
-    def add_vertex(self, float x, float y, object a=None, object b=None,
-                   object c=None):
-        if a is None:
-            self.p_this.AddVertex(x, y)
-        elif b is None:
-            self.p_this.AddVertex(x, y, (<Color>a).p_this[0])
-        elif c is None:
-            self.p_this.AddVertex(x, y, <float>a, <float>b)
-        else:
-            self.p_this.AddVertex(x, y, <float>a, <float>b,
-                                  (<Color>c).p_this[0])
-
-    def apply_color(self, Color color):
-        self.p_this.SetColor(color.p_this[0])
-
-    def apply_model_view(self, Matrix3 matrix):
-        self.p_this.ApplyModelView(matrix.p_this[0])
-
-    def begin(self, int value):
-        self.p_this.Begin(<declprimitive.PrimitiveType>value)
-        
-    def clear(self, Color color):
-        self.p_this.Clear(color.p_this[0])
-        
-    def end(self):
-        self.p_this.End()
-        
-    def initialize(self):
-        self.p_this.Initialize()
-        
-    def push_states(self):
-        self.p_this.PushStates()
-        
-    def pop_states(self):
-        self.p_this.PopStates()
-        
-    def restore_gl_states(self):
-        self.p_this.RestoreGLStates()
-        
-    def save_gl_states(self):
-        self.p_this.SaveGLStates()
-    
-
-cdef extern Renderer wrap_renderer_instance(decl.Renderer *p_cpp_instance):
-    cdef Renderer ret = Renderer.__new__(Renderer)
-    
-    ret.p_this = p_cpp_instance
-
-    return ret
