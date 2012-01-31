@@ -690,8 +690,16 @@ cdef class Time:
     cdef decl.Time *p_this
     ZERO = wrap_time_instance(new decl.Time(decl.Time_Zero))
 
-    def __init__(self):
+    def __init__(self, float seconds=-1.0, int milliseconds=-1,
+                 int microseconds=-1):
         self.p_this = new decl.Time()
+
+        if seconds != -1.0:
+            self.p_this[0] = decl.Seconds(seconds)
+        elif milliseconds != -1:
+            self.p_this[0] = decl.Milliseconds(milliseconds)
+        elif microseconds != -1:
+            self.p_this[0] = decl.Microseconds(microseconds)
 
     def __dealloc__(self):
         del self.p_this
