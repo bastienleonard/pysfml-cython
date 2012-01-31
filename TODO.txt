@@ -1,5 +1,3 @@
-- Add support for multiplication by Vector2f in the Transform class
-
 - Add operator overloads in Time
 
 - Choose between returning a rect or a tuple, and make sure it's
