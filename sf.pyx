@@ -585,12 +585,27 @@ cdef class Transform:
                         p[8], p[9], p[10], p[11],
                         p[12], p[13], p[14], p[15]))
 
-    def __mul__(Transform self, Transform other):
-        cdef decl.Transform *p = new decl.Transform()
+    def __mul__(a, b):
+        cdef decl.Transform *p_t
+        cdef decl.Vector2f *p_v
 
-        p[0] = self.p_this[0] * other.p_this[0]
+        if isinstance(a, Transform):
+            if isinstance(b, Transform):
+                p_t = new decl.Transform()
 
-        return wrap_transform_instance(p)
+                p_t[0] = ((<Transform>a).p_this[0] *
+                          (<Transform>b).p_this[0])
+
+                return wrap_transform_instance(p_t)
+            elif isinstance(b, Vector2f):
+                p_v = new decl.Vector2f()
+
+                p_v[0] = ((<Transform>a).p_this[0] *
+                        (<Vector2f>b).p_this[0])
+
+                return Vector2f(p_v.x, p_v.y)
+
+        return NotImplemented
 
     property matrix:
         def __get__(self):

@@ -207,7 +207,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Transform& Translate(Vector2f&)
 
         Transform operator*(Transform&)
-        Transform operator*(Transform&, Vector2f&)
+        Vector2f operator*(Vector2f&)
         # Transform operator*=(Transform&, Transform&)
 
     cdef cppclass Time:
