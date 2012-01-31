@@ -696,6 +696,9 @@ cdef class Time:
     def __dealloc__(self):
         del self.p_this
 
+    def __str__(self):
+        return 'Time ({0} seconds)'.format(self.as_seconds())
+
     def __richcmp__(Time x, Time y, int op):
         # ==
         if op == 2:
