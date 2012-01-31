@@ -216,6 +216,18 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         float AsSeconds()
         Uint32 AsMilliseconds()
         Int64 AsMicroseconds()
+        bint operator==(Time&)
+        bint operator!=(Time&)
+        bint operator<(Time&)
+        bint operator>(Time&)
+        bint operator<=(Time&)
+        bint operator>=(Time&)
+        Time operator+(Time&, Time&)
+        Time operator-(Time&, Time&)
+        Time operator*(float)
+        Time operator*(Int64)
+        Time operator/(float)
+        Time operator/(Int64)
 
     cdef cppclass Clock:
         Clock()

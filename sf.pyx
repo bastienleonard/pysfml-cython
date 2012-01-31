@@ -696,6 +696,74 @@ cdef class Time:
     def __dealloc__(self):
         del self.p_this
 
+    def __richcmp__(Time x, Time y, int op):
+        # ==
+        if op == 2:
+            return x.p_this[0] == y.p_this[0]
+
+        # !=
+        elif op == 3:
+            return x.p_this[0] != y.p_this[0]
+
+        # <
+        elif op == 0:
+            return x.p_this[0] < y.p_this[0]
+        # >
+        elif op == 4:
+            return x.p_this[0] > y.p_this[0]
+
+        # <=
+        elif op == 1:
+            return x.p_this[0] <= y.p_this[0]
+        # >=
+        elif op == 5:
+            return x.p_this[0] >= y.p_this[0]
+
+        return NotImplemented
+
+    def __add__(a, b):
+        if isinstance(a, Time) and isinstance(b, Time):
+            return a.p_this[0] + b.p_this[0]
+
+        return NotImplemented
+
+    def __sub__(a, b):
+        if isinstance(a, Time) and isinstance(b, Time):
+            return a.p_this[0] - b.p_this[0]
+
+        return NotImplemented
+
+    def __mul__(a, b):
+        if isinstance(a, (int, float)) and isinstance(b, Time):
+            a, b = b, a
+
+        if isinstance(a, Time):
+            if isinstance(b, int):
+                return wrap_time_instance(
+                    new decl.Time((<Time>a).p_this[0] * <decl.Int64>b))
+            if isinstance(b, float):
+                return wrap_time_instance(
+                    new decl.Time((<Time>a).p_this[0] * <float>b))
+
+        return NotImplemented
+
+    def __div__(a, b):
+        if isinstance(a, (int, float)) and isinstance(b, Time):
+            a, b = b, a
+
+        if isinstance(a, Time):
+            if isinstance(b, int):
+                return wrap_time_instance(
+                    new decl.Time((<Time>a).p_this[0] / <decl.Int64>b))
+            if isinstance(b, float):
+                return wrap_time_instance(
+                    new decl.Time((<Time>a).p_this[0] / <float>b))
+
+        return NotImplemented
+
+    def __neg__(self):
+        return -self.p_this.AsMilliseconds()
+
     def as_seconds(self):
         return self.p_this.AsSeconds()
 

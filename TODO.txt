@@ -1,5 +1,3 @@
-- Add operator overloads in Time
-
 - Choose between returning a rect or a tuple, and make sure it's
   consistent across the API
 
