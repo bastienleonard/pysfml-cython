@@ -768,7 +768,7 @@ cdef class Time:
         return self.p_this.AsSeconds()
 
     def as_milliseconds(self):
-        return self.p_this.AsMilliseconds()
+        return <int>self.p_this.AsMilliseconds()
 
     def as_microseconds(self):
         return self.p_this.AsMicroseconds()
