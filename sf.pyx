@@ -864,17 +864,23 @@ cdef class Color:
 
         return NotImplemented
 
-    def __add__(Color x, Color y):
-        return Color(min(x.r + y.r, 255),
-                     min(x.g + y.g, 255),
-                     min(x.b + y.b, 255),
-                     min(x.a + y.a, 255))
+    def __add__(x, y):
+        if isinstance(x, Color) and isinstance(y, Color):
+            return Color(min(x.r + y.r, 255),
+                         min(x.g + y.g, 255),
+                         min(x.b + y.b, 255),
+                         min(x.a + y.a, 255))
 
-    def __mul__(Color x, Color y):
-        return Color(x.r * y.r / 255,
-                     x.g * y.g / 255,
-                     x.b * y.b / 255,
-                     x.a * y.a / 255)
+        return NotImplemented
+
+    def __mul__(x, y):
+        if isinstance(x, Color) and isinstance(y, Color):
+            return Color(x.r * y.r / 255,
+                         x.g * y.g / 255,
+                         x.b * y.b / 255,
+                         x.a * y.a / 255)
+
+        return NotImplemented
 
     property r:
         def __get__(self):
