@@ -62,6 +62,7 @@ cdef extern from "hacks.hpp":
 # use c_str() and it will be converted to a Python object
 # automatically if needed.
 # Do not confuse with String, which is sf::String!
+# TODO: replace this with Cython's string declaration
 cdef extern from "<string>" namespace "std":
     cdef cppclass string:
         char* c_str()

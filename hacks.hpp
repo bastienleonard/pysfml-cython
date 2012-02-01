@@ -41,9 +41,9 @@ sf::Drawable* transformable_to_drawable(sf::Transformable *t);
 
 extern "C"
 {
-    struct __pyx_obj_2sf_RenderTarget* wrap_render_target_instance(
+    struct DL_IMPORT(__pyx_obj_2sf_RenderTarget)* wrap_render_target_instance(
         sf::RenderTarget*);
-    struct __pyx_obj_2sf_RenderStates* wrap_render_states_instance(
+    struct DL_IMPORT(__pyx_obj_2sf_RenderStates)* wrap_render_states_instance(
         sf::RenderStates*);
 }
 
@@ -57,10 +57,9 @@ class CppDrawable : public sf::Drawable
 public :
     CppDrawable();
     CppDrawable(void* drawable);
-    void* drawable; // this is a PyObject pointer
-
-private :
     virtual void Draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
+    void* drawable; // this is a PyObject pointer
 };
 
 #endif
