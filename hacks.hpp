@@ -41,9 +41,9 @@ sf::Drawable* transformable_to_drawable(sf::Transformable *t);
 
 extern "C"
 {
-    struct DL_IMPORT(__pyx_obj_2sf_RenderTarget)* wrap_render_target_instance(
+    DL_IMPORT(struct __pyx_obj_2sf_RenderTarget)* wrap_render_target_instance(
         sf::RenderTarget*);
-    struct DL_IMPORT(__pyx_obj_2sf_RenderStates)* wrap_render_states_instance(
+    DL_IMPORT(struct __pyx_obj_2sf_RenderStates)* wrap_render_states_instance(
         sf::RenderStates*);
 }
 
