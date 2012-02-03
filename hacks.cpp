@@ -133,7 +133,7 @@ CppDrawable::CppDrawable(void* drawable):
     sf::Drawable(),
     drawable(drawable)
 {
-};
+}
 
 void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
@@ -154,4 +154,60 @@ void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
         Py_DECREF(ret);
     }
+}
+
+
+
+void ShapeWithUpdate::Update()
+{
+    sf::Shape::Update();
+}
+
+
+CppShape::CppShape()
+{
+}
+
+CppShape::CppShape(void* shape) : shape(shape)
+{
+}
+
+unsigned int CppShape::GetPointCount() const
+{
+    char method_name[] = "get_point_count";
+    char format[] = "";
+    PyObject* ret = PyObject_CallMethod(
+        static_cast<PyObject*>(shape), method_name, format);
+    long count = 0;
+
+    if (ret != NULL)
+    {
+        if (!PyInt_Check(ret))
+        {
+            PyErr_SetString(PyExc_TypeError,
+                            "get_point_count() must return an integer");
+        }
+
+        count = PyInt_AsLong(ret);
+        Py_DECREF(ret);
+    }
+
+    return count;
+}
+
+sf::Vector2f CppShape::GetPoint(unsigned int index) const
+{
+    char method_name[] = "get_point";
+    char format[] ="I";
+    PyObject *ret = PyObject_CallMethod(
+        static_cast<PyObject*>(shape), method_name, format, index);
+    sf::Vector2f point;
+
+    if (ret != NULL)
+    {
+        point = convert_to_vector2f(ret);
+        Py_DECREF(ret);
+    }
+
+    return point;
 }

@@ -59,8 +59,15 @@ cdef class RenderWindow
 # If you add a class that inherits drawables to the module, you *must*
 # add it to this list. It used in RenderTarget.draw(), to know
 # whether a drawable is ``built-in'' or user-defined.
-cdef sfml_drawables = [Shape, Sprite, Text, VertexArray]
+cdef sfml_drawables = (Shape, Sprite, Text, VertexArray)
 
+
+# The shapes built in SFML. This is used to know whether update() can
+# be called on a Shape object. (Shape objects wrap a special
+# ShapeWithUpdate C++ object that has a public Update() method, but
+# built-in Shapes don't support it, as it doesn't seem needed and
+# would require extea work.)
+cdef sfml_shapes = (RectangleShape, CircleShape, ConvexShape)
 
 cdef error_messages = {}
 cdef error_messages_lock = threading.Lock()
@@ -542,7 +549,7 @@ cdef class Vector2f:
         return Vector2f(t[0], t[1])
 
 
-cdef decl.Vector2f convert_to_vector2f(value):
+cdef extern decl.Vector2f convert_to_vector2f(value):
     if isinstance(value, Vector2f):
         return (<Vector2f>value).p_this[0]
 
@@ -550,8 +557,6 @@ cdef decl.Vector2f convert_to_vector2f(value):
         return decl.Vector2f(value[0], value[1])
     
     raise TypeError("Expected Vector2f or tuple, found {0}".format(type(value)))
-
-
 
 
 
@@ -2093,6 +2098,9 @@ cdef class Sprite(Transformable):
 
 
 
+# Classes like Rectangle that inherit from Shape shouldn't have a
+# __cinit__() constructor, otherwise they will call Shape's
+# constructor automatically, which will create a Shape object for no reason.
 cdef class Shape(Transformable):
     cdef Texture texture
 
@@ -2101,6 +2109,8 @@ cdef class Shape(Transformable):
             raise NotImplementedError("Shape is abstract")
 
         self.texture = None
+        self.p_this = <decl.Transformable*>new decl.CppShape()
+        (<decl.CppShape*>self.p_this).shape = <void*>self
 
     property fill_color:
         def __get__(self):
@@ -2165,19 +2175,39 @@ cdef class Shape(Transformable):
         self.texture = texture
         (<decl.Shape*>self.p_this).SetTexture(texture.p_this, reset_rect)
 
+    def update(self):
+        if isinstance(self, sfml_shapes):
+            raise NotImplementedError(
+                "You can only call update() on Shape and Shape-derived classes")
+
+        (<decl.ShapeWithUpdate*>self.p_this).Update()
 
 
 
+cdef class RectangleShape(Shape):
+    def __init__(self, size=None):
+        cdef decl.Vector2f s
 
-cdef class Rectangle(Shape):
-    def __cinit__(self):
-        self.p_this = <decl.Transformable*>new decl.RectangleShape()
+        if size is None:
+            self.p_this = <decl.Transformable*>new decl.RectangleShape()
+        else:
+            s = convert_to_vector2f(size)
+            self.p_this = <decl.Transformable*>new decl.RectangleShape(s)
 
+    property size:
+        def __get__(self):
+            cdef decl.Vector2f s = (<decl.RectangleShape*>self.p_this).GetSize()
 
+            return (s.x, s.y)
+
+        def __set__(self, object size):
+            cdef decl.Vector2f s = convert_to_vector2f(size)
+
+            (<decl.RectangleShape*>self.p_this).SetSize(s)
 
 
 cdef class CircleShape(Shape):
-    def __cinit__(self, radius=None, point_count=None):
+    def __init__(self, radius=None, point_count=None):
         self.p_this = <decl.Transformable*>new decl.CircleShape()
 
         if radius is not None:
@@ -2203,7 +2233,7 @@ cdef class CircleShape(Shape):
 
 
 cdef class ConvexShape(Shape):
-    def __cinit__(self, point_count=None):
+    def __init__(self, point_count=None):
         self.p_this = <decl.Transformable*>new decl.ConvexShape()
 
         if point_count is not None:
@@ -2882,8 +2912,7 @@ cdef class RenderTarget:
         cdef int the_type
 
         if x is None:
-            if (isinstance(drawable, Transformable) and
-                drawable.__class__ in sfml_drawables):
+            if (isinstance(drawable, sfml_drawables)):
                 self.p_this.Draw(decl.transformable_to_drawable(
                                  (<Transformable>drawable).p_this)[0])
             else:

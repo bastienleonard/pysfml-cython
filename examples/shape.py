@@ -4,41 +4,50 @@
 import sf
 
 
+class CustomShape(sf.Shape):
+    def __init__(self):
+        sf.Shape.__init__(self)
+        self.fill_color = sf.Color.RED
+        self.update()
+
+    def get_point_count(self):
+        return 3
+
+    def get_point(self, index):
+        if index == 0:
+            return (500, 50)
+        elif index == 1:
+            return (600, 100)
+        elif index == 2:
+            return (450, 300)
+
+        assert False, "Code should never reach this"
+
+
 def main():
     window = sf.RenderWindow(sf.VideoMode(640, 480), 'Shape example')
     window.framerate_limit = 60
     running = True
-    circle0 = sf.Shape.circle(50, 50, 50, sf.Color.YELLOW)
-    circle0.position = (100, 100)
+    circle = sf.CircleShape(100.0)
+    circle.fill_color = sf.Color.YELLOW
+    circle.position = (100, 50)
     
-    rect0 = sf.Shape.rectangle(0, 0, 100, 50, sf.Color.GREEN, 2, sf.Color.BLUE)
-    rect0.position = (200, 400)
-    
-    rect1 = sf.Shape.rectangle(0.0, 0.0, 50.0, 50.0,
-                                         sf.Color.CYAN)
-    rect1.position = (400, 100)
-    
-    line0 = sf.Shape.line(0, 0, 640, 480, 5, sf.Color.RED)
-    
-    points = [(0.0, 50.0), (50.0, 50.0), (25.0, 0.0)]
-    shape0 = sf.Shape()
+    rectangle = sf.RectangleShape((100, 50))
+    rectangle.position = (200, 350)
+    rectangle.fill_color = sf.Color.GREEN
+    rectangle.outline_color = sf.Color.BLUE
+    rectangle.outline_thickness = 2.0
 
-    for point in points:
-        shape0.add_point(point[0], point[1])
-
-    shape0.position = (300, 200)
-    shape0.color = sf.Color(50, 100, 200, 128)
-    shape0.origin = (25.0, 32.0)
-    
-    shapes = [line0, circle0, rect0, rect1, shape0]
+    shapes = [circle, rectangle, CustomShape()]
 
     while running:
         for event in window.iter_events():
             if event.type == sf.Event.CLOSED:
                 running = False
 
+        rectangle.rotate(2)
+
         window.clear(sf.Color.WHITE)
-        shape0.rotate(2)
 
         for s in shapes:
             window.draw(s)

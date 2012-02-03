@@ -51,10 +51,54 @@ cdef extern from "hacks.hpp":
 
     cdef cppclass CppDrawable:
         CppDrawable()
+        CppDrawable(void*)
         # This is a PyObject*, but for some reason Cython doesn't
         # accept ``object''
-        void* drawable
+        void *drawable
 
+    cdef cppclass CppShape:
+        CppShape()
+        CppShape(void*)
+        void *shape
+        unsigned int GetPointCount()
+        Vector2f GetPoint(unsigned int)        
+
+    cdef cppclass ShapeWithUpdate:
+        ShapeWithUpdate()
+        Color& GetFillColor()
+        FloatRect GetLocalBounds()
+        FloatRect GetGlobalBounds()
+        Transform& GetInverseTransform()
+        Vector2f& GetOrigin()
+        Color& GetOutlineColor()
+        float GetOutlineThickness()
+        Vector2f GetPoint(unsigned int)
+        unsigned int GetPointCount()
+        Vector2f& GetPosition()
+        float GetRotation()
+        Vector2f& GetScale()
+        Texture* GetTexture()
+        IntRect& GetTextureRect()
+        Transform& GetTransform()
+        void Move(float, float)
+        void Move(Vector2f&)
+        void Rotate(float)
+        void SetFillColor(Color&)
+        void Scale(float, float)
+        void Scale(Vector2f&)
+        void SetOrigin(float, float)
+        void SetOrigin(Vector2f&)
+        void SetOutlineColor(Color&)
+        void SetOutlineThickness(float)
+        void SetPosition(float, float)
+        void SetPosition(Vector2f&)
+        void SetRotation(float)
+        void SetScale(float, float)
+        void SetScale(Vector2f&)
+        void SetTexture(Texture*)
+        void SetTexture(Texture*, bint)
+        void SetTextureRect(IntRect&)
+        void Update()
 
 
 # Declaration of the standard std::string class.  This is useful
@@ -594,6 +638,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
 
     cdef cppclass RectangleShape:
         RectangleShape()
+        RectangleShape(Vector2f&)
+        Vector2f& GetSize()
+        void SetSize(Vector2f&)
 
     cdef cppclass CircleShape:
         CircleShape()

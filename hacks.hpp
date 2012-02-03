@@ -39,13 +39,33 @@ void replace_error_handler();
 // Cython, apparently
 sf::Drawable* transformable_to_drawable(sf::Transformable *t);
 
+// TODO: move these declarations to the .cpp file, and see if it fixes
+// the MSVC build problem
 extern "C"
 {
     DL_IMPORT(struct __pyx_obj_2sf_RenderTarget)* wrap_render_target_instance(
         sf::RenderTarget*);
     DL_IMPORT(struct __pyx_obj_2sf_RenderStates)* wrap_render_states_instance(
         sf::RenderStates*);
+    sf::Vector2f convert_to_vector2f(PyObject*);
 }
+
+
+
+// This is the same class as sf::Shape, but with a public Update()
+// method. This allows to expose it a public method in Python.
+class ShapeWithUpdate : public sf::Shape
+{
+public:
+    void Update();
+};
+
+
+// Important: these Cpp* classes ``callback'' methods can't return a
+// value to the Python caller to report errors. So the caller must
+// check the current exception directly with PyErr_Occurred(). In
+// Cython, the only way to do that is to add ``except *'' at the end
+// of a function signature.
 
 // See this class like Shape, Sprite and Text. They have already defined
 // their Render method and if we want to make Drawable derivable with 
@@ -54,12 +74,23 @@ extern "C"
 // python method; render(self, target, renderer)
 class CppDrawable : public sf::Drawable
 {
-public :
+public:
     CppDrawable();
     CppDrawable(void* drawable);
     virtual void Draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     void* drawable; // this is a PyObject pointer
+};
+
+
+class CppShape : public ShapeWithUpdate
+{
+public:
+    CppShape();
+    CppShape(void*);
+    virtual unsigned int GetPointCount() const;
+    virtual sf::Vector2f GetPoint(unsigned int index) const;
+    void* shape;
 };
 
 #endif
