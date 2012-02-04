@@ -1669,10 +1669,10 @@ cdef class Texture:
 
     property repeated:
         def __get__(self):
-            return self.IsRepeated()
+            return self.p_this.IsRepeated()
 
         def __set__(self, bint value):
-            self.SetRepeated(value)
+            self.p_this.SetRepeated(value)
 
     property smooth:
         def __get__(self):
