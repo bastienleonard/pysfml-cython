@@ -182,13 +182,21 @@ unsigned int CppShape::GetPointCount() const
 
     if (ret != NULL)
     {
+#ifndef IS_PY3K
         if (!PyInt_Check(ret))
+#else
+        if (!PyLong_Check(ret))
+#endif
         {
             PyErr_SetString(PyExc_TypeError,
                             "get_point_count() must return an integer");
         }
 
+#ifndef IS_PY3K
         count = PyInt_AsLong(ret);
+#else
+        count = PyLong_AsLong(ret);
+#endif
         Py_DECREF(ret);
     }
 

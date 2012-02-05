@@ -32,6 +32,10 @@
 #include "Python.h"
 #include <SFML/Graphics.hpp>
 
+#if PY_MAJOR_VERSION >= 3
+#define IS_PY3K
+#endif
+
 
 void replace_error_handler();
 
