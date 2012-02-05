@@ -47,9 +47,9 @@ sf::Drawable* transformable_to_drawable(sf::Transformable *t);
 // the MSVC build problem
 extern "C"
 {
-    DL_IMPORT(struct __pyx_obj_2sf_RenderTarget)* wrap_render_target_instance(
+    struct __pyx_obj_2sf_RenderTarget* wrap_render_target_instance(
         sf::RenderTarget*);
-    DL_IMPORT(struct __pyx_obj_2sf_RenderStates)* wrap_render_states_instance(
+    struct __pyx_obj_2sf_RenderStates* wrap_render_states_instance(
         sf::RenderStates*);
     sf::Vector2f convert_to_vector2f(PyObject*);
 }
