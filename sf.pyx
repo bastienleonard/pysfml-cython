@@ -2323,7 +2323,7 @@ cdef class VertexArray:
     def __len__(self):
         return self.p_this.GetVertexCount()
 
-    def __getitem__(self, int x):
+    def __getitem__(self, unsigned int x):
         cdef decl.Vertex *p = new decl.Vertex()
 
         if not 0 <= x < self.p_this.GetVertexCount():
