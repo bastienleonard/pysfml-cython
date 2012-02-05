@@ -839,7 +839,7 @@ cdef class Clock:
             return wrap_time_instance(p)
 
     def restart(self):
-        self.p_this.Restart()
+        return wrap_time_instance(new decl.Time(self.p_this.Restart()))
 
 
 
