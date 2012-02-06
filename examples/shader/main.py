@@ -105,6 +105,8 @@ def main():
     # Create the main window
     window = sf.RenderWindow(sf.VideoMode(800, 600), 'SFML shader example')
 
+    clock = sf.Clock()
+
     # Create the render texture
     texture = sf.RenderTexture(window.width, window.height)
 
@@ -124,29 +126,36 @@ def main():
 
     # Load all shaders
     shaders = [None] * 7
-    shaders[NOTHING] = sf.Shader.load_from_file('resources/nothing.sfx')
-    shaders[BLUR] = sf.Shader.load_from_file('resources/blur.sfx')
-    shaders[COLORIZE] = sf.Shader.load_from_file('resources/colorize.sfx')
-    shaders[EDGE] = sf.Shader.load_from_file('resources/edge.sfx')
-    shaders[FISHEYE] = sf.Shader.load_from_file('resources/fisheye.sfx')
-    shaders[WAVE] = sf.Shader.load_from_file('resources/wave.sfx')
-    shaders[PIXELATE] = sf.Shader.load_from_file('resources/pixelate.sfx')
+    shaders[NOTHING] = sf.Shader.load_from_file('resources/nothing.sfx',
+                                                 sf.Shader.FRAGMENT)
+    shaders[BLUR] = sf.Shader.load_from_file('resources/blur.sfx',
+                                             sf.Shader.FRAGMENT)
+    shaders[COLORIZE] = sf.Shader.load_from_file('resources/colorize.sfx',
+                                                 sf.Shader.FRAGMENT)
+    shaders[EDGE] = sf.Shader.load_from_file('resources/edge.sfx',
+                                             sf.Shader.FRAGMENT)
+    shaders[FISHEYE] = sf.Shader.load_from_file('resources/fisheye.sfx',
+                                                sf.Shader.FRAGMENT)
+    shaders[WAVE] = sf.Shader.load_from_file('resources/wave.sfx',
+                                             sf.Shader.FRAGMENT)
+    shaders[PIXELATE] = sf.Shader.load_from_file('resources/pixelate.sfx',
+                                                 sf.Shader.FRAGMENT)
 
     background_shader = ShaderSelector(shaders)
     entity_shader = ShaderSelector(shaders)
     global_shader = ShaderSelector(shaders)
 
     # Do specific initializations
-    shaders[NOTHING].current_texture = 'texture'
-    shaders[BLUR].current_texture = 'texture'
+    shaders[NOTHING].set_parameter('texture', sf.Shader.CURRENT_TEXTURE)
+    shaders[BLUR].set_parameter('texture', sf.Shader.CURRENT_TEXTURE)
     shaders[BLUR].set_parameter('offset', 0.0)
-    shaders[COLORIZE].current_texture = 'texture'
+    shaders[COLORIZE].set_parameter('texture', sf.Shader.CURRENT_TEXTURE)
     shaders[COLORIZE].set_parameter('color', 1.0, 1.0, 1.0)
-    shaders[EDGE].current_texture = 'texture'
-    shaders[FISHEYE].current_texture = 'texture'
-    shaders[WAVE].current_texture = 'texture'
-    shaders[WAVE].set_texture('wave', wave_texture)
-    shaders[PIXELATE].current_texture = 'texture'
+    shaders[EDGE].set_parameter('texture', sf.Shader.CURRENT_TEXTURE)
+    shaders[FISHEYE].set_parameter('texture', sf.Shader.CURRENT_TEXTURE)
+    shaders[WAVE].set_parameter('texture', sf.Shader.CURRENT_TEXTURE)
+    shaders[WAVE].set_parameter('wave', wave_texture)
+    shaders[PIXELATE].set_parameter('texture', sf.Shader.CURRENT_TEXTURE)
 
     # Define a string for displaying the description of the current shader
     shader_str = sf.Text()
@@ -177,7 +186,7 @@ def main():
     clock = sf.Clock()
 
     # Start the game loop
-    while window.opened:
+    while window.open:
         # Process events
         for event in window.iter_events():
             # Close window : exit
@@ -212,6 +221,8 @@ def main():
                             entity_shader.get_name(),
                             global_shader.get_name()))
 
+        frame_time = clock.restart().as_milliseconds()
+
         # Get the mouse position in the range [0, 1]
         if window.width and window.height:
             mouse_x = sf.Mouse.get_position(window)[0] / float(window.width)
@@ -223,10 +234,12 @@ def main():
         global_shader.update(mouse_x, mouse_y);
 
         # Animate the entity
-        entity_x = (math.cos(clock.elapsed_time * 0.0013) + 1.2) * 300
-        entity_y = (math.cos(clock.elapsed_time * 0.0008) + 1.2) * 200
+        entity_x = ((math.cos(clock.elapsed_time.as_milliseconds() * 0.0013) +
+                     1.2) * 300)
+        entity_y = ((math.cos(clock.elapsed_time.as_milliseconds() * 0.0008) +
+                     1.2) * 200)
         entity.position = (entity_x, entity_y)
-        entity.rotate(window.frame_time * 0.1)
+        entity.rotate(frame_time * 0.1)
 
         # Draw the background and the moving entity to the render texture
         texture.clear()

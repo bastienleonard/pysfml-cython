@@ -662,6 +662,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
 # created in seperate files, mainly for enums, e.g. declevents.pxd
 cdef extern from "SFML/Graphics.hpp":
     cdef Time Time_Zero "sf::Time::Zero"
+    cdef int Shader_Fragment "sf::Shader::Fragment"
+    cdef int Shader_Vertex "sf::Shader::Vertex"
 
 cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef Time Seconds(float)

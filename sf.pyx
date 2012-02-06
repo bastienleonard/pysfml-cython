@@ -2626,6 +2626,8 @@ cdef class Shader:
 
     IS_AVAILABLE = decl.IsAvailable()
     CURRENT_TEXTURE = object()
+    FRAGMENT = decl.Shader_Fragment
+    VERTEX = decl.Shader_Vertex
 
     def __init__(self):
         raise NotImplementedError(
