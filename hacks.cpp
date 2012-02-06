@@ -139,7 +139,7 @@ void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     // The string parameters to PyObject_CallMethod() are char*, so in
     // theory they can be modified, and string litterals are const char*
-    char method_name[] = "render";
+    char method_name[] = "draw";
     char format[] = "(O, O)";
     PyObject* py_target = (PyObject*)(wrap_render_target_instance(&target));
     PyObject* py_states = (PyObject*)(wrap_render_states_instance(&states));

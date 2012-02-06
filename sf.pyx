@@ -2912,22 +2912,20 @@ cdef class RenderTarget:
         cdef int the_type
 
         if x is None:
-            if (isinstance(drawable, sfml_drawables)):
+            if isinstance(drawable, sfml_drawables):
                 self.p_this.Draw(decl.transformable_to_drawable(
                                  (<Transformable>drawable).p_this)[0])
             else:
                 call_render(self, drawable, x)
         elif isinstance(x, Shader):
-            if (isinstance(drawable, Transformable) and
-                drawable.__class__ in sfml_drawables):
+            if isinstance(drawable, sfml_drawables):
                 self.p_this.Draw(decl.transformable_to_drawable(
                                  (<Transformable>drawable).p_this)[0],
                                  (<Shader>x).p_this)
             else:
                 call_render(self, drawable, x)
         elif isinstance(x, RenderStates):
-            if (isinstance(drawable, Transformable) and
-                drawable.__class__ in sfml_drawables):
+            if isinstance(drawable, sfml_drawables):
                 self.p_this.Draw(decl.transformable_to_drawable(
                                  (<Transformable>drawable).p_this)[0],
                                  (<RenderStates>x).p_this[0])
@@ -2979,8 +2977,8 @@ cdef class RenderTarget:
 
 
 # Wraps the code that will call the render() method of a drawable.
-# This is called in RenderTaget.draw(). The goal is to force Cython to
-# check if an error occured (with except *), because the C++ Render()
+# This is called in RenderTarget.draw(). The goal is to force Cython to
+# check if an error occured (with except *), because the C++ Draw()
 # method can't return any status code.
 cdef void call_render(RenderTarget target, object drawable, object x) except *:
     cdef decl.CppDrawable cpp_drawable
