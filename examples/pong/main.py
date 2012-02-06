@@ -40,21 +40,25 @@ def main():
     right_paddle = sf.Sprite(right_paddle_texture)
     ball = sf.Sprite(ball_texture)
 
-    left_paddle.move(10, (window.view.size[1] - left_paddle.size[1]) / 2)
-    right_paddle.move(window.view.size[0] - right_paddle.size[0] - 10,
-                      (window.view.size[1] - right_paddle.size[1]) / 2)
-    ball.move((window.view.size[0] - ball.size[0]) / 2,
-              (window.view.size[1] - ball.size[1]) / 2)
+    left_paddle.move(
+        10, (window.view.size[1] - left_paddle.global_bounds.height) / 2)
+    right_paddle.move(
+        window.view.size[0] - right_paddle.global_bounds.width - 10,
+        (window.view.size[1] - right_paddle.global_bounds.height) / 2)
+    ball.move((window.view.size[0] - ball.global_bounds.width) / 2,
+              (window.view.size[1] - ball.global_bounds.height) / 2)
 
     # Define the paddles properties
     ai_timer = sf.Clock()
-    ai_time= 100
+    ai_time = sf.Time(milliseconds=100)
     left_paddle_speed  = 0.4
     right_paddle_speed = 0.4
 
     # Define the ball properties
     ball_speed = 0.4
     ball_angle = 0.0
+
+    clock = sf.Clock()
 
     while True:
         # Make sure the ball initial angle is not too much vertical
@@ -65,7 +69,7 @@ def main():
 
     is_playing = True
 
-    while window.opened:
+    while window.open:
         # Handle events
         for event in window.iter_events():
             # Window closed or escape key pressed : exit
@@ -75,40 +79,42 @@ def main():
                 window.close()
                 break
 
+        frame_time = clock.restart().as_milliseconds()
+
         if is_playing:
             # Move the player's paddle
             if (sf.Keyboard.is_key_pressed(sf.Keyboard.UP) and
                 left_paddle.y > 5.0):
-                left_paddle.move(0.0, -left_paddle_speed * window.frame_time)
+                left_paddle.move(0.0, -left_paddle_speed * frame_time)
 
             if (sf.Keyboard.is_key_pressed(sf.Keyboard.DOWN) and
                 (left_paddle.y <
-                 window.view.size[1] - left_paddle.height - 5.0)):
-                left_paddle.move(0.0, left_paddle_speed * window.frame_time)
+                 window.view.size[1] - left_paddle.global_bounds.height - 5.0)):
+                left_paddle.move(0.0, left_paddle_speed * frame_time)
 
             # Move the computer's paddle
             if (((right_paddle_speed < 0.0) and
                  (right_paddle.y > 5.0)) or
                 ((right_paddle_speed > 0.0) and
                  (right_paddle.y < window.view.size[1] -
-                  right_paddle.size[1] - 5.0))):
-                right_paddle.move(0.0, right_paddle_speed * window.frame_time)
+                  right_paddle.global_bounds.height - 5.0))):
+                right_paddle.move(0.0, right_paddle_speed * frame_time)
 
             # Update the computer's paddle direction according
             # to the ball position
             if ai_timer.elapsed_time > ai_time:
-                ai_timer.reset()
+                ai_timer.restart()
 
                 if (right_paddle_speed < 0 and
-                    (ball.y + ball.height >
-                     right_paddle.y + right_paddle.height)):
+                    (ball.y + ball.global_bounds.height >
+                     right_paddle.y + right_paddle.global_bounds.height)):
                     right_paddle_speed = -right_paddle_speed
 
                 if right_paddle_speed > 0 and ball.y < right_paddle.y:
                     right_paddle_speed = -right_paddle_speed;
 
             # Move the ball
-            factor = ball_speed * window.frame_time
+            factor = ball_speed * frame_time
             ball.move(math.cos(ball_angle) * factor,
                       math.sin(ball_angle) * factor)
 
@@ -117,7 +123,7 @@ def main():
                 is_playing = False
                 end.string = "You lost !\n(press escape to exit)"
 
-            if ball.x + ball.width > window.view.size[0]:
+            if ball.x + ball.global_bounds.width > window.view.size[0]:
                 is_playing = False
                 end.string = "You won !\n(press escape to exit)"
 
@@ -126,30 +132,31 @@ def main():
                 ball_angle = -ball_angle
                 ball.y = 0.1
 
-            if ball.y + ball.height > window.view.size[1]:
+            if ball.y + ball.global_bounds.height > window.view.size[1]:
                 ball_sound.play()
                 ball_angle = -ball_angle
-                ball.y = window.view.size[1] - ball.height - 0.1
+                ball.y = window.view.size[1] - ball.global_bounds.height - 0.1
 
             # Check the collisions between the ball and the paddles
             # Left Paddle
-            if (ball.x < left_paddle.x + left_paddle.width and
-                ball.x > left_paddle.x + (left_paddle.width / 2.0) and
-                ball.y + ball.height >= left_paddle.y and
-                ball.y <= left_paddle.y + left_paddle.height):
+            if (ball.x < left_paddle.x + left_paddle.global_bounds.width and
+                ball.x > left_paddle.x +
+                (left_paddle.global_bounds.width / 2.0) and
+                ball.y + ball.global_bounds.height >= left_paddle.y and
+                ball.y <= left_paddle.y + left_paddle.global_bounds.height):
                 ball_sound.play()
                 ball_angle = math.pi - ball_angle
-                ball.x = left_paddle.x + left_paddle.width + 0.1
+                ball.x = left_paddle.x + left_paddle.global_bounds.width + 0.1
 
             # Right Paddle
-            if (ball.x + ball.width > right_paddle.x and
-                ball.x + ball.width < right_paddle.x +
-                (right_paddle.width / 2.0) and
-                ball.y + ball.height >= right_paddle.y and
-                ball.y <= right_paddle.y + right_paddle.height):
+            if (ball.x + ball.global_bounds.width > right_paddle.x and
+                ball.x + ball.global_bounds.width < right_paddle.x +
+                (right_paddle.global_bounds.width / 2.0) and
+                ball.y + ball.global_bounds.height >= right_paddle.y and
+                ball.y <= right_paddle.y + right_paddle.global_bounds.height):
                 # ball_sound.play();
                 ball_angle = math.pi - ball_angle
-                ball.x = right_paddle.x - ball.width - 0.1
+                ball.x = right_paddle.x - ball.global_bounds.width - 0.1
 
         # Clear the window
         window.clear()
