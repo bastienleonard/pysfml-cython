@@ -52,7 +52,7 @@ else:
     ext_modules = [Extension('sf', ['sf.cpp', 'hacks.cpp'],
                              libraries=libs)]
 
-with open('README.txt', 'r') as f:
+with open('README.md', 'r') as f:
     long_description = f.read()
 
 kwargs = dict(name='PySFML 2',
