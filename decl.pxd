@@ -673,4 +673,4 @@ cdef extern from "SFML/Graphics.hpp":
     cdef Transform Transform_Identity "sf::Transform::Identity"
     cdef unsigned int Texture_GetMaximumSize "sf::Texture::GetMaximumSize"()
     cdef Font& Font_GetDefaultFont "sf::Font::GetDefaultFont" ()
-    cdef bint IsAvailable "sf:Shader::IsAvailable" ()
+    cdef bint Shader_IsAvailable "sf::Shader::IsAvailable" ()
