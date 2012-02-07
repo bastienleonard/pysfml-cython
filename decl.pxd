@@ -421,6 +421,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         unsigned int GetCharacterSize()
         Color& GetColor()
         Font& GetFont()
+        FloatRect GetGlobalBounds()
         FloatRect GetLocalBounds()
         String& GetString()
         unsigned long GetStyle()

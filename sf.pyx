@@ -1967,6 +1967,14 @@ cdef class Text(Transformable):
             (<decl.Text*>self.p_this).SetFont(value.p_this[0])
             self.font = value
 
+    property global_bounds:
+        def __get__(self):
+            cdef decl.FloatRect *p = new decl.FloatRect()
+
+            p[0] = (<decl.Text*>self.p_this).GetGlobalBounds()
+
+            return wrap_float_rect_instance(p)
+
     property local_bounds:
         def __get__(self):
             cdef decl.FloatRect *p = new decl.FloatRect()
