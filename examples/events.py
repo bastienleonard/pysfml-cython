@@ -12,7 +12,7 @@ def main():
     while running:
         for event in window.iter_events():
             # Print all events
-            print event
+            print(event)
 
             # Stop running if the application is closed
             # or if the user presses Escape
