@@ -564,7 +564,8 @@ cdef extern decl.Vector2f convert_to_vector2f(value):
 cdef class Transform:
     cdef decl.Transform *p_this
 
-    IDENTITY = wrap_transform_instance(<decl.Transform*>&decl.Identity)
+    IDENTITY = wrap_transform_instance(
+        <decl.Transform*>&decl.Transform_Identity)
 
     def __init__(self, float a00, float a01, float a02,
                   float a10, float a11, float a12,
@@ -700,11 +701,11 @@ cdef class Time:
         self.p_this = new decl.Time()
 
         if seconds != -1.0:
-            self.p_this[0] = decl.Seconds(seconds)
+            self.p_this[0] = decl.Time_Seconds(seconds)
         elif milliseconds != -1:
-            self.p_this[0] = decl.Milliseconds(milliseconds)
+            self.p_this[0] = decl.Time_Milliseconds(milliseconds)
         elif microseconds != -1:
-            self.p_this[0] = decl.Microseconds(microseconds)
+            self.p_this[0] = decl.Time_Microseconds(microseconds)
 
     def __dealloc__(self):
         del self.p_this
@@ -801,21 +802,21 @@ cdef Time wrap_time_instance(decl.Time *p_cpp_instance):
 def seconds(float seconds):
     cdef decl.Time *p = new decl.Time()
 
-    p[0] = decl.Seconds(seconds)
+    p[0] = decl.Time_Seconds(seconds)
 
     return wrap_time_instance(p)
 
 def milliseconds(int milliseconds):
     cdef decl.Time *p = new decl.Time()
 
-    p[0] = decl.Milliseconds(milliseconds)
+    p[0] = decl.Time_Milliseconds(milliseconds)
 
     return wrap_time_instance(p)
 
 def microseconds(int microseconds):
     cdef decl.Time *p = new decl.Time()
 
-    p[0] = decl.Microseconds(microseconds)
+    p[0] = decl.Time_Microseconds(microseconds)
 
     return wrap_time_instance(p)
 
@@ -1458,7 +1459,8 @@ cdef class Font:
     cdef decl.Font *p_this
     cdef bint delete_this
 
-    DEFAULT_FONT = wrap_font_instance(<decl.Font*>&decl.GetDefaultFont(), False)
+    DEFAULT_FONT = wrap_font_instance(
+        <decl.Font*>&decl.Font_GetDefaultFont(), False)
 
     def __init__(self):
         self.p_this = new decl.Font()
@@ -2444,7 +2446,7 @@ cdef class VideoMode:
     @classmethod
     def get_desktop_mode(cls):
         cdef decl.VideoMode *p = new decl.VideoMode()
-        p[0] = decl.GetDesktopMode()
+        p[0] = decl.VideoMode_GetDesktopMode()
 
         return wrap_video_mode_instance(p, True)
 
@@ -2624,7 +2626,7 @@ cdef View wrap_view_instance(decl.View *p_cpp_view, object window):
 cdef class Shader:
     cdef decl.Shader *p_this
 
-    IS_AVAILABLE = decl.IsAvailable()
+    IS_AVAILABLE = decl.Shader_IsAvailable()
     CURRENT_TEXTURE = object()
     FRAGMENT = decl.Shader_Fragment
     VERTEX = decl.Shader_Vertex

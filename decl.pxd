@@ -664,27 +664,13 @@ cdef extern from "SFML/Graphics.hpp":
     cdef Time Time_Zero "sf::Time::Zero"
     cdef int Shader_Fragment "sf::Shader::Fragment"
     cdef int Shader_Vertex "sf::Shader::Vertex"
-
-cdef extern from "SFML/Graphics.hpp" namespace "sf":
-    cdef Time Seconds(float)
-    cdef Time Milliseconds(Int32)
-    cdef Time Microseconds(Int64)
-
-cdef extern from "SFML/Graphics.hpp":
+    cdef Time Time_Seconds "sf::Seconds" (float)
+    cdef Time Time_Milliseconds "sf::Milliseconds" (Int32)
+    cdef Time Time_Microseconds "sf::Microseconds" (Int64)
     RenderStates RenderStates_Default "sf::RenderStates::Default"
-
-cdef extern from "SFML/Graphics.hpp" namespace "sf::VideoMode":
-    cdef VideoMode& GetDesktopMode()
-    cdef vector[VideoMode]& GetFullscreenModes()
-
-cdef extern from "SFML/Graphics.hpp" namespace "sf::Transform":
-    cdef Transform Identity
-
-cdef extern from "SFML/Graphics.hpp":
+    cdef VideoMode& VideoMode_GetDesktopMode "sf::VideoMode::GetDesktopMode" ()
+    cdef vector[VideoMode]& GetFullscreenModes "sf::VideoMode::GetFullscreenModes" ()
+    cdef Transform Transform_Identity "sf::Transform::Identity"
     cdef unsigned int Texture_GetMaximumSize "sf::Texture::GetMaximumSize"()
-
-cdef extern from "SFML/Graphics.hpp" namespace "sf::Font":
-    cdef Font& GetDefaultFont()
-
-cdef extern from "SFML/Graphics.hpp" namespace "sf::Shader":
-    cdef bint IsAvailable()
+    cdef Font& Font_GetDefaultFont "sf::Font::GetDefaultFont" ()
+    cdef bint IsAvailable "sf:Shader::IsAvailable" ()
