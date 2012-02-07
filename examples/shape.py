@@ -8,20 +8,15 @@ class CustomShape(sf.Shape):
     def __init__(self):
         sf.Shape.__init__(self)
         self.fill_color = sf.Color.RED
+        self.points = [(400, 200), (450, 150), (500, 200), (550, 200),
+                       (500, 250), (420, 300)]
         self.update()
 
     def get_point_count(self):
-        return 3
+        return len(self.points)
 
     def get_point(self, index):
-        if index == 0:
-            return (500, 50)
-        elif index == 1:
-            return (600, 100)
-        elif index == 2:
-            return (450, 300)
-
-        assert False, "Code should never reach this"
+        return self.points[index]
 
 
 def main():
