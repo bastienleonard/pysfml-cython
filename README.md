@@ -1,3 +1,6 @@
+pySFML 2 - Cython
+=================
+
 This is a pythonic binding for SFML 2, which supports Python 2 and 3.
 This library allows you to write multimedia applications or games with
 a simple Python API.
