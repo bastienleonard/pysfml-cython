@@ -29,6 +29,12 @@
 # SUCH DAMAGE.
 
 
+# This the main source file, and yes it's huge. I'd like to split it
+# into several files, but using includes seems ugly and dangerous, and
+# Cython's module/namespace mechanisms didn't work when I tried to put
+# exceptions-related stuff in another file.
+
+
 """Python wrapper for the C++ library SFML 2 (Simple and Fast
 Multimedia Library)."""
 
@@ -75,6 +81,10 @@ cdef error_messages_lock = threading.Lock()
 
 # TODO: apparently functions should be static in Python modules, see
 # http://docs.python.org/extending/extending.html#providing-a-c-api-for-an-extension-module.
+# The problem is that this function needs to be called in hacks.cpp,
+# and Cython doesn't (AFAIK) make any difference between ``available
+# acros translations units'' and ``available at runtime in the shared
+# object/DLL''.
 cdef extern void set_error_message(char* message):
     ident = threading.current_thread().ident
 
