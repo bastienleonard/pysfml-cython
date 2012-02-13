@@ -1,4 +1,4 @@
-- Choose between returning a rect or a tuple, and make sure it's
-  consistent across the API
+- Add support for streaming
 
-- Make Shape inheritance work
+- Update the documentation
+
