@@ -98,7 +98,7 @@ Audio
    .. attribute:: sample_rate
    .. attribute:: status
 
-      Read-onlt. Can be one of:
+      Read-only. Can be one of:
 
       * sf.Music.STOPPED
       * sf.Music.PAUSED

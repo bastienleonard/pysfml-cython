@@ -452,7 +452,7 @@ Windowing
    Name                    Description
    ======================= ===========
    ``sf.Style.NONE``
-   ``sf.Style.TITLEEBAR``
+   ``sf.Style.TITLEBAR``
    ``sf.Style.RESIZE``
    ``sf.Style.CLOSE``
    ``sf.Style.FULLSCREEN``
