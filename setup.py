@@ -33,7 +33,7 @@
 # extension.
 USE_CYTHON = True
 
-
+import os.path
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.command.build_ext import build_ext
@@ -42,14 +42,18 @@ if USE_CYTHON:
     import Cython.Distutils
 
 
+def src(path):
+    return os.path.join('src', path)
+
+
 libs = ['sfml-graphics', 'sfml-window', 'sfml-audio', 'sfml-system']
 
 if USE_CYTHON:
-    ext_modules = [Extension('sf', ['sf.pyx', 'hacks.cpp'],
+    ext_modules = [Extension('sf', [src('sf.pyx'), src('hacks.cpp')],
                              language='c++',
                              libraries=libs)]
 else:
-    ext_modules = [Extension('sf', ['sf.cpp', 'hacks.cpp'],
+    ext_modules = [Extension('sf', [src('sf.cpp'), src('hacks.cpp')],
                              libraries=libs)]
 
 with open('README.md', 'r') as f:
