@@ -55,7 +55,14 @@ between SFML and this binding should be fairly easy to grasp.
    A current limitation is that :class:`sf.Texture` objects won't work
    as expected unless they are created after your
    :class:`sf.RenderWindow`.  It isn't a big problem in practice, but
-   it's something to keep in mind until the issue is fixed.
+   it's something to keep in mind until the issue is
+   fixed. **Update:** this seems to be related to a bug in SFML:
+   https://github.com/LaurentGomila/SFML/issues/160
+
+.. warning::
+
+   The current Github binding has been updated to SFML's new graphics
+   API recently, but the documentation hasn't been updated yet.
 
 Contents:
 
