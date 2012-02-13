@@ -181,7 +181,7 @@ Windows it's still ``sf.pyd``.)
 
 The second problem is that the SFML API uses raw strings a lot. This
 maps well into Python 2: you just use normal string litterals most of
-the time, except that when you want to use the Unicode functionality
+the time, except when you want to use the Unicode functionality
 exposed in the :py:class:`sf.Text` class.
 
 However, in Python 3, string literals are Unicode by default, and you
