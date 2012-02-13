@@ -2,11 +2,35 @@ System
 ======
 
 
+.. function:: seconds(float seconds)
+
+.. function:: milliseconds(int milliseconds)
+
+.. function:: microseconds(int microseconds)
+
+
+.. class:: Time(seconds=-1.0, milliseconds=-1, microseconds=-1)
+
+   Using one keyword argument is equivalent to calling the
+   corresponding function. For example,
+   ``sf.seconds(10) == sf.Time(seconds=10)``.
+
+   This class provides the following special methods:
+
+   * Comparison operators: ``==``, ``!=``, ``<``, ``>``, ``<=``, ``>=``.
+   * Arithmetic operators: ``+``, ``-``, ``*``, ``/``, unary ``-``.
+   * ``str()`` returns a representation of the number of seconds.
+
+   .. method:: as_seconds()
+   .. method:: as_milliseconds()
+   .. method:: as_microseconds()
+
+
 .. class:: Clock
 
    .. attribute:: elapsed_time
 
-   .. method:: reset()
+   .. method:: restart()
 
 
 
