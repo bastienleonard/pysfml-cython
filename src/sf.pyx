@@ -2067,11 +2067,6 @@ cdef class Sprite(Transformable):
     def __dealloc__(self):
         del self.p_this
 
-    def __getitem__(self, coords):
-        cdef decl.Vector2f v = convert_to_vector2f(coords)
-
-        return self.get_pixel(v.x, v.y)
-
     property color:
         def __get__(self):
             return wrap_color_instance(new decl.Color(
