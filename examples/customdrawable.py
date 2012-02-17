@@ -9,7 +9,7 @@ class Drawable:
         self.princess = sf.Sprite(sf.Texture.load_from_file('princess.png'))
         self.logo = sf.Sprite(sf.Texture.load_from_file('python-logo.png'))
 
-    def render(self, target, states):
+    def draw(self, target, states):
         target.draw(self.logo)
         target.draw(self.princess)
 
