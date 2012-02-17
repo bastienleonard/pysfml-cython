@@ -605,6 +605,9 @@ cdef class Transform:
         cdef decl.Transform *p_t
         cdef decl.Vector2f *p_v
 
+        if isinstance(a, Vector2f) and isinstance(b, Transform):
+            a, b = b, a
+
         if isinstance(a, Transform):
             if isinstance(b, Transform):
                 p_t = new decl.Transform()
