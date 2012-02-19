@@ -65,7 +65,7 @@ cdef class RenderWindow
 # If you add a class that inherits drawables to the module, you *must*
 # add it to this list. It used in RenderTarget.draw(), to know
 # whether a drawable is ``built-in'' or user-defined.
-cdef sfml_drawables = (Shape, Sprite, Text, VertexArray)
+cdef sfml_drawables = (Shape, Sprite, Text)
 
 
 # The shapes built in SFML. This is used to know whether update() can
@@ -2320,61 +2320,6 @@ cdef Vertex wrap_vertex_instance(decl.Vertex *p):
     ret.p_this = p
 
     return ret
-
-
-cdef class VertexArray:
-    cdef decl.VertexArray *p_this
-
-    def __init__(self, int primitive_type=-1, int vertex_count=-1):
-        if primitive_type != -1 and vertex_count != -1:
-            self.p_this = new decl.VertexArray(
-                <decl.PrimitiveType>primitive_type, vertex_count)
-        else:
-            self.p_this = new decl.VertexArray()
-
-            if primitive_type != -1:
-                self.primitive_type = primitive_type
-
-    def __dealloc__(self):
-        del self.p_this
-
-    def __len__(self):
-        return self.p_this.GetVertexCount()
-
-    def __getitem__(self, unsigned int x):
-        cdef decl.Vertex *p = new decl.Vertex()
-
-        if not 0 <= x < self.p_this.GetVertexCount():
-            raise IndexError(
-                "VertexArray index out of range "
-                "(must be 0 <= x <= {0}, got {1})"
-                .format(len(self) - 1, x))
-
-        p[0] = <decl.Vertex&>((self.p_this)[x])
-
-        return wrap_vertex_instance(p)
-
-    property bounds:
-        def __get__(self):
-            cdef decl.FloatRect r = self.p_this.GetBounds()
-
-            return FloatRect(r.Left, r.Top, r.Width, r.Height)
-
-    property primitive_type:
-        def __get__(self):
-            return <int>self.p_this.GetPrimitiveType()
-
-        def __set__(self, int value):
-            self.p_this.SetPrimitiveType(<decl.PrimitiveType>value)
-
-    def append(self, Vertex vertex):
-        self.p_this.Append(vertex.p_this[0])
-
-    def clear(self):
-        self.p_this.Clear()
-
-    def resize(self, int vertex_count):
-        self.p_this.Resize(vertex_count)
 
 
 
