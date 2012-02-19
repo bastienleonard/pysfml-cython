@@ -1,4 +1,4 @@
-.. Copyright 2011 Bastien Léonard. All rights reserved.
+.. Copyright 2011, 2012 Bastien Léonard. All rights reserved.
 
 .. Redistribution and use in source (reStructuredText) and 'compiled'
    forms (HTML, PDF, PostScript, RTF and so forth) with or without
@@ -40,7 +40,7 @@ Audio
    methods instead.
 
    .. attribute:: channels_count
-   .. attribute:: duration
+   .. attribute:: Time duration
    .. attribute:: sample_rate
    .. attribute:: samples
    .. attribute:: samples_count
@@ -61,7 +61,7 @@ Audio
    .. attribute:: loop
    .. attribute:: min_distance
    .. attribute:: pitch
-   .. attribute:: playing_offset
+   .. attribute:: Time playing_offset
    .. attribute:: position
    .. attribute:: relative_to_listener
    .. attribute:: status
@@ -88,11 +88,11 @@ Audio
 
    .. attribute:: attenuation
    .. attribute:: channels_count
-   .. attribute:: duration
+   .. attribute:: Time duration
    .. attribute:: loop
    .. attribute:: min_distance
    .. attribute:: pitch
-   .. attribute:: playing_offset
+   .. attribute:: Time playing_offset
    .. attribute:: position
    .. attribute:: relative_to_listener
    .. attribute:: sample_rate

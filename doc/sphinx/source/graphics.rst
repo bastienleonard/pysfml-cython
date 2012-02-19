@@ -1,4 +1,4 @@
-.. Copyright 2011 Bastien Léonard. All rights reserved.
+.. Copyright 2011, 2012 Bastien Léonard. All rights reserved.
 
 .. Redistribution and use in source (reStructuredText) and 'compiled'
    forms (HTML, PDF, PostScript, RTF and so forth) with or without
@@ -35,9 +35,64 @@ Graphics
 
 
 
+.. _custom_drawables:
+
+.. note:: Creating your own drawables
+
+   A drawable is an object that can be draw directly to render target,
+   e.g. you can write ``window.draw(a_drawable)``. The object can also
+   be drawn using the low-level API.
+
+   In the past, creating a drawable involved inheriting the ``Drawable``
+   class and overriding its ``render()`` method. With the new graphics API,
+   you only have to define a ``draw()`` method that takes two parameters::
+
+       def draw(self, target, states):
+           target.draw(self.logo)
+           target.draw(self.princess)
+
+   See ``examples/customdrawable.py`` for a working example.
+   TODO: update the low-level API example and explain it here.
+
+   The :class:`Transformable` class now contains the operations that can
+   be appied to a drawable. Most drawable (i.e. objects that can be drawn)
+   are transformable as well.
+
+   C++ documentation:
+
+   * http://www.sfml-dev.org/documentation/2.0/classsf_1_1Drawable.php
+   * http://www.sfml-dev.org/documentation/2.0/classsf_1_1Transformable.php
+
+
+
 Misc
 ----
 
+
+.. _blend_modes:
+
+Blend modes
+^^^^^^^^^^^
+
+.. attribute:: BLEND_ALPHA
+.. attribute:: BLEND_ADD
+.. attribute:: BLEND_MULTIPLY
+.. attribute:: BLEND_NONE
+
+
+Primitive types
+^^^^^^^^^^^^^^^
+
+.. attribute:: POINTS
+.. attribute:: LINES
+.. attribute:: LINES_STRIP
+.. attribute:: TRIANGLES
+.. attribute:: TRIANGLES_FAN
+.. attribute:: QUADS
+
+
+Classes
+^^^^^^^
 
 .. class:: Color(int r, int g, int b[, int a=255])
 
@@ -64,43 +119,21 @@ Misc
 
 
 
-.. class:: Drawable
+.. class:: Transformable
 
-   Base class for classes like :class:`Sprite` or :class:`Text`. You
-   can create your own drawables by inheriting this class and
-   overriding the ``render`` method::
+   Abstract class.
 
-      class Drawable(sf.Drawable):
-          def __init__(self):
-              self.princess = sf.Sprite(sf.Texture.load_from_file(
-                  'examples/princess.png'))
-              self.logo = sf.Sprite(sf.Texture.load_from_file(
-                  'examples/python-logo.png'))
-
-          def render(self, target, renderer):
-              target.draw(self.logo)
-              target.draw(self.princess)
-
-   You can then draw the drawable by passing as an argument to
-   :meth:`RenderWindow.draw`. For a runnable example, see
-   ``examples/customdrawable.py``. There is also a low level rendering
-   example in ``examples/lowleveldrawable.py``. For more information,
-   read the SFML documentation:
-   http://sfml-dev.org/documentation/2.0/classsf_1_1Drawable.php#details.
-
-   .. attribute:: blend_mode
-   .. attribute:: color
    .. attribute:: origin
    .. attribute:: position
    .. attribute:: rotation
    .. attribute:: scale
 
-      The object returned by this property will behave, but it might
-      be important in some cases to know that its exact type isn't
-      tuple, although its class does inherit tuple. In practice it
-      should behave just like a tuple, except if you write code that
-      checks for exact type using the ``type()`` function. Instead,
-      use ``isinstance()``::
+      The object returned by this property will behave like a tuple,
+      but it might be important in some cases to know that its exact
+      type isn't tuple, although its class does inherit tuple. In
+      practice it should behave just like one, except if you write
+      code that checks for exact type using the ``type()`` function.
+      Instead, use ``isinstance()``::
 
         if isinstance(some_object, tuple):
             # We now know that some_object is a tuple
@@ -108,11 +141,10 @@ Misc
    .. attribute:: x
    .. attribute:: y
 
-   .. method:: tranform_to_local(float x, float y)
-   .. method:: transform_to_global(float x, float y)
+   .. method:: get_inverse_transform()
+   .. method:: get_transform()
    .. method:: move(float x, float y)
    .. method:: rotate(float angle)
-   .. method:: scale(float x, float y)
 
 
 
@@ -123,14 +155,27 @@ Misc
    you call it.
 
    .. attribute:: default_view
+   .. attribute:: height
    .. attribute:: view
+   .. attribute:: width
 
    .. method:: clear
    .. method:: convert_coords
-   .. method:: draw
+   .. method:: draw(drawable, ...)
+
+      *drawable* may be:
+
+      * A built-in drawable, such as :class:`Sprite` or :class:`Text`,
+        or a user-made drawable (see :ref:`Creating your own drawables
+        <custom_drawables>`). You can pass a seconds argument of type
+        :class:`Shader` or :class:`RenderStates`.
+      * A list of :class:`Vertex` objects. This is currently badly
+        implemented and is going to be reworked.
+
    .. method:: get_viewport
-   .. method:: restore_gl_states
-   .. method:: save_gl_states
+   .. method:: pop_gl_states
+   .. method:: push_gl_states
+   .. method:: reset_gl_states
 
 
 
@@ -168,27 +213,29 @@ Misc
 
 
 
-.. class:: Matrix3(float a00, float a01, float a02,\
-                   float a10, float a11, float a12,\
-                   float a20, float a21, float a22)
+.. class:: Transform(float a00, float a01, float a02,\
+                     float a10, float a11, float a12,\
+                     float a20, float a21, float a22)
 
-   Note: this class overrides the multiplication operator.
+   This class provides the following special methods:
+
+   * ``*`` operator.
+   * ``str()`` returns the content of the matrix in a human-readable format.
 
    .. attribute:: IDENTITY
 
       Class attribute containing the identity matrix.
 
-   .. classmethod:: projection(center, size, float rotation)
-   .. classmethod:: transformation(origin, translation, float rotation, scale)
+   .. attribute:: matrix
 
-   .. method:: __str__()
-
-      Return the content of the matrix in a human-readable format.
-
+   .. method:: combine(transform)
    .. method:: get_inverse()
-   .. method:: transform()
-
-
+   .. method:: rotate(float angle[, float center_x, float center_y])
+   .. method:: scale(float scale_x, float scale_y[, float, center_y,\
+                     float center_y])
+   .. method:: transform_point(float x, float y)
+   .. method:: transform_rect(FloatRect rectangle)
+   .. method:: translate(float x, float y)
 
 
 
@@ -201,43 +248,62 @@ Image display and effects
 
 .. class:: Shape
 
+   This abstract class inherits :class:`Transformable`. To create your
+   own shapes, you should override :meth:`get_point` and
+   :meth:`get_point_count`. A few built-in shapes are provided:
+   :class:`RectangleShape`, :class:`CircleShape` and\
+   :class:`ConvexShape`.
 
-   .. attribute:: blend_mode
-   .. attribute:: color
-   .. attribute:: fill_enabled
-   .. attribute:: origin
-   .. attribute:: outline_enabled
+   .. attribute:: fill_color
+   .. attribute:: global_bounds
+   .. attribute:: local_bounds
+   .. attribute:: texture
+   .. attribute:: texture_rect
+   .. attribute:: outline_color
    .. attribute:: outline_thickness
-   .. attribute:: points_count
-   .. attribute:: position
-   .. attribute:: rotation
-   .. attribute:: the_scale
-   .. attribute:: x
-   .. attribute:: y
 
-   .. classmethod:: line(float p1x, float p1y, float p2x, float p2y,\
-                         float thickness, color\
-                         [, float outline=0.0[, outline_color]])
-   .. classmethod:: rectangle(float left, float top, float width,\
-                              float height, color\
-                              [, float outline=0.0[, outline_color]])
-   .. classmethod:: circle(float x, float y, float radius, color\
-                           [, float outline=0.0[, outline_color]])
+   .. method:: get_point(int index)
 
-   .. method:: add_point(float x, float y[, color[, outline_color]])
-   .. method:: get_point_color(int index)
-   .. method:: get_point_outline_color(int index)
-   .. method:: get_point_position(int index)
-   .. method:: move(float x, float y)
-   .. method:: rotate(float angle)
-   .. method:: scale(float x, float y)
-   .. method:: set_point_color(int index, color)
-   .. method:: set_point_outline_color(int index, color)
-   .. method:: set_point_position(int index, float x, float y)
-   .. method:: tranform_to_local(float x, float y)
-   .. method:: transform_to_global(float x, float y)
+      This method should be overriden to return a tuple or a
+      :class:`Vector2f` containing the coordinates at the position
+      ``index``.
+
+   .. method:: get_point_count()
+
+      This method should be overriden to return the number of points,
+      as an integer.
+
+   .. method:: set_texture(texture[, reset_rect=False])
+   .. method:: update()
+
+      This method is not available in built-in SFML shapes (it would
+      require extra work for each class, and doesn't seem useful for
+      any use case).
 
 
+
+.. class:: RectangleShape([size])
+
+   This class inherits :class:`Shape`. *size* can be either a tuple or
+   a :class:`Vector2f`.
+
+   .. attribute:: size
+
+
+
+.. class:: CircleShape([float radius[, int point_count]])
+
+   This class inherits :class:`Shape`.
+
+   .. attribute:: point_count
+   .. attribute:: radius
+
+
+.. class:: ConvexShape([int point_count])
+
+   This class inherits :class:`Shape`.
+
+   .. attribute:: point_count
 
 
 .. class:: Image(int width, int height[, color])
@@ -282,6 +348,7 @@ Image display and effects
 
    .. attribute:: MAXIMUM_SIZE
    .. attribute:: height   
+   .. attribute:: repeated
    .. attribute:: smooth
    .. attribute:: width
 
@@ -298,10 +365,6 @@ Image display and effects
       *area* can be either a tuple or an :class:`sf.IntRect`.
 
    .. method:: bind()
-   .. method:: get_tex_coords(rect):
-
-      *rect* can be either a tuple or an :class:`sf.IntRect`.
-
    .. method:: update(object source, int p1=-1, int p2=-1, int p3=-1, int p4=-1)
 
       This method can be called in three ways, to be consistent with
@@ -312,47 +375,25 @@ Image display and effects
           update(window[, x, y])
 
 
+
 .. class:: Sprite([texture])
 
-   .. attribute:: blend_mode
+   This class inherits :class:`Transformable`.
+
    .. attribute:: color
-   .. attribute:: height
-   .. attribute:: origin
-   .. attribute:: position
-   .. attribute:: rotation
-   .. attribute:: the_scale
-   .. attribute:: size
+   .. attribute:: global_bounds
+   .. attribute:: local_bounds
    .. attribute:: texture
-   .. attribute:: width
-   .. attribute:: x
-   .. attribute:: y
-
-   .. method:: __getitem__()
-
-      Equivalent to :meth:`get_pixel()`.
-
-   .. method:: get_sub_rect()
+   .. attribute:: texture_rect
 
       .. warning::
 
-         This method returns a copy of the rectangle, so code like
+         This property returns a copy of the rectangle, so code like
          this won't work::
 
-             sprite.get_sub_rect().top = 10
+             sprite.texture_rect.top = 10
 
-   .. method:: flip_x(flipped)
-   .. method:: flip_y(flipped)
-   .. method:: move(float x, float y)
-   .. method:: resize(float width, float height)
-   .. method:: rotate(float angle)
-   .. method:: scale(float x, float y)
-   .. method:: set_sub_rect(rect)
-
-      *rect* can be either a tuple or an :class:`IntRect`.
-
-   .. method:: set_texture(image[, adjust_to_new_size=False])
-   .. method:: transform_to_global(float x, float y)
-   .. method:: transform_to_local(float x, float y)
+   .. method:: set_texture(texture[, adjust_to_new_size=False])
 
 
 
@@ -362,8 +403,108 @@ Image display and effects
    class methods like :meth:`load_from_file()` or :meth:`load_from_memory()`
    instead.
 
-   .. classmethod:: load_from_file(filename)
-   .. classmethod:: load_from_memory(str shader)
+   Shaders are programs written using a specific language, executed
+   directly by the graphics card and allowing to apply real-time
+   operations to the rendered entities.
+
+   There are two kinds of shaders:
+
+   * Vertex shaders, that process vertices.
+   * Fragment (pixel) shaders, that process pixels.
+
+   A shader can be composed of either a vertex shader alone, a
+   fragment shader alone, or both combined (see the variants of the
+   load classmethods).
+
+   Shaders are written in GLSL, which is a C-like language dedicated
+   to OpenGL shaders. You'll probably need to learn its basics before
+   writing your own shaders for SFML.
+
+   Like any Python program, a shader has its own variables that you can
+   set from your Python. :class:`Shader` handles four different types
+   of variables:
+
+   * floats
+   * vectors (2, 3 or 4 components)
+   * textures
+   * transforms (matrices)
+
+   The value of the variables can be changed at any time with
+   :meth:`set_parameter`::
+
+       shader.set_parameter('offset', 2.f);
+       shader.set_parameter('color', 0.5f, 0.8f, 0.3f);
+       shader.set_parameter('matrix', transform); # transform is a sf.Transform
+       shader.set_parameter('overlay', texture); # texture is a sf.Texture
+       shader.set_parameter('texture', sf.Shader.CURRENT_TEXTURE);
+
+   The special :attr:`Shader.CURRENT_TEXTURE` argument maps the given
+   texture variable to the current texture of the object being drawn
+   (which cannot be known in advance).
+
+   To apply a shader to a drawable, you must pass it as an additional
+   parameter to :meth:`RenderTarget.draw`::
+
+       window.draw(sprite, shader);
+
+   Which is in fact just a shortcut for this::
+
+       states = sf.RenderStates()
+       states.shader = shader;
+       window.draw(sprite, states)
+
+   Shaders can be used on any drawable, but some combinations are not
+   interesting. For example, using a vertex shader on a
+   :class:`Sprite` is limited because there are only 4 vertices, the
+   sprite would have to be subdivided in order to apply wave
+   effects. Another bad example is a fragment shader with
+   :class:`Text`: the texture of the text is not the actual text that
+   you see on screen, it is a big texture containing all the
+   characters of the font in an arbitrary order; thus, texture lookups
+   on pixels other than the current one may not give you the expected
+   result.
+
+   Shaders can also be used to apply global post-effects to the
+   current contents of the target (like the old ``sf.PostFx`` class in
+   SFML 1). This can be done in two different ways:
+
+   * Draw everything to a :class:`RenderTexture`, then draw it to the main
+     target using the shader.
+   * Draw everything directly to the main target, then use
+     :meth:`Texture.update` to copy its contents to a texture
+     and draw it to the main target using the shader.
+
+   The first technique is more optimized because it doesn't involve
+   retrieving the target's pixels to system memory, but the second one
+   doesn't impact the rendering process and can be easily inserted
+   anywhere without impacting all the code.
+
+   Like :class:`Texture` that can be used as a raw OpenGL texture,
+   :class:`Shader` can also be used directly as a raw shader for
+   custom OpenGL geometry::
+
+      window.active = True
+      shader.bind();
+      ... render OpenGL geometry ...
+      shader.unbind();
+
+
+   .. attribute:: IS_AVAILABLE
+   .. attribute:: CURRENT_TEXTURE
+   .. attribute:: FRAGMENT
+   .. attribute:: VERTEX
+
+   .. classmethod:: load_both_types_from_file(str vertex_shader_filename,\
+                                              str fragment_shader_filename)
+   .. classmethod:: load_both_types_from_memory(str vertex_shader,\
+                                                str fragment_shader)
+   .. classmethod:: load_from_file(filename, int type)
+
+      *type* must be :attr:`Shader.FRAGMENT` or :attr:`Shader.VERTEX`.
+
+   .. classmethod:: load_from_memory(str shader, int type)
+
+      *type* must be :attr:`Shader.FRAGMENT` or :attr:`Shader.VERTEX`.
 
    .. method:: bind()
 
@@ -372,8 +513,6 @@ Image display and effects
       After *name*, you can pass as many parameters as four, depending
       on your need.
 
-   .. method:: set_texture(str name)
-   .. method:: set_current_texture(str name)
    .. method:: unbind()
 
 
@@ -400,43 +539,11 @@ Image display and effects
 
 
 
+.. class:: Vertex([position[, color[, tex_coords]]])
 
-.. class:: Renderer
-
-   .. attribute:: TRIANGLE_LIST
-   .. attribute:: TRIANGLE_STRIP
-   .. attribute:: TRIANGLE_FAN
-   .. attribute:: QUAD_LIST
-
-   .. attribute:: blend_mode
    .. attribute:: color
-   .. attribute:: model_view
-   .. attribute:: projection
-   .. attribute:: shader
-   .. attribute:: texture
-   .. attribute:: viewport
- 
-   .. method:: add_vertex(...)
-
-      This method can be called in the same ways as in C++::
-
-         add_vertex(x, y)  # position only
-         add_vertex(x, y, color)  # position and color
-         add_vertex(x, y, u, v) # position and texture coordinates
-         add_vertex(x, y, u, v, color)  # position, texture coordinates and color
-
-   .. method:: apply_color(color)
-   .. method:: apply_model_view(matrix)
-   .. method:: begin(int value)
-   .. method:: clear(color)
-   .. method:: end()
-   .. method:: initialize()
-   .. method:: push_states()
-   .. method:: pop_states()
-   .. method:: restore_gl_states()
-   .. method:: save_gl_states()
-
-
+   .. attribute:: position
+   .. attribute:: tex_coords
 
 
 Windowing
@@ -462,11 +569,10 @@ Windowing
    .. attribute:: cursor_position
    .. attribute:: default_view
    .. attribute:: framerate_limit
-   .. attribute:: frame_time
    .. attribute:: height
    .. attribute:: joystick_threshold
    .. attribute:: key_repeat_enabled
-   .. attribute:: opened
+   .. attribute:: open
    .. attribute:: position
    .. attribute:: settings
    .. attribute:: show_mouse_cursor
@@ -517,6 +623,18 @@ Windowing
 
 
 
+.. class:: RenderStates(shader=None, texture=None, transform=None)
+
+   .. attribute:: blend_mode
+
+      See :ref:`blend_modes`.
+
+   .. attribute:: shader
+   .. attribute:: texture
+   .. attribute:: transform
+
+
+
 .. class:: ContextSettings(int depth=24, int stencil=8, int antialiasing=0,\
                            int major=2, int minor=0)
 
@@ -543,7 +661,7 @@ Windowing
 
 
 
-.. class:: View( )
+.. class:: View
 
 
 
@@ -560,10 +678,12 @@ Windowing
 
    .. classmethod:: from_rect(rect)
 
-   .. method:: move
-   .. method:: reset
-   .. method:: rotate
-   .. method:: zoom
+   .. method:: get_inverse_transform()
+   .. method:: get_transform()
+   .. method:: move()
+   .. method:: reset()
+   .. method:: rotate()
+   .. method:: zoom()
 
 
 
@@ -594,24 +714,20 @@ Text
 
 .. class:: Text([string, font, character_size=0])
 
+   This class inherits :class:`Transformable`.
+
    *string* can be either a regular string or Unicode. SFML will
    internally store characters as 32-bit integers. A ``str`` object
    will end up being interpreted by SFML as an "ANSI string" (cp1252
    encoding). A ``unicode`` object will be interpreted as 32-bit code
    points, as you would expect.
 
-   .. attribute:: blend_mode
-   .. attribute:: color
    .. attribute:: character_size
+   .. attribute:: color
    .. attribute:: font
-   .. attribute:: origin
-   .. attribute:: position
-   .. attribute:: rect
-   .. attribute:: rotation
-   .. attribute:: scale
+   .. attribute:: global_bounds
+   .. attribute:: local_bounds
    .. attribute:: string
-   .. attribute:: x
-   .. attribute:: y
 
       This attribute can be set as either a ``str`` or ``unicode``
       object. The value retrieved will be either ``str`` or
@@ -631,11 +747,7 @@ Text
 
          text.style = sf.Text.BOLD | sf.Text.ITALIC
 
-   .. method:: tranform_to_local(float x, float y)
-   .. method:: transform_to_global(float x, float y)
-   .. method:: move(float x, float y)
-   .. method:: rotate(float angle)
-   .. method:: scale(float x, float y)
+   .. method:: find_character_pos(int index)
 
 
 
@@ -643,4 +755,4 @@ Text
 
    .. attribute:: advance
    .. attribute:: bounds
-   .. attribute:: sub_rect
+   .. attribute:: texture_rect
