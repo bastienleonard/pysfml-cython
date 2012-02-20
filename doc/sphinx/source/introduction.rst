@@ -82,3 +82,17 @@ projects and it only breaks a few parts of SFML 1's API.
 SFML 2 brings in important changes, such as new features, performance
 improvement and a more consistent API.  In my opinion, if you aren't
 tied to SFML 1, you should stop using it and try SFML 2.
+
+
+What does "Cython" mean? Can I use this module with Python 2/3?
+---------------------------------------------------------------
+
+I use it in the binding's name to help distinguish it with other
+bindings. The fact the it's written with Cython means that it's easier
+to maintain, and as fast as a C or C++ binding (although some parts
+*might* need optimizations).
+
+Don't worry, the module works with the traditional Python interpreter
+(CPython), version 2 or 3. (For more information, see
+:ref:`building_the_module`.) However, it doesn't work with other
+interpreters like PyPy.

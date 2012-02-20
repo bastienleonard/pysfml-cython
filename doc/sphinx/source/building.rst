@@ -28,6 +28,8 @@
    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+.. _building_the_module:
+
 Building the module
 ===================
 
