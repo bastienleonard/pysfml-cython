@@ -262,7 +262,7 @@ Image display and effects
    This abstract class inherits :class:`Transformable`. To create your
    own shapes, you should override :meth:`get_point` and
    :meth:`get_point_count`. A few built-in shapes are provided:
-   :class:`RectangleShape`, :class:`CircleShape` and\
+   :class:`RectangleShape`, :class:`CircleShape` and \
    :class:`ConvexShape`.
 
    .. attribute:: fill_color
