@@ -65,6 +65,10 @@ cdef class RenderWindow
 # If you add a class that inherits drawables to the module, you *must*
 # add it to this list. It used in RenderTarget.draw(), to know
 # whether a drawable is ``built-in'' or user-defined.
+# Important: RenderTarget.draw() assumes that these drawables' C++
+# object inherit sf::Transformable, which causes a problem with
+# sf::VertexArray, since it only inherits sf::Drawable. This is
+# another reason why I removed that class.
 cdef sfml_drawables = (Shape, Sprite, Text)
 
 
@@ -2870,59 +2874,63 @@ cdef class RenderTarget:
 
         return (res.x, res.y)
 
-    def draw(self, object drawable, object x=None, object primitive_type=None,
-             RenderStates states=None):
+    def draw(self, object drawable, object x=None, object y=None):
         cdef decl.Vertex *vertex
         cdef unsigned int vertex_count
         cdef int the_type
 
-        if x is None:
-            if isinstance(drawable, sfml_drawables):
+        if isinstance(drawable, sfml_drawables):
+            if x is None:
                 self.p_this.Draw(decl.transformable_to_drawable(
-                                 (<Transformable>drawable).p_this)[0])
-            else:
-                call_render(self, drawable, x)
-        elif isinstance(x, Shader):
-            if isinstance(drawable, sfml_drawables):
+                    (<Transformable>drawable).p_this)[0])
+            elif isinstance(x, Shader):
                 self.p_this.Draw(decl.transformable_to_drawable(
                                  (<Transformable>drawable).p_this)[0],
                                  (<Shader>x).p_this)
-            else:
-                call_render(self, drawable, x)
-        elif isinstance(x, RenderStates):
-            if isinstance(drawable, sfml_drawables):
+            elif isinstance(x, RenderStates):
                 self.p_this.Draw(decl.transformable_to_drawable(
                                  (<Transformable>drawable).p_this)[0],
                                  (<RenderStates>x).p_this[0])
             else:
-                call_render(self, drawable, x)
-        elif isinstance(x, list):
-            vertex_count = len(<list>x)
+                raise TypeError(
+                    "The optional second argument has type {0}. "
+                    "Only Shader and RenderStates are supported."
+                    .format(type(x)))
+        elif isinstance(drawable, list):
+            vertex_count = len(<list>drawable)
             vertex = <decl.Vertex*>malloc(vertex_count * sizeof(decl.Vertex))
-            the_type = <int?>primitive_type
+            the_type = <int?>x
 
             for i in range(vertex_count):
-                if not isinstance(list[i], Vertex):
+                if not isinstance(<list>drawable[i], Vertex):
                     free(vertex)
                     raise TypeError(
                         "The list should contain vertex objects, {0} found"
                         .format(type(list[i])))
 
-                vertex[i] = (<Vertex>list[i]).p_this[0]
+                vertex[i] = (<Vertex>(<list>drawable[i])).p_this[0]
 
-            if states is None:
+            if y is None:
                 self.p_this.Draw(vertex, vertex_count,
                                  <decl.PrimitiveType>the_type)
-            else:
+            elif isinstance(y, Shader):
                 self.p_this.Draw(vertex, vertex_count,
-                                 <decl.PrimitiveType>the_type, states.p_this[0])
+                                 <decl.PrimitiveType>the_type,
+                                 (<Shader>y).p_this)
+            elif isinstance(y, RenderStates):
+                self.p_this.Draw(vertex, vertex_count,
+                                 <decl.PrimitiveType>the_type,
+                                 (<RenderStates>y).p_this[0])
+            else:
+                free(vertex)
+                raise TypeError(
+                    "The optional third argument has type {0}. "
+                    "Only Shader and RenderStates are supported."
+                    .format(type(x)))
 
             free(vertex)
         else:
-            raise TypeError(
-                "The optional second argument has type {0}. "
-                "Only Shader, RenderStates, and list of Vertex are supported."
-                .format(type(x)))
+            call_render(self, drawable, x)
 
     def get_viewport(self, View view):
         cdef decl.IntRect *p = new decl.IntRect()

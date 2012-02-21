@@ -80,6 +80,8 @@ Blend modes
 .. attribute:: BLEND_NONE
 
 
+.. _primitive_types:
+
 Primitive types
 ^^^^^^^^^^^^^^^
 
@@ -167,10 +169,19 @@ Classes
 
       * A built-in drawable, such as :class:`Sprite` or :class:`Text`,
         or a user-made drawable (see :ref:`Creating your own drawables
-        <custom_drawables>`). You can pass a seconds argument of type
-        :class:`Shader` or :class:`RenderStates`.
-      * A list of :class:`Vertex` objects. This is currently badly
-        implemented and is going to be reworked.
+        <custom_drawables>`). You can pass a second argument of type
+        :class:`Shader` or :class:`RenderStates`. Example::
+
+            window.draw(sprite, shader)
+
+      * A list of :class:`Vertex` objects. You must pass a
+        :ref:`primitive type <primitive_types>` as a second argument,
+        and can pass a :class:`Shader` or :class:`RenderStates` as a
+        third argument. Example::
+
+            window.draw(vertices, sf::QUADS, shader)
+
+        See ``examples/vertices.py`` for a working example.
 
    .. method:: get_viewport
    .. method:: pop_gl_states

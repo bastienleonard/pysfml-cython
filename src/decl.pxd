@@ -546,6 +546,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void Draw(Drawable&, RenderStates&)
         void Draw(Vertex*, unsigned int, PrimitiveType)
         void Draw(Vertex*, unsigned int, PrimitiveType, RenderStates&)
+        void Draw(Vertex*, unsigned int, PrimitiveType, Shader*)
         unsigned int GetHeight()
         unsigned int GetWidth()
         void SetView(View&)
