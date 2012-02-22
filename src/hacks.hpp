@@ -43,18 +43,6 @@ void replace_error_handler();
 // Cython, apparently
 sf::Drawable* transformable_to_drawable(sf::Transformable *t);
 
-// TODO: move these declarations to the .cpp file, and see if it fixes
-// the MSVC build problem
-extern "C"
-{
-    struct __pyx_obj_2sf_RenderTarget* wrap_render_target_instance(
-        sf::RenderTarget*);
-    struct __pyx_obj_2sf_RenderStates* wrap_render_states_instance(
-        sf::RenderStates*);
-    sf::Vector2f convert_to_vector2f(PyObject*);
-}
-
-
 
 // This is the same class as sf::Shape, but with a public Update()
 // method. This allows to expose it a public method in Python.

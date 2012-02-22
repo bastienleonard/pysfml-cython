@@ -27,6 +27,7 @@
 
 
 #include "hacks.hpp"
+#include "sf.h"
 
 #include <iostream>
 #include <cassert>
@@ -35,15 +36,6 @@
 
 // This file contains code that couldn't be written in Cython.
 
-
-
-// C functions defined in sf.pyx
-// Can't declare them in hacks.hpp because the const-qualifier will clash with
-// the actual signature (Cython doesn't support const pointers)
-extern "C"
-{
-    void set_error_message(const char* message);
-}
 
 
 // This should be big enough to contain any message error

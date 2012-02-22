@@ -89,7 +89,7 @@ cdef error_messages_lock = threading.Lock()
 # and Cython doesn't (AFAIK) make any difference between ``available
 # acros translations units'' and ``available at runtime in the shared
 # object/DLL''.
-cdef extern void set_error_message(char* message):
+cdef public void set_error_message(char* message):
     ident = threading.current_thread().ident
 
     with error_messages_lock:
@@ -563,7 +563,7 @@ cdef class Vector2f:
         return Vector2f(t[0], t[1])
 
 
-cdef extern decl.Vector2f convert_to_vector2f(value):
+cdef public decl.Vector2f convert_to_vector2f(value):
     if isinstance(value, Vector2f):
         return (<Vector2f>value).p_this[0]
 
@@ -2800,7 +2800,7 @@ cdef class RenderStates:
             self.p_this.Transform = value.p_this[0]
 
 
-cdef extern RenderStates wrap_render_states_instance(decl.RenderStates *p):
+cdef public RenderStates wrap_render_states_instance(decl.RenderStates *p):
     cdef RenderStates ret = RenderStates.__new__(RenderStates)
 
     ret.p_this = p
@@ -2968,7 +2968,7 @@ cdef void call_render(RenderTarget target, object drawable, object x) except *:
         target.p_this.Draw((<decl.Drawable*>&cpp_drawable)[0])
 
 
-cdef extern RenderTarget wrap_render_target_instance(decl.RenderTarget
+cdef public RenderTarget wrap_render_target_instance(decl.RenderTarget
                                                      *p_cpp_instance):
     cdef RenderTarget ret = RenderTarget.__new__(RenderTarget)
     ret.p_this = p_cpp_instance
