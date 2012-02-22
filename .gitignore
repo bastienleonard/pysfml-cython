@@ -1,4 +1,5 @@
 build/
-sf.cpp
-sf.so
+src/sf.cpp
+src/sf.so
+src/sf.h
 *~
