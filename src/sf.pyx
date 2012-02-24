@@ -1302,7 +1302,7 @@ cdef class SoundStream:
 
     property sample_rate:
         def __get__(self):
-            Return self.p_this.GetSampleRate()
+            return self.p_this.GetSampleRate()
 
     property status:
         def __get__(self):
