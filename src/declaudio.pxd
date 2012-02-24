@@ -108,3 +108,31 @@ cdef extern from "SFML/Audio.hpp" namespace "sf":
         void SetRelativeToListener(bint)
         void SetVolume(float)
         void Stop()
+
+    cdef cppclass Chunk "sf::SoundStream::Chunk":
+        decl.Int16* Samples
+        size_t SampleCount
+
+    cdef cppclass SoundStream:
+        float GetAttenuation()
+        unsigned int GetChannelCount()
+        bint GetLoop()
+        float GetMinDistance()
+        float GetPitch()
+        decl.Time GetPlayingOffset()
+        decl.Vector3f GetPosition()
+        unsigned int GetSampleRate()
+        Status GetStatus()
+        float GetVolume()
+        bint IsRelativeToListener()
+        void Pause()
+        void Play()
+        void SetAttenuation(float)
+        void SetLoop(bint)
+        void SetMinDistance(float)
+        void SetPitch(float)
+        void SetPlayingOffset(decl.Time)
+        void SetPosition(float, float, float)
+        void SetRelativeToListener(bint)
+        void SetVolume(float)
+        void Stop()

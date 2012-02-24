@@ -1,1 +1,2 @@
 - Add support for streaming
+- Check for malloc() failures and raise PyErr_NoMemory

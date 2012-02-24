@@ -81,34 +81,61 @@ Audio
 
 
 
-.. class:: Music
+.. class:: Chunk
 
-   Will raise ``NotImplementedError`` if the constructor is called. Use class
-   methods instead.
+   .. attribute:: sample_count
+
+      Normally you should ``len(self.samples)``, but currently, using
+      this attribute is much faster. Might be changed in the future.
+
+   .. attribute:: samples
+
+
+.. class:: SoundStream
+
+   .. warning:: Currently, this class is painfully slow and is going
+                to be reworked.
+
+   Abstract class.
+
+   To create your own sound stream, you must inherit this class and at
+   least define a ``on_get_data()`` method that receives a
+   :class:`Chunk` parameter. ``on_seek(Time)`` may be implemented as well.
+   See ``examples/soundstream.py`` for an example.
+
+   .. attribute:: PAUSED
+   .. attribute:: PLAYING
+   .. attribute:: STOPPED
 
    .. attribute:: attenuation
-   .. attribute:: channels_count
-   .. attribute:: Time duration
+   .. attribute:: channel_count
    .. attribute:: loop
    .. attribute:: min_distance
    .. attribute:: pitch
-   .. attribute:: Time playing_offset
+   .. attribute:: playing_offset
    .. attribute:: position
    .. attribute:: relative_to_listener
    .. attribute:: sample_rate
    .. attribute:: status
-
-      Read-only. Can be one of:
-
-      * sf.Music.STOPPED
-      * sf.Music.PAUSED
-      * sf.Music.PLAYING
-
    .. attribute:: volume
 
-   .. classmethod:: open_from_file(filename)
-   .. classmethod:: open_from_memory(str data)
+   .. method:: initialize(int channel_count, int sample_rate)
+
+      This method must be called by user-defined streams. It's not
+      available from built-in sound streams such as :class:`Music`.
 
    .. method:: pause()
    .. method:: play()
    .. method:: stop()
+
+
+.. class:: Music
+
+   This class inherits :class:`SoundStream`.
+   Will raise ``NotImplementedError`` if the constructor is called. Use class
+   methods instead.
+
+   .. attribute:: Time duration
+
+   .. classmethod:: open_from_file(filename)
+   .. classmethod:: open_from_memory(str data)

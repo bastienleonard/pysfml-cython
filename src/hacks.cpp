@@ -30,8 +30,9 @@
 #include "sf.h"
 
 #include <iostream>
-#include <cassert>
 
+#include <cassert>
+#include <cstdio>
 
 
 // This file contains code that couldn't be written in Cython.
@@ -133,8 +134,8 @@ void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
     // theory they can be modified, and string litterals are const char*
     char method_name[] = "draw";
     char format[] = "(O, O)";
-    PyObject* py_target = (PyObject*)(wrap_render_target_instance(&target));
-    PyObject* py_states = (PyObject*)(wrap_render_states_instance(&states));
+    PyObject* py_target = (PyObject*)wrap_render_target_instance(&target);
+    PyObject* py_states = (PyObject*)wrap_render_states_instance(&states);
     
     // The caller needs to use PyErr_Occurred() to know if this
     // function failed
@@ -210,4 +211,77 @@ sf::Vector2f CppShape::GetPoint(unsigned int index) const
     }
 
     return point;
+}
+
+
+CppSoundStream::CppSoundStream()
+{
+}
+
+CppSoundStream::CppSoundStream(void* sound_stream) : sound_stream(sound_stream)
+{
+}
+
+void CppSoundStream::Initialize(unsigned int channel_count,
+                                unsigned int sample_rate)
+{
+    sf::SoundStream::Initialize(channel_count, sample_rate);
+}
+
+bool CppSoundStream::OnGetData(sf::SoundStream::Chunk& data)
+{
+    char method_name[] = "on_get_data";
+    char format[] = "O";
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    PyObject *py_chunk = (PyObject*)wrap_chunk_instance(&data);
+    PyObject *ret = PyObject_CallMethod(
+        static_cast<PyObject*>(sound_stream), method_name, format, py_chunk);
+    bool status = false;
+
+    if (ret == NULL)
+    {
+        PyErr_Print();
+    }
+    else
+    {
+        if (ret == Py_True)
+        {
+            status = true;
+        }
+        else if (ret != Py_False)
+        {
+            PyErr_SetString(PyExc_TypeError,
+                            "on_get_data() must return a boolean");
+            PyErr_Print();
+        }
+
+        Py_DECREF(ret);
+    }
+
+    PyGILState_Release(gstate);
+
+    return status;
+}
+
+void CppSoundStream::OnSeek(sf::Time time_offset)
+{
+    char method_name[] = "on_seek";
+    char format[] = "O";
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    PyObject *py_time = (PyObject*)wrap_time_instance(&time_offset);
+    PyObject *ret = PyObject_CallMethod(
+        static_cast<PyObject*>(sound_stream), method_name, format, py_time);
+
+    if (ret == NULL)
+    {
+        PyErr_Print();
+    }
+    else
+    {
+        Py_DECREF(ret);
+    }
+
+    PyGILState_Release(gstate);
 }

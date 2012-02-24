@@ -45,6 +45,10 @@ cimport declprimitive
 cimport declshader
 
 
+
+cdef extern from "Python.h":
+    void PyEval_InitThreads()
+
 cdef extern from "hacks.hpp":
     void replace_error_handler()
     Drawable* transformable_to_drawable(Transformable*)
@@ -99,6 +103,13 @@ cdef extern from "hacks.hpp":
         void SetTexture(Texture*, bint)
         void SetTextureRect(IntRect&)
         void Update()
+
+    cdef cppclass CppSoundStream:
+        CppSoundStream()
+        CppSoundStream(void*)
+        void Initialize(unsigned int, unsigned int)
+        void Play()
+        void *sound_stream
 
 
 # Declaration of the standard std::string class.  This is useful

@@ -43,6 +43,7 @@ from libc.stdlib cimport malloc, free
 from libc.stdio cimport printf
 from libcpp.vector cimport vector
 from cython.operator cimport preincrement as preinc, dereference as deref
+cimport cpython
 
 import threading
 
@@ -60,6 +61,10 @@ cimport declprimitive
 # Forward declarations
 cdef class RenderTarget
 cdef class RenderWindow
+
+
+
+decl.PyEval_InitThreads()
 
 
 # If you add a class that inherits drawables to the module, you *must*
@@ -808,7 +813,7 @@ cdef class Time:
         return self.p_this.AsMicroseconds()
 
 
-cdef Time wrap_time_instance(decl.Time *p_cpp_instance):
+cdef public Time wrap_time_instance(decl.Time *p_cpp_instance):
     cdef Time ret = Time.__new__(Time)
 
     ret.p_this = p_cpp_instance
@@ -966,7 +971,7 @@ cdef class SoundBuffer:
 
     property channel_count:
         def __get__(self):
-            return self.p_this.GetChannelCount()
+            return <int>self.p_this.GetChannelCount()
 
     property duration:
         def __get__(self):
@@ -978,7 +983,7 @@ cdef class SoundBuffer:
 
     property sample_rate:
         def __get__(self):
-            return self.p_this.GetSampleRate()
+            return <int>self.p_this.GetSampleRate()
 
     property samples:
         def __get__(self):
@@ -993,7 +998,7 @@ cdef class SoundBuffer:
 
     property sample_count:
         def __get__(self):
-            return self.p_this.GetSampleCount()
+            return <int>self.p_this.GetSampleCount()
 
     @classmethod
     def load_from_file(cls, char* filename):
@@ -1160,17 +1165,77 @@ cdef class Sound:
 
 
 
-cdef class Music:
-    cdef declaudio.Music *p_this
-
-    STOPPED = declaudio.Stopped
-    PAUSED = declaudio.Paused
-    PLAYING = declaudio.Playing
+cdef class Chunk:
+    cdef declaudio.Chunk *p_this
 
     def __init__(self):
-        raise NotImplementedError(
-            "Use class methods like open_from_file() or open_from_memory() "
-            "to create Music objects")
+        self.p_this = new declaudio.Chunk()
+        self.p_this.Samples = NULL
+
+    def __dealloc__(self):
+        free(<void*>self.p_this.Samples)
+        del self.p_this
+
+    property sample_count:
+        def __get__(self):
+            return <int>self.p_this.SampleCount
+
+    property samples:
+        def __get__(self):
+            cdef list ret = []
+            cdef decl.Int16 *p = <decl.Int16*>self.p_this.Samples
+
+            for i in range(self.p_this.SampleCount):
+                ret.append(<int>p[0])
+                preinc(p)
+
+            return ret
+
+        def __set__(self, list value):
+            cdef decl.Int16* p = NULL
+
+            if self.p_this.Samples != NULL:
+                free(<void*>self.p_this.Samples)
+                self.p_this.Samples = NULL
+
+            self.p_this.Samples = <decl.Int16*>malloc(
+                len(value) * sizeof(decl.Int16))
+
+            if self.p_this.Samples == NULL:
+                cpython.exc.PyErr_NoMemory()
+            else:
+                p = <decl.Int16*>self.p_this.Samples
+
+                for item in value:
+                    p[0] = item
+                    preinc(p)
+
+                self.p_this.SampleCount = len(value)
+                
+
+cdef public Chunk wrap_chunk_instance(declaudio.Chunk *p):
+    cdef Chunk ret = Chunk.__new__(Chunk)
+
+    ret.p_this = p
+    ret.p_this.Samples = NULL
+
+    return ret
+
+
+
+cdef class SoundStream:
+    cdef declaudio.SoundStream *p_this
+
+    PAUSED = declaudio.Paused
+    PLAYING = declaudio.Playing
+    STOPPED = declaudio.Stopped
+
+    def __init__(self):
+        if self.__class__ == SoundStream:
+            raise NotImplementedError("SoundStream is abstract")
+
+        self.p_this = <declaudio.SoundStream*>new decl.CppSoundStream(
+            <void*>self)
 
     def __dealloc__(self):
         del self.p_this
@@ -1185,14 +1250,6 @@ cdef class Music:
     property channel_count:
         def __get__(self):
             return self.p_this.GetChannelCount()
-
-    property duration:
-        def __get__(self):
-            cdef decl.Time *p = new decl.Time()
-
-            p[0] = self.p_this.GetDuration()
-
-            return wrap_time_instance(p)
 
     property loop:
         def __get__(self):
@@ -1245,7 +1302,7 @@ cdef class Music:
 
     property sample_rate:
         def __get__(self):
-            return self.p_this.GetSampleRate()
+            Return self.p_this.GetSampleRate()
 
     property status:
         def __get__(self):
@@ -1257,6 +1314,38 @@ cdef class Music:
 
         def __set__(self, float value):
             self.p_this.SetVolume(value)
+
+    def initialize(self, int channel_count, int sample_rate):
+        (<decl.CppSoundStream*>self.p_this).Initialize(channel_count,
+                                                       sample_rate)
+
+    def pause(self):
+        self.p_this.Pause()
+
+    def play(self):
+        self.p_this.Play()
+
+    def stop(self):
+        self.p_this.Stop()
+
+
+
+cdef class Music(SoundStream):
+    def __init__(self):
+        raise NotImplementedError(
+            "Use class methods like open_from_file() or open_from_memory() "
+            "to create Music objects")
+
+    def __dealloc__(self):
+        del self.p_this
+
+    property duration:
+        def __get__(self):
+            cdef decl.Time *p = new decl.Time()
+
+            p[0] = (<declaudio.Music*>self.p_this).GetDuration()
+
+            return wrap_time_instance(p)
 
     @classmethod
     def open_from_file(cls, char* filename):
@@ -1276,19 +1365,16 @@ cdef class Music:
 
         raise PySFMLException()
 
-    def pause(self):
-        self.p_this.Pause()
+    def initialize(self, int channel_count, int sample_rate):
+        raise NotImplementedError(
+            "You can only call initialize() if you create a class derived "
+            "from SoundStream")
 
-    def play(self):
-        self.p_this.Play()
-
-    def stop(self):
-        self.p_this.Stop()
 
 cdef Music wrap_music_instance(declaudio.Music *p_cpp_instance):
     cdef Music ret = Music.__new__(Music)
 
-    ret.p_this = p_cpp_instance
+    ret.p_this = <declaudio.SoundStream*>p_cpp_instance
 
     return ret
 

@@ -31,6 +31,7 @@
 
 #include "Python.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #if PY_MAJOR_VERSION >= 3
 #define IS_PY3K
@@ -83,6 +84,18 @@ public:
     virtual unsigned int GetPointCount() const;
     virtual sf::Vector2f GetPoint(unsigned int index) const;
     void* shape;
+};
+
+
+class CppSoundStream : public sf::SoundStream
+{
+public:
+    CppSoundStream();
+    CppSoundStream(void*);
+    void Initialize(unsigned int, unsigned int);
+    virtual bool OnGetData(sf::SoundStream::Chunk& data);
+    virtual void OnSeek(sf::Time time_offset);
+    void* sound_stream;
 };
 
 #endif
