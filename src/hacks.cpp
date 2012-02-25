@@ -154,13 +154,6 @@ void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 
-
-void ShapeWithUpdate::Update()
-{
-    sf::Shape::Update();
-}
-
-
 CppShape::CppShape()
 {
 }
@@ -215,6 +208,11 @@ sf::Vector2f CppShape::GetPoint(unsigned int index) const
     }
 
     return point;
+}
+
+void CppShape::Update()
+{
+    sf::Shape::Update();
 }
 
 

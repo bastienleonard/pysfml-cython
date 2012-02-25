@@ -77,13 +77,6 @@ decl.PyEval_InitThreads()
 cdef sfml_drawables = (Shape, Sprite, Text)
 
 
-# The shapes built in SFML. This is used to know whether update() can
-# be called on a Shape object. (Shape objects wrap a special
-# ShapeWithUpdate C++ object that has a public Update() method, but
-# built-in Shapes don't support it, as it doesn't seem needed and
-# would require extea work.)
-cdef sfml_shapes = (RectangleShape, CircleShape, ConvexShape)
-
 cdef error_messages = {}
 cdef error_messages_lock = threading.Lock()
 
@@ -2288,12 +2281,10 @@ cdef class Shape(Transformable):
         self.texture = texture
         (<decl.Shape*>self.p_this).SetTexture(texture.p_this, reset_rect)
 
+    # Built-in shapes must override this method and raise NotImplementedError,
+    # since their p_this isn't a CppShape* but a sf::Shape*.
     def update(self):
-        if isinstance(self, sfml_shapes):
-            raise NotImplementedError(
-                "You can only call update() on Shape and Shape-derived classes")
-
-        (<decl.ShapeWithUpdate*>self.p_this).Update()
+        (<decl.CppShape*>self.p_this).Update()
 
 
 
@@ -2317,6 +2308,10 @@ cdef class RectangleShape(Shape):
             cdef decl.Vector2f s = convert_to_vector2f(size)
 
             (<decl.RectangleShape*>self.p_this).SetSize(s)
+
+    def update(self):
+        raise NotImplementedError(
+            "This method isn't availble in built-in shapes")
 
 
 cdef class CircleShape(Shape):
@@ -2343,6 +2338,10 @@ cdef class CircleShape(Shape):
         def __set__(self, float value):
             (<decl.CircleShape*>self.p_this).SetRadius(value)
 
+    def update(self):
+        raise NotImplementedError(
+            "This method isn't availble in built-in shapes")
+
 
 
 cdef class ConvexShape(Shape):
@@ -2358,6 +2357,10 @@ cdef class ConvexShape(Shape):
 
         def __set__(self, int value):
             (<decl.ConvexShape*>self.p_this).SetPointCount(value)
+
+    def update(self):
+        raise NotImplementedError(
+            "This method isn't availble in built-in shapes")
 
 
 

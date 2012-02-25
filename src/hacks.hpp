@@ -76,13 +76,14 @@ public:
 };
 
 
-class CppShape : public ShapeWithUpdate
+class CppShape : public sf::Shape
 {
 public:
     CppShape();
     CppShape(void*);
     virtual unsigned int GetPointCount() const;
     virtual sf::Vector2f GetPoint(unsigned int index) const;
+    void Update();
     void* shape;
 };
 
