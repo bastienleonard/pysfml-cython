@@ -40,7 +40,7 @@ Multimedia Library)."""
 
 
 from libc.stdlib cimport malloc, free
-from libc.stdio cimport printf
+from libc.stdio cimport printf, puts
 from libcpp.vector cimport vector
 from cython.operator cimport preincrement as preinc, dereference as deref
 cimport cpython
@@ -1167,14 +1167,18 @@ cdef class Sound:
 
 cdef class Chunk:
     cdef declaudio.Chunk *p_this
+    cdef bint delete_this
 
     def __init__(self):
         self.p_this = new declaudio.Chunk()
         self.p_this.Samples = NULL
+        self.delete_this = True
 
     def __dealloc__(self):
         free(<void*>self.p_this.Samples)
-        del self.p_this
+
+        if self.delete_this:
+            del self.p_this
 
     property sample_count:
         def __get__(self):
@@ -1213,11 +1217,12 @@ cdef class Chunk:
                 self.p_this.SampleCount = len(value)
                 
 
-cdef public Chunk wrap_chunk_instance(declaudio.Chunk *p):
+cdef public Chunk wrap_chunk_instance(declaudio.Chunk *p, bint delete_this):
     cdef Chunk ret = Chunk.__new__(Chunk)
 
     ret.p_this = p
     ret.p_this.Samples = NULL
+    ret.delete_this = delete_this
 
     return ret
 
@@ -2676,6 +2681,7 @@ cdef View wrap_view_instance(decl.View *p_cpp_view, object window):
 
 cdef class Shader:
     cdef decl.Shader *p_this
+    cdef bint delete_this
 
     IS_AVAILABLE = decl.Shader_IsAvailable()
     CURRENT_TEXTURE = object()
@@ -2688,7 +2694,8 @@ cdef class Shader:
             "to create Shader objects")
 
     def __dealloc__(self):
-        del self.p_this
+        if self.delete_this:
+            del self.p_this
 
     @classmethod
     def load_both_types_from_file(cls, char *vertex_shader_filename,
@@ -2697,7 +2704,7 @@ cdef class Shader:
 
         if p.LoadFromFile(vertex_shader_filename,
                           fragment_shader_filename):
-            return wrap_shader_instance(p)
+            return wrap_shader_instance(p, True)
 
         raise PySFMLException()
 
@@ -2707,7 +2714,7 @@ cdef class Shader:
         cdef decl.Shader *p = new decl.Shader()
 
         if p.LoadFromMemory(vertex_shader, fragment_shader):
-            return wrap_shader_instance(p)
+            return wrap_shader_instance(p, True)
 
         raise PySFMLException()
 
@@ -2716,7 +2723,7 @@ cdef class Shader:
         cdef decl.Shader *p = new decl.Shader()
 
         if p.LoadFromFile(filename, <declshader.Type>type):
-            return wrap_shader_instance(p)
+            return wrap_shader_instance(p, True)
 
         raise PySFMLException()
 
@@ -2725,7 +2732,7 @@ cdef class Shader:
         cdef decl.Shader *p = new decl.Shader()
 
         if p.LoadFromMemory(shader, <declshader.Type>type):
-            return wrap_shader_instance(p)
+            return wrap_shader_instance(p, True)
 
         raise PySFMLException()
 
@@ -2761,10 +2768,11 @@ cdef class Shader:
         self.p_this.Unbind()
 
 
-cdef Shader wrap_shader_instance(decl.Shader *p_cpp_instance):
+cdef Shader wrap_shader_instance(decl.Shader *p_cpp_instance, bint delete_this):
     cdef Shader ret = Shader.__new__(Shader)
 
     ret.p_this = p_cpp_instance
+    ret.delete_this = delete_this
 
     return ret
 
@@ -2852,6 +2860,9 @@ cdef class RenderStates:
             self.transform = transform
 
     def __dealloc__(self):
+        self.transform = None
+        self.texture = None
+        self.shader = None
         del self.p_this
 
     property blend_mode:
@@ -2894,7 +2905,7 @@ cdef public RenderStates wrap_render_states_instance(decl.RenderStates *p):
     if p.Shader == NULL:
         ret.shader = None
     else:
-        ret.shader = wrap_shader_instance(<decl.Shader*>p.Shader)
+        ret.shader = wrap_shader_instance(<decl.Shader*>p.Shader, False)
 
     if p.Texture == NULL:
         ret.texture = None

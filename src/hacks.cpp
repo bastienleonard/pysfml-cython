@@ -135,7 +135,8 @@ void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
     char method_name[] = "draw";
     char format[] = "(O, O)";
     PyObject* py_target = (PyObject*)wrap_render_target_instance(&target);
-    PyObject* py_states = (PyObject*)wrap_render_states_instance(&states);
+    PyObject* py_states = (PyObject*)wrap_render_states_instance(
+        new sf::RenderStates(states));
     
     // The caller needs to use PyErr_Occurred() to know if this
     // function failed
@@ -147,6 +148,9 @@ void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
         Py_DECREF(ret);
     }
+
+    Py_DECREF(py_target);
+    Py_DECREF(py_states);
 }
 
 
@@ -234,7 +238,7 @@ bool CppSoundStream::OnGetData(sf::SoundStream::Chunk& data)
     char format[] = "O";
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
-    PyObject *py_chunk = (PyObject*)wrap_chunk_instance(&data);
+    PyObject *py_chunk = (PyObject*)wrap_chunk_instance(&data, false);
     PyObject *ret = PyObject_CallMethod(
         static_cast<PyObject*>(sound_stream), method_name, format, py_chunk);
     bool status = false;
@@ -259,6 +263,7 @@ bool CppSoundStream::OnGetData(sf::SoundStream::Chunk& data)
         Py_DECREF(ret);
     }
 
+    Py_DECREF(py_chunk);
     PyGILState_Release(gstate);
 
     return status;
@@ -270,7 +275,8 @@ void CppSoundStream::OnSeek(sf::Time time_offset)
     char format[] = "O";
     PyGILState_STATE gstate;
     gstate = PyGILState_Ensure();
-    PyObject *py_time = (PyObject*)wrap_time_instance(&time_offset);
+    PyObject *py_time = (PyObject*)wrap_time_instance(
+        new sf::Time(time_offset));
     PyObject *ret = PyObject_CallMethod(
         static_cast<PyObject*>(sound_stream), method_name, format, py_time);
 
@@ -283,5 +289,6 @@ void CppSoundStream::OnSeek(sf::Time time_offset)
         Py_DECREF(ret);
     }
 
+    Py_DECREF(py_time);
     PyGILState_Release(gstate);
 }

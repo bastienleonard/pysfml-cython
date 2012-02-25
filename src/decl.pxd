@@ -482,6 +482,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
 
     cdef cppclass Shader:
         Shader()
+        Shader(Shader)
         void Bind()
         bint LoadFromFile(char*, declshader.Type)
         bint LoadFromFile(char*, char*)
