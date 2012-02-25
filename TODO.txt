@@ -1,4 +1,3 @@
 - Optimize audio streaming
-- Check for malloc() failures and raise PyErr_NoMemory
 - Look for for memory leaks in classes with Python attributes whose
   reference count isn't decreased in the destructor

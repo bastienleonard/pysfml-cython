@@ -1027,7 +1027,7 @@ cdef class SoundBuffer:
         cdef decl.Int16 *p_temp = NULL
 
         if p_samples == NULL:
-            raise PySFMLException()
+            cpython.exc.PyErr_NoMemory()
         else:
             p_temp = p_samples
 
@@ -2996,6 +2996,10 @@ cdef class RenderTarget:
         elif isinstance(drawable, list):
             vertex_count = len(<list>drawable)
             vertex = <decl.Vertex*>malloc(vertex_count * sizeof(decl.Vertex))
+
+            if vertex == NULL:
+                cpython.exc.PyErr_NoMemory()
+
             the_type = <int?>x
 
             for i in range(vertex_count):
