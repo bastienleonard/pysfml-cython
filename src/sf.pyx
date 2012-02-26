@@ -115,13 +115,11 @@ cdef object get_last_error_message():
 
 
 class PySFMLException(Exception):
-    def __init__(self):
-        message = get_last_error_message()
-
+    def __init__(self, message=None):
         if message is None:
-            Exception.__init__(self)
-        else:
-            Exception.__init__(self, message)
+            message = get_last_error_message()
+
+        Exception.__init__(self, message)
 
 
 
@@ -137,6 +135,9 @@ TRIANGLES = decl.Triangles
 TRIANGLES_STRIP = decl.TrianglesStrip
 TRIANGLES_FAN = decl.TrianglesFan
 QUADS = decl.Quads
+
+
+
 
 cdef class Mouse:
     LEFT = declmouse.Left
