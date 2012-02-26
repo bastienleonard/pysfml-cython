@@ -1334,9 +1334,6 @@ cdef class Music(SoundStream):
             "Use class methods like open_from_file() or open_from_memory() "
             "to create Music objects")
 
-    def __dealloc__(self):
-        del self.p_this
-
     property duration:
         def __get__(self):
             cdef decl.Time *p = new decl.Time()
