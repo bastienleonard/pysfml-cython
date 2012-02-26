@@ -30,6 +30,7 @@
 
 
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 
 # Forward declarations, to avoid some circular import errors when
 # these declarations are imported elsewhere (e.g. from declmouse.pxd)
@@ -74,17 +75,6 @@ cdef extern from "hacks.hpp":
         void Initialize(unsigned int, unsigned int)
         void Play()
         void *sound_stream
-
-
-# Declaration of the standard std::string class.  This is useful
-# e.g. when you get a std::string and want to return a Python string,
-# use c_str() and it will be converted to a Python object
-# automatically if needed.
-# Do not confuse with String, which is sf::String!
-# TODO: replace this with Cython's string declaration
-cdef extern from "<string>" namespace "std":
-    cdef cppclass string:
-        char* c_str()
 
 
 cdef extern from "SFML/Graphics.hpp" namespace "sf::Event":
