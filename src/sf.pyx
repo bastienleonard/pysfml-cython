@@ -2861,9 +2861,6 @@ cdef class RenderStates:
             self.transform = transform
 
     def __dealloc__(self):
-        self.transform = None
-        self.texture = None
-        self.shader = None
         del self.p_this
 
     property blend_mode:
