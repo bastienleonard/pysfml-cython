@@ -38,12 +38,21 @@ Binary releases
 
 If you're on Windows, you download the current binary release at
 https://github.com/bastienleonard/pysfml2-cython/downloads, and ignore
-most of this section.  There are two zip files named
+most of this section. Currently, there's an installer for Python 2.7,
+32 bits. The Python 3 version is coming. The installer contains the
+module itself, and the required DLLs (SFML and dependencies). The DLLs
+are dropped in Python's folder, e.g. ``C:\Python27``. I tried to place
+them in a directory inside ``Lib\site-packages\``, but Windows
+wouldn't find the DLLs at runtime (although it works for Pygame's
+installer, I have no idea why).
+
+There are also two older zip files named
 ``python2-sfml2-cython-win32.zip`` and
-``python3-sfml2-cython-win32.zip``. They contain the compiled module,
-the dependencies as well as the docs and the examples (note that the
-Python 3 version still contains examples written for Python 2,
-though).
+``python3-sfml2-cython-win32.zip``. They contain the compiled module
+with the older graphics API, the dependencies as well as the docs and
+the examples (note that the Python 3 version still contains examples
+written for Python 2, though). I'm probably going to remove them at
+some point.
 
 You should be able to use pySFML 2 without installig anything
 else. Feedback is welcome.
@@ -99,6 +108,11 @@ installation (it should be something like
                          linker_so='%s -mno-cygwin %s %s'
                                     % (self.linker_dll, shared_option,
                                        entry_point))
+
+
+If you are using Visual C++, please use the 2008 version. Python was
+built with this version, and it's apparently difficult to use 2010
+because it links to another C or C++ runtime.
 
 
 Common build options
