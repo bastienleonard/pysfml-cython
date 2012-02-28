@@ -36,15 +36,15 @@ Building the module
 Binary releases
 ---------------
 
-If you're on Windows, you download the current binary release at
+If you're on Windows, you can download the current binary release at
 https://github.com/bastienleonard/pysfml2-cython/downloads, and ignore
 most of this section. Currently, there's an installer for Python 2.7,
 32 bits. The Python 3 version is coming. The installer contains the
 module itself, and the required DLLs (SFML and dependencies). The DLLs
 are dropped in Python's folder, e.g. ``C:\Python27``. I tried to place
 them in a directory inside ``Lib\site-packages\``, but Windows
-wouldn't find the DLLs at runtime (although it works for Pygame's
-installer, I have no idea why).
+wouldn't find the DLLs at runtime (it works for Pygame's installer
+though, I have no idea why).
 
 There are also two older zip files named
 ``python2-sfml2-cython-win32.zip`` and
