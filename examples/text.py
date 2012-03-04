@@ -10,8 +10,8 @@ def main():
     text = sf.Text(u'éèà', sf.Font.DEFAULT_FONT, 100)
     text.color = sf.Color.BLACK
     text.style = sf.Text.UNDERLINED | sf.Text.BOLD | sf.Text.ITALIC
-    text.x = window.width / 2.0 - text.rect.width / 2.0
-    text.y = window.height / 2.0 - text.rect.height / 2.0
+    text.x = window.width / 2.0 - text.global_bounds.width / 2.0
+    text.y = window.height / 2.0 - text.global_bounds.height / 2.0
     running = True
 
     while running:
