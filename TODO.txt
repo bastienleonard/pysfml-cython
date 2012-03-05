@@ -1,1 +1,4 @@
 - Optimize audio streaming
+- Add an empty RenderWindow constructor, to let the user delay the
+  window creation
+- Document the attribute types and explain them in the tutorial
