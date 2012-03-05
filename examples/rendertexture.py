@@ -7,8 +7,10 @@
 
 import sf
 
+
 def main():
-    window = sf.RenderWindow(sf.VideoMode(640, 480), 'RenderImage example')
+    window = sf.RenderWindow(sf.VideoMode(640, 480),
+                             'SFML RenderTexture example')
     window.framerate_limit = 60
     running = True
     
@@ -22,12 +24,12 @@ def main():
     rect1.position = (50, 50)
     rect1.fill_color = sf.Color.CYAN
 
-    ri = sf.RenderTexture(110, 110)
-    ri.clear(sf.Color(0, 0, 0, 0))
-    ri.draw(rect0)
-    ri.draw(rect1)
-    ri.display()
-    s = sf.Sprite(ri.texture)
+    rt = sf.RenderTexture(110, 110)
+    rt.clear(sf.Color(0, 0, 0, 0))
+    rt.draw(rect0)
+    rt.draw(rect1)
+    rt.display()
+    s = sf.Sprite(rt.texture)
     s.origin = (55, 55)
     s.position = (320, 240)
 
