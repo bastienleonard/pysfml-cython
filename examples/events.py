@@ -7,6 +7,8 @@ import sf
 def main():
     window = sf.RenderWindow(sf.VideoMode(640, 480), 'Events example')
     window.framerate_limit = 60
+    window.clear(sf.Color.WHITE)
+    window.display()
     running = True
 
     while running:
@@ -17,8 +19,8 @@ def main():
             # Stop running if the application is closed
             # or if the user presses Escape
             if (event.type == sf.Event.CLOSED or
-                (event.type == sf.Event.KEY_PRESSED and
-                 event.code == sf.Keyboard.ESCAPE)):
+               (event.type == sf.Event.KEY_PRESSED and
+                event.code == sf.Keyboard.ESCAPE)):
                 running = False
 
     window.close()

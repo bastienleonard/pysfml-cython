@@ -1,17 +1,27 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-import sf
-import sys
+# Please note that this example may not work on all GPUs (eg. intel chipsets)
+# because of a bug in the drivers. See the corresponding SFML issue:
+# https://github.com/LaurentGomila/SFML/issues/101
 
+import sf
 
 def main():
     window = sf.RenderWindow(sf.VideoMode(640, 480), 'RenderImage example')
     window.framerate_limit = 60
     running = True
     
-    rect0 = sf.Shape.rectangle(5, 5, 90, 50, sf.Color.GREEN, 2, sf.Color.BLUE)
-    rect1 = sf.Shape.rectangle(20.0, 30.0, 50.0, 50.0, sf.Color.CYAN)
+    rect0 = sf.RectangleShape((5, 5))
+    rect0.position = (90, 50)
+    rect0.fill_color = sf.Color.GREEN
+    rect0.outline_color = sf.Color.BLUE
+    rect0.outline_thickness = 2.0
+
+    rect1 = sf.RectangleShape((20, 30))
+    rect1.position = (50, 50)
+    rect1.fill_color = sf.Color.CYAN
+
     ri = sf.RenderTexture(110, 110)
     ri.clear(sf.Color(0, 0, 0, 0))
     ri.draw(rect0)
