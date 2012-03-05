@@ -85,7 +85,7 @@ cdef error_messages_lock = threading.Lock()
 # http://docs.python.org/extending/extending.html#providing-a-c-api-for-an-extension-module.
 # The problem is that this function needs to be called in hacks.cpp,
 # and Cython doesn't (AFAIK) make any difference between ``available
-# acros translations units'' and ``available at runtime in the shared
+# across translations units'' and ``available at runtime in the shared
 # object/DLL''.
 cdef public void set_error_message(char* message):
     ident = threading.current_thread().ident
