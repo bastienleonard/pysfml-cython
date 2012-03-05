@@ -38,13 +38,12 @@ Binary releases
 
 If you're on Windows, you can download the current binary release at
 https://github.com/bastienleonard/pysfml2-cython/downloads, and ignore
-most of this section. Currently, there's an installer for Python 2.7,
-32 bits. The Python 3 version is coming. The installer contains the
-module itself, and the required DLLs (SFML and dependencies). The DLLs
-are dropped in Python's folder, e.g. ``C:\Python27``. I tried to place
-them in a directory inside ``Lib\site-packages\``, but Windows
-wouldn't find the DLLs at runtime (it works for Pygame's installer
-though, I have no idea why).
+most of this section. The installer contains the module itself, and
+the required DLLs (SFML and dependencies). The DLLs are dropped in
+Python's folder, e.g. ``C:\Python27``. I tried to place them in a
+directory inside ``Lib\site-packages\``, but Windows wouldn't find the
+DLLs at runtime (it works for Pygame's installer though, I have no
+idea why).
 
 There are also two older zip files named
 ``python2-sfml2-cython-win32.zip`` and
@@ -139,6 +138,12 @@ In the end, the command will look something like this::
 Building without Cython
 -----------------------
 
+.. warning::
+
+   I have stopped releasing a current source snapshot, so this section
+   doesn't apply anymore. But I am going to publish source releases
+   that will follow the same principle.
+
 If you downloaded a release that already contains the sf.cpp file, you don't
 need to install Cython.
 
@@ -171,7 +176,8 @@ When you've done so, you can build the module by typing this command::
 Building a Python 3 module
 --------------------------
 
-It's possible to build a Python 3 module, but you may encounter two problems.
+It's possible to build a Python 3 module, but you may encounter a few
+minor problems.
 
 First of all, on my machine, the Cython class used in ``setup3k.py`` to
 automate Cython invocation is only installed for Python 2. It's
@@ -205,3 +211,11 @@ need to use the ``b`` prefix if you want a raw string.  For example,
 when you create a :py:class:`sf.RenderWindow`::
 
     window = sf.RenderWindow(video_mode, b'The title')
+
+Finally, compilation may fail because the ``src/sf.h`` file generated
+by Cython uses the deprecated ``DL_IMPORT()`` macro. In the root of
+the project, there is a ``patch.py`` script that will remove the
+offending macros for you. The trick is ``src/sf.h`` will not exist at
+first; the setup script will create it, then try to compile it and
+fail. That's when you need to use ``patch.py``, and build the module
+again.
