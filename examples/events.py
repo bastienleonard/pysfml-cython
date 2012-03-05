@@ -16,7 +16,7 @@ class EventQueue(object):
             self.events.pop(0)
 
     # We could make it a custom drawable, but I personally don't like it
-    def draw_(self, window):
+    def draw(self, window):
         y = 0
         text = sf.Text('Last events:')
         text.character_size = 15
@@ -49,7 +49,7 @@ def main():
             events.add(event)
 
         window.clear(sf.Color.WHITE)
-        events.draw_(window)
+        events.draw(window)
         window.display()
 
     window.close()
