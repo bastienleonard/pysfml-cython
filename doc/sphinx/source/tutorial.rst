@@ -231,6 +231,9 @@ In our case, we just use the "closed" event to stop the program::
         if event.type == sf.Event.CLOSED:
             running = False
 
+See :ref:`event_types_reference` for the list of all events and the
+attributes they use.
+
 To do: talk about the other kinds of events and their attributes.
 
 

@@ -35,6 +35,32 @@ Events
 .. module:: sf
 
 
+.. _event_types_reference:
+
+Event types reference
+^^^^^^^^^^^^^^^^^^^^^
+
+============================================================================= ===================================================== ==========
+Type                                                                          Attributes                                            Remarks
+============================================================================= ===================================================== ==========
+:attr:`Event.CLOSED`                                                                                                                In fullscreen, Alt + F4 won't send the ``CLOSED`` event (on GNU/Linux, at least).
+:attr:`Event.RESIZED`                                                         ``width``, ``height``
+:attr:`Event.LOST_FOCUS`
+:attr:`Event.GAINED_FOCUS`
+:attr:`Event.TEXT_ENTERED`                                                    ``unicode``                                           The attribute lets you retrieve the character entered by the user, as a Unicode string.
+:attr:`Event.KEY_PRESSED`, :attr:`Event.KEY_RELEASED`                         ``code``, ``alt``, ``control``, ``shift``, ``system`` ``code`` is the code of the key that was pressed/released, the other attributes are booleans and tell you if the alt/control/shit/system modifier was pressed.
+:attr:`Event.MOUSE_WHEEL_MOVED`                                               ``delta``, ``x``, ``y``                               The attribute contains the mouse wheel move (positive if forward, negative if backward).
+:attr:`Event.MOUSE_BUTTON_PRESSED`, :attr:`Event.MOUSE_BUTTON_RELEASED`       ``button``, ``x``, ``y``                              See the :class:`Mouse` class for the button codes.
+:attr:`Event.MOUSE_MOVED`                                                     ``x``, ``y``
+:attr:`Event.MOUSE_ENTERED`
+:attr:`Event.MOUSE_LEFT`
+:attr:`Event.JOYSTICK_BUTTON_PRESSED`, :attr:`Event.JOYSTICK_BUTTON_RELEASED` ``joystick_id``, ``button``                           ``button`` is a number between 0 and :attr:`Joystick.BUTTON_COUNT`- 1.
+:attr:`Event.JOYSTICK_MOVED`                                                  ``joystick_id``, ``axis``, ``position``               See the :class:`Joystick` class for the axis codes.
+:attr:`Event.JOYSTICK_CONNECTED`, :attr:`Event.JOYSTICK_DISCONNECTED`         ``joystick_id``
+============================================================================= ===================================================== ==========
+
+
+
 .. class:: Event
 
    This class behaves differently from the C++ ``sf::Event`` class.
@@ -68,6 +94,28 @@ Events
       If you want to print this information about a specific object,
       you can simply use ``print``; ``Event.__str__()`` will look up
       the description for you.
+
+   Event types:
+
+   .. attribute:: CLOSED
+   .. attribute:: RESIZED
+   .. attribute:: LOST_FOCUS
+   .. attribute:: GAINED_FOCUS
+   .. attribute:: TEXT_ENTERED
+   .. attribute:: KEY_PRESSED
+   .. attribute:: KEY_RELEASED
+   .. attribute:: MOUSE_WHEEL_MOVED
+   .. attribute:: MOUSE_BUTTON_PRESSED
+   .. attribute:: MOUSE_BUTTON_RELEASED
+   .. attribute:: MOUSE_MOVED
+   .. attribute:: MOUSE_ENTERED
+   .. attribute:: MOUSE_LEFT
+   .. attribute:: JOYSTICK_BUTTON_PRESSED
+   .. attribute:: JOYSTICK_BUTTON_RELEASED
+   .. attribute:: JOYSTICK_MOVED
+   .. attribute:: JOYSTICK_CONNECTED
+   .. attribute:: JOYSTICK_DISCONNECTED
+
 
 
 .. class:: Joystick
