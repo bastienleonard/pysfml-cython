@@ -1419,9 +1419,33 @@ class Event:
         }
 
     def __str__(self):
-        """Return a short description of the event."""
+        name = self.NAMES[self.type]
+        format = ''
 
-        return self.NAMES[self.type]
+        if self.type == self.RESIZED:
+            format = ' (width={0.width}, height={0.height})'
+        elif self.type == self.TEXT_ENTERED:
+            format = ' (unicode={0.unicode!r})'
+        elif self.type in (self.KEY_PRESSED, self.KEY_RELEASED):
+            format = (' (code={0.code}, alt={0.alt}, control={0.control}, '
+                      'shift={0.shift}, system={0.system})')
+        elif self.type == self.MOUSE_WHEEL_MOVED:
+            format = ' (delta={0.delta}, x={0.x}, y={0.y})'
+        elif self.type in (self.MOUSE_BUTTON_PRESSED,
+                           self.MOUSE_BUTTON_RELEASED):
+            format = ' (button={0.button}, x={0.x}, y={0.y})'
+        elif self.type == self.MOUSE_MOVED:
+            format = ' (x={0.x}, y={0.y})'
+        elif self.type in (self.JOYSTICK_BUTTON_PRESSED,
+                           self.JOYSTICK_BUTTON_RELEASED):
+            format = ' (joystick_id={0.joystick_id}, button={0.button})'
+        elif self.type == self.JOYSTICK_MOVED:
+            format = (' (joystick_id={0.joystick_id}, axis={0.axis}, '
+                      'position={0.position})')
+        elif self.type in (self.JOYSTICK_CONNECTED, self.JOYSTICK_DISCONNECTED):
+            format = (' (joystick_id={0.joystick_id)')
+
+        return name + format.format(self)
 
 
 # Create an Python Event object that matches the C++ object
