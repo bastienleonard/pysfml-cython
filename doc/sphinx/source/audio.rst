@@ -85,23 +85,33 @@ Audio
 
    .. attribute:: sample_count
 
-      Normally you should ``len(self.samples)``, but currently, using
-      this attribute is much faster. Might be changed in the future.
+      Normally you should use ``len(self.samples)``, but accessing
+      this attribute might be faster, since it just reads the
+      appropriate C++ attribute.
 
    .. attribute:: samples
 
+      Should be a string in Python 2, and bytes in Python 3.
+
 
 .. class:: SoundStream
-
-   .. warning:: Currently, this class is painfully slow and is going
-                to be reworked.
 
    Abstract class.
 
    To create your own sound stream, you must inherit this class and at
    least define a ``on_get_data()`` method that receives a
-   :class:`Chunk` parameter. ``on_seek(Time)`` may be implemented as well.
-   See ``examples/soundstream.py`` for an example.
+   :class:`Chunk` parameter. ``on_seek(Time)`` may be implemented as
+   well. Any exception raised in these two methods will be printed to
+   ``sys.stdout`` and swallowed. This is because it doesn't seem
+   possible to catch an exception raised in another thread, or at
+   least it doesn't seem reliable. So try to keep them as short as
+   possible, and if they don't work, check the console. See
+   ``examples/soundstream.py`` for an example.
+
+   My streaming tests show that this class is still too slow. I
+   optimized it as much as I could, and I'm not sure how to improve it
+   now. Also, ``on_seek()`` seems to hang the program when seeking is
+   used.
 
    .. attribute:: PAUSED
    .. attribute:: PLAYING

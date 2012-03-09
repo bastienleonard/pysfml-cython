@@ -981,12 +981,8 @@ cdef class SoundBuffer:
 
     property samples:
         def __get__(self):
-            cdef decl.Int16 *p = <decl.Int16*>self.p_this.GetSamples()
-            cdef unsigned int i
-            ret = []
-
-            for i in range(self.p_this.GetSampleCount()):
-                ret.append(int(p[i]))
+            cdef char *c_string = <char*>self.p_this.GetSamples()
+            cdef bytes ret = c_string[:self.p_this.GetSampleCount()]
 
             return ret
 
@@ -1162,15 +1158,14 @@ cdef class Sound:
 cdef class Chunk:
     cdef declaudio.Chunk *p_this
     cdef bint delete_this
+    cdef object py_string
 
     def __init__(self):
         self.p_this = new declaudio.Chunk()
-        self.p_this.Samples = NULL
         self.delete_this = True
+        self.py_string = None
 
     def __dealloc__(self):
-        free(<void*>self.p_this.Samples)
-
         if self.delete_this:
             del self.p_this
 
@@ -1180,35 +1175,14 @@ cdef class Chunk:
 
     property samples:
         def __get__(self):
-            cdef list ret = []
-            cdef decl.Int16 *p = <decl.Int16*>self.p_this.Samples
+            return self.py_string
 
-            for i in range(self.p_this.SampleCount):
-                ret.append(<int>p[0])
-                preinc(p)
+        def __set__(self, bytes value):
+            cdef char *c_string = value
 
-            return ret
-
-        def __set__(self, list value):
-            cdef decl.Int16* p = NULL
-
-            if self.p_this.Samples != NULL:
-                free(<void*>self.p_this.Samples)
-                self.p_this.Samples = NULL
-
-            self.p_this.Samples = <decl.Int16*>malloc(
-                len(value) * sizeof(decl.Int16))
-
-            if self.p_this.Samples == NULL:
-                cpython.exc.PyErr_NoMemory()
-            else:
-                p = <decl.Int16*>self.p_this.Samples
-
-                for item in value:
-                    p[0] = item
-                    preinc(p)
-
-                self.p_this.SampleCount = len(value)
+            self.py_string = value
+            self.p_this.Samples = <decl.Int16*>c_string
+            self.p_this.SampleCount = len(value)
                 
 
 cdef public Chunk wrap_chunk_instance(declaudio.Chunk *p, bint delete_this):
@@ -3223,7 +3197,10 @@ cdef class RenderWindow(RenderTarget):
                                                      style, settings.p_this[0])
 
     def display(self):
-        (<decl.RenderWindow*>self.p_this).Display()
+        cdef decl.RenderWindow *w = <decl.RenderWindow*>self.p_this
+
+        with nogil:
+            w.Display()
 
     def iter_events(self):
         """Return an iterator which yields the current pending events.

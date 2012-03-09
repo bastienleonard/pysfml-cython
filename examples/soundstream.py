@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import time
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 import sf
 
@@ -9,30 +15,28 @@ import sf
 class CustomStream(sf.SoundStream):
     def __init__(self, path):
         sf.SoundStream.__init__(self)
-        self.sound_buffer = sf.SoundBuffer.load_from_file(path)
-        self._samples = self.sound_buffer.samples
-        self.i = 0
-        self.buffer_size = 2 ** 15
-        self.initialize(self.sound_buffer.channel_count,
-                        self.sound_buffer.sample_rate)
+        sound_buffer = sf.SoundBuffer.load_from_file(path)
+        self.string_buffer = StringIO(sound_buffer.samples)
+
+        # The program crashes if this line is removed. Apparently,
+        # cStringIO doesn't keep a Python reference to the string.
+        self.s = sound_buffer.samples
+        self.initialize(sound_buffer.channel_count,
+                        sound_buffer.sample_rate)
+        self.buffer_size = 2 ** 12
+        self.next_data = self.string_buffer.read(self.buffer_size)
 
     def on_get_data(self, chunk):
-        ret = True
+        if not self.next_data:
+            return False
 
-        a = self.i
-        b = self.i + self.buffer_size
+        chunk.samples = self.next_data
+        self.next_data = self.string_buffer.read(self.buffer_size)
 
-        if b > self.sound_buffer.sample_count:
-            b = self.sound_buffer.sample_count % self.buffer_size
-            ret = False
-
-        chunk.samples = self._samples[self.i:self.i+self.buffer_size]
-        self.i += self.buffer_size
-
-        return ret
+        return True
 
     def on_seek(self, time_offset):
-       print(time_offset)
+        print(time_offset)
 
 
 
@@ -70,5 +74,3 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv)
-
-    
