@@ -119,7 +119,10 @@ class PySFMLException(Exception):
         if message is None:
             message = get_last_error_message()
 
-        Exception.__init__(self, message)
+        if message is None:
+            Exception.__init__(self)
+        else:
+            Exception.__init__(self, message)
 
 
 
