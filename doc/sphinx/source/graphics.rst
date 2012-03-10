@@ -158,6 +158,7 @@ Classes
 
    .. attribute:: default_view
    .. attribute:: height
+   .. attribute:: size
    .. attribute:: view
    .. attribute:: width
 
@@ -583,11 +584,12 @@ Windowing
    .. attribute:: height
    .. attribute:: joystick_threshold
    .. attribute:: key_repeat_enabled
+   .. attribute:: mouse_cursor_visible
    .. attribute:: open
    .. attribute:: position
    .. attribute:: settings
-   .. attribute:: show_mouse_cursor
    .. attribute:: size
+
    .. attribute:: system_handle
 
       Return the system handle as a long (or int on Python 3). Windows

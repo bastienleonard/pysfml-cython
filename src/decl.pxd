@@ -165,6 +165,12 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         int x
         int y
 
+    cdef cppclass Vector2u:
+       Vector2u()
+       Vector2u(unsigned int, unsigned int)
+       unsigned int x
+       unsigned int y
+
     cdef cppclass Vector3f:
         Vector3f()
         Vector3f(float, float, float)
@@ -513,8 +519,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void Draw(Vertex*, unsigned int, PrimitiveType)
         void Draw(Vertex*, unsigned int, PrimitiveType, RenderStates&)
         void Draw(Vertex*, unsigned int, PrimitiveType, Shader*)
-        unsigned int GetHeight()
-        unsigned int GetWidth()
+        Vector2u GetSize()
         void SetView(View&)
         View& GetView()
         View& GetDefaultView()
@@ -537,8 +542,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void Create(VideoMode, char*, unsigned long)
         void Create(VideoMode, char*, unsigned long, ContextSettings&)
         void Display() nogil
-        void EnableKeyRepeat(bint)
         void EnableVerticalSync(bint)
+        Vector2i GetPosition()
         ContextSettings& GetSettings()
         unsigned long GetSystemHandle()
         bint IsOpen()
@@ -548,12 +553,13 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void SetIcon(unsigned int, unsigned int, Uint8*)
         void SetJoystickThreshold(float)
         void SetFramerateLimit(unsigned int)
-        void SetPosition(int, int)
-        void SetSize(unsigned int, unsigned int)
+        void SetKeyRepeatEnabled(bint)
+        void SetMouseCursorVisible(bint)
+        void SetPosition(Vector2i&)
+        void SetSize(Vector2u)
         void SetTitle(char*)
-        void Show(bint)
-        void ShowMouseCursor(bint)
-        void UseVerticalSync(bint)
+        void SetVerticalSyncEnabled(bint)
+        void SetVisible(bint)
         bint WaitEvent(Event&)
 
     cdef cppclass RenderTexture:

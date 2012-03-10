@@ -2937,7 +2937,13 @@ cdef class RenderTarget:
 
     property height:
         def __get__(self):
-            return self.p_this.GetHeight()
+            return self.size[1]
+
+    property size:
+        def __get__(self):
+            cdef decl.Vector2u size = self.p_this.GetSize()
+
+            return (size.x, size.y)
 
     property view:
         def __get__(self):
@@ -2952,7 +2958,7 @@ cdef class RenderTarget:
 
     property width:
         def __get__(self):
-            return self.p_this.GetWidth()
+            return self.size[0]
 
     def clear(self, Color color=None):
         if color is None:
@@ -3110,27 +3116,15 @@ cdef class RenderWindow(RenderTarget):
         def __set__(self, int value):
             (<decl.RenderWindow*>self.p_this).SetFramerateLimit(value)
 
-    property width:
-        def __get__(self):
-            return self.p_this.GetWidth()
-
-        def __set__(self, unsigned int value):
-            self.size = (value, self.height)
-
-    property height:
-        def __get__(self):
-            return self.p_this.GetHeight()
-
-        def __set__(self, unsigned int value):
-            self.size = (self.width, value)
-
     property size:
         def __get__(self):
-            return (self.width, self.height)
+            cdef decl.Vector2u size = self.p_this.GetSize()
+
+            return (size.x, size.y)
 
         def __set__(self, tuple value):
             x, y = value
-            (<decl.RenderWindow*>self.p_this).SetSize(x, y)
+            (<decl.RenderWindow*>self.p_this).SetSize(decl.Vector2u(x, y))
 
     property joystick_threshold:
         def __set__(self, bint value):
@@ -3138,16 +3132,29 @@ cdef class RenderWindow(RenderTarget):
 
     property key_repeat_enabled:
         def __set__(self, bint value):
-            (<decl.RenderWindow*>self.p_this).EnableKeyRepeat(value)
+            (<decl.RenderWindow*>self.p_this).SetKeyRepeatEnabled(value)
+
+    property mouse_cursor_visible:
+        def __set__(self, bint value):
+            (<decl.RenderWindow*>self.p_this).SetMouseCursorVisible(value)
 
     property open:
         def __get__(self):
             return (<decl.RenderWindow*>self.p_this).IsOpen()
 
     property position:
+        def __get__(self):
+            cdef decl.Vector2i pos = ((<decl.RenderWindow*>self.p_this)
+                                      .GetPosition())
+
+            return (pos.x, pos.y)
+
         def __set__(self, tuple value):
+            cdef decl.Vector2i pos
             x, y = value
-            (<decl.RenderWindow*>self.p_this).SetPosition(x, y)
+            pos.x = x
+            pos.y = y
+            (<decl.RenderWindow*>self.p_this).SetPosition(pos)
 
     property settings:
         def __get__(self):
@@ -3156,10 +3163,6 @@ cdef class RenderWindow(RenderTarget):
             p[0] = (<decl.RenderWindow*>self.p_this).GetSettings()
 
             return wrap_context_settings_instance(p)
-
-    property show_mouse_cursor:
-        def __set__(self, bint value):
-            (<decl.RenderWindow*>self.p_this).ShowMouseCursor(value)
 
     property system_handle:
         def __get__(self):
@@ -3172,7 +3175,11 @@ cdef class RenderWindow(RenderTarget):
 
     property vertical_sync_enabled:
         def __set__(self, bint value):
-            (<decl.RenderWindow*>self.p_this).EnableVerticalSync(value)
+            (<decl.RenderWindow*>self.p_this).SetVerticalSyncEnabled(value)
+
+    property visible:
+        def __set__(self, bint value):
+            (<decl.RenderWindow*>self.p_this).SetVisible(value)
 
     @classmethod
     def from_window_handle(cls, unsigned long window_handle,
@@ -3226,9 +3233,6 @@ cdef class RenderWindow(RenderTarget):
         (<decl.RenderWindow*>self.p_this).SetIcon(width, height,
                                                   <decl.Uint8*>pixels)
 
-    def show(self, bint show):
-        (<decl.RenderWindow*>self.p_this).Show(show)
-
     def wait_event(self):
         cdef decl.Event *p = new decl.Event()
 
@@ -3265,18 +3269,6 @@ cdef class RenderTexture(RenderTarget):
             return wrap_texture_instance(
                 <decl.Texture*>&(<decl.RenderTexture*>self.p_this).GetTexture(),
                 False)
-
-    property width:
-        def __get__(self):
-            return self.p_this.GetWidth()
-
-    property height:
-        def __get__(self):
-            return self.p_this.GetHeight()
-
-    property size:
-        def __get__(self):
-            return (self.width, self.height)
 
     property smooth:
         def __get__(self):
