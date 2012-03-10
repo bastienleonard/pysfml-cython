@@ -35,6 +35,7 @@ USE_CYTHON = True
 
 
 import os.path
+import sys
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.command.build_ext import build_ext
@@ -46,6 +47,8 @@ if USE_CYTHON:
 def src(path):
     return os.path.join('src', path)
 
+print("\nIf the build fails, run patch.py and try again\n"
+        "----------------------------------------------\n", file=sys.stderr)
 
 libs = ['sfml-graphics', 'sfml-window', 'sfml-audio', 'sfml-system']
 
