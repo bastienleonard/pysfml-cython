@@ -50,7 +50,7 @@ sf::Drawable* transformable_to_drawable(sf::Transformable *t);
 class ShapeWithUpdate : public sf::Shape
 {
 public:
-    void Update();
+    void update();
 };
 
 
@@ -70,7 +70,7 @@ class CppDrawable : public sf::Drawable
 public:
     CppDrawable();
     CppDrawable(void* drawable);
-    virtual void Draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     void* drawable; // this is a PyObject pointer
 };
@@ -81,9 +81,9 @@ class CppShape : public sf::Shape
 public:
     CppShape();
     CppShape(void*);
-    virtual unsigned int GetPointCount() const;
-    virtual sf::Vector2f GetPoint(unsigned int index) const;
-    void Update();
+    virtual unsigned int getPointCount() const;
+    virtual sf::Vector2f getPoint(unsigned int index) const;
+    void update();
     void* shape;
 };
 
@@ -93,9 +93,9 @@ class CppSoundStream : public sf::SoundStream
 public:
     CppSoundStream();
     CppSoundStream(void*);
-    void Initialize(unsigned int, unsigned int);
-    virtual bool OnGetData(sf::SoundStream::Chunk& data);
-    virtual void OnSeek(sf::Time time_offset);
+    void initialize(unsigned int, unsigned int);
+    virtual bool onGetData(sf::SoundStream::Chunk& data);
+    virtual void onSeek(sf::Time time_offset);
     void* sound_stream;
 };
 

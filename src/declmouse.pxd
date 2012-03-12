@@ -50,8 +50,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Mouse":
     int XButton2
     int ButtonCount
 
-    cdef bint IsButtonPressed(Button)
-    cdef decl.Vector2i GetPosition()
-    cdef decl.Vector2i GetPosition(decl.RenderWindow&)
-    cdef void SetPosition(decl.Vector2i&)
-    cdef void SetPosition(decl.Vector2i&, decl.RenderWindow&)
+    cdef bint isButtonPressed(Button)
+    cdef decl.Vector2i getPosition()
+    cdef decl.Vector2i getPosition(decl.RenderWindow&)
+    cdef void setPosition(decl.Vector2i&)
+    cdef void setPosition(decl.Vector2i&, decl.RenderWindow&)

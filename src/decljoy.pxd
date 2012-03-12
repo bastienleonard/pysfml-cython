@@ -50,9 +50,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Joystick":
     int PovX
     int PovY
 
-    bint IsConnected(unsigned int)
-    unsigned int GetButtonCount(unsigned int)
-    bint HasAxis(unsigned int, Axis)
-    bint IsButtonPressed(unsigned int, unsigned int)
-    float GetAxisPosition(unsigned int, Axis)
+    bint isConnected(unsigned int)
+    unsigned int getButtonCount(unsigned int)
+    bint hasAxis(unsigned int, Axis)
+    bint isButtonPressed(unsigned int, unsigned int)
+    float getAxisPosition(unsigned int, Axis)
 

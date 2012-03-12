@@ -32,6 +32,7 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
+
 # Forward declarations, to avoid some circular import errors when
 # these declarations are imported elsewhere (e.g. from declmouse.pxd)
 cdef extern from "SFML/Graphics.hpp" namespace "sf":
@@ -65,58 +66,58 @@ cdef extern from "hacks.hpp":
         CppShape()
         CppShape(void*)
         void *shape
-        unsigned int GetPointCount()
-        Vector2f GetPoint(unsigned int)
-        void Update()
+        unsigned int getPointCount()
+        Vector2f getPoint(unsigned int)
+        void update()
 
     cdef cppclass CppSoundStream:
         CppSoundStream()
         CppSoundStream(void*)
-        void Initialize(unsigned int, unsigned int)
-        void Play()
+        void initialize(unsigned int, unsigned int)
+        void play()
         void *sound_stream
 
 
 cdef extern from "SFML/Graphics.hpp" namespace "sf::Event":
     cdef struct SizeEvent:
-        unsigned int Width
-        unsigned int Height
+        unsigned int width
+        unsigned int height
 
     cdef struct KeyEvent:
-        int Code
-        bint Alt
-        bint Control
-        bint Shift
-        bint System
+        int code
+        bint alt
+        bint control
+        bint shift
+        bint system
 
     cdef struct MouseMoveEvent:
-        int X
-        int Y
+        int x
+        int y
 
     cdef struct MouseButtonEvent:
-        int Button
-        int X
-        int Y
+        int button
+        int x
+        int y
 
     cdef struct TextEvent:
-        int Unicode
+        int unicode
 
     cdef struct MouseWheelEvent:
-        int Delta
-        int X
-        int Y
+        int delta
+        int x
+        int y
 
     cdef struct JoystickMoveEvent:
-        unsigned int JoystickId
-        int Axis
-        float Position
+        unsigned int joystickId
+        int axis
+        float position
 
     cdef struct JoystickButtonEvent:
-        unsigned int JoystickId
-        unsigned int Button
+        unsigned int joystickId
+        unsigned int button
 
     cdef struct JoystickConnectEvent:
-        unsigned int JoystickId
+        unsigned int joystickId
 
 
 
@@ -181,24 +182,24 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass IntRect:
         IntRect()
         IntRect(int, int, int, int)
-        bint Contains(int, int)
-        bint Intersects(IntRect&)
-        bint Intersects(IntRect&, IntRect&)
-        int Left
-        int Top
-        int Width
-        int Height
+        bint contains(int, int)
+        bint intersects(IntRect&)
+        bint intersects(IntRect&, IntRect&)
+        int left
+        int top
+        int width
+        int height
 
     cdef cppclass FloatRect:
         FloatRect()
         FloatRect(float, float, float, float)
-        bint Contains(int, int)
-        bint Intersects(FloatRect&)
-        bint Intersects(FloatRect&, FloatRect&)
-        float Left
-        float Top
-        float Width
-        float Height
+        bint contains(int, int)
+        bint intersects(FloatRect&)
+        bint intersects(FloatRect&, FloatRect&)
+        float left
+        float top
+        float width
+        float height
 
     cdef cppclass Transform:
         Transform()
@@ -206,21 +207,21 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
                   float, float, float,
                   float, float, float)
         Transform(Transform&)
-        Transform Combine(Transform&)
-        Transform GetInverse()
-        float* GetMatrix()
-        Transform& Rotate(float)
-        Transform& Rotate(float, float, float)
-        Transform& Rotate(float, Vector2f&)
-        Transform& Scale(float, float)
-        Transform& Scale(float, float, float, float)
-        Transform& Scale(Vector2f&)
-        Transform& Scale(Vector2f&, Vector2f&)
-        Vector2f TransformPoint(float, float)
-        Vector2f TransformPoint(Vector2f&)
-        FloatRect TransformRect(FloatRect&)
-        Transform& Translate(float, float)
-        Transform& Translate(Vector2f&)
+        Transform combine(Transform&)
+        Transform getInverse()
+        float* getMatrix()
+        Transform& rotate(float)
+        Transform& rotate(float, float, float)
+        Transform& rotate(float, Vector2f&)
+        Transform& scale(float, float)
+        Transform& scale(float, float, float, float)
+        Transform& scale(Vector2f&)
+        Transform& scale(Vector2f&, Vector2f&)
+        Vector2f transformPoint(float, float)
+        Vector2f transformPoint(Vector2f&)
+        FloatRect transformRect(FloatRect&)
+        Transform& translate(float, float)
+        Transform& translate(Vector2f&)
 
         Transform operator*(Transform&)
         Vector2f operator*(Vector2f&)
@@ -229,9 +230,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass Time:
         Time()
         Time(Time)
-        float AsSeconds()
-        Uint32 AsMilliseconds()
-        Int64 AsMicroseconds()
+        float asSeconds()
+        Uint32 asMilliseconds()
+        Int64 asMicroseconds()
         bint operator==(Time&)
         bint operator!=(Time&)
         bint operator<(Time&)
@@ -247,8 +248,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
 
     cdef cppclass Clock:
         Clock()
-        Time GetElapsedTime()
-        Time Restart()
+        Time getElapsedTime()
+        Time restart()
 
     cdef cppclass Color:
         Color()
@@ -262,123 +263,123 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
 
     cdef cppclass Event:
         Event()
-        int Type
-        SizeEvent Size
-        KeyEvent Key
-        MouseMoveEvent MouseMove
-        MouseButtonEvent MouseButton
-        TextEvent Text
-        MouseWheelEvent MouseWheel
-        JoystickMoveEvent JoystickMove
-        JoystickButtonEvent JoystickButton
-        JoystickConnectEvent JoystickConnect
+        int type
+        SizeEvent size
+        KeyEvent key
+        MouseMoveEvent mouseMove
+        MouseButtonEvent mouseButton
+        TextEvent text
+        MouseWheelEvent mouseWheel
+        JoystickMoveEvent joystickMove
+        JoystickButtonEvent joystickButton
+        JoystickConnectEvent joystickConnect
 
     cdef cppclass VideoMode:
         VideoMode()
         VideoMode(unsigned int width, unsigned int height)
         VideoMode(unsigned int width, unsigned int height,
                   unsigned int bits_per_pixel)
-        bint IsValid()
-        unsigned int Width
-        unsigned int Height
-        unsigned int BitsPerPixel
+        bint isValid()
+        unsigned int width
+        unsigned int height
+        unsigned int bitsPerPixel
 
 
     cdef cppclass Image:
         Image()
         Image(Image&)
-        void Copy(Image&, unsigned int, unsigned int)
-        void Copy(Image&, unsigned int, unsigned int, IntRect&)
-        void Copy(Image&, unsigned int, unsigned int, IntRect&, bint)
-        bint Create(unsigned int, unsigned int)
-        bint Create(unsigned int, unsigned int, Color&)
-        bint Create(unsigned int, unsigned int, Uint8*)
-        void CreateMaskFromColor(Color&)
-        void CreateMaskFromColor(Color&, unsigned char)
-        unsigned int GetHeight()
-        Color& GetPixel(unsigned int, unsigned int)
-        unsigned char* GetPixelsPtr()
-        unsigned int GetWidth() 
-        bint LoadFromFile(char*)
-        bint LoadFromMemory(void*, size_t)
-        bint SaveToFile(string&)
-        bint SaveToFile(char*)
-        void SetPixel(unsigned int, unsigned int, Color&)
+        void copy(Image&, unsigned int, unsigned int)
+        void copy(Image&, unsigned int, unsigned int, IntRect&)
+        void copy(Image&, unsigned int, unsigned int, IntRect&, bint)
+        bint create(unsigned int, unsigned int)
+        bint create(unsigned int, unsigned int, Color&)
+        bint create(unsigned int, unsigned int, Uint8*)
+        void createMaskFromColor(Color&)
+        void createMaskFromColor(Color&, unsigned char)
+        unsigned int getHeight()
+        Color& getPixel(unsigned int, unsigned int)
+        unsigned char* getPixelsPtr()
+        unsigned int getWidth() 
+        bint loadFromFile(char*)
+        bint loadFromMemory(void*, size_t)
+        bint saveToFile(string&)
+        bint saveToFile(char*)
+        void setPixel(unsigned int, unsigned int, Color&)
 
     cdef cppclass Texture:
         Texture()
         Texture(Texture&)
-        void Bind()
-        Image CopyToImage()
-        bint Create(unsigned int, unsigned int)
-        unsigned int GetHeight()
-        unsigned int GetWidth()
-        bint IsRepeated()
-        bint IsSmooth()
-        bint LoadFromFile(char*)
-        bint LoadFromFile(char*, IntRect&)
-        bint LoadFromImage(Image&)
-        bint LoadFromImage(Image&, IntRect&)
-        bint LoadFromMemory(void*, size_t)
-        bint LoadFromMemory(void*, size_t, IntRect&)
-        # bint LoadFromStream(InputStream&)
-        # bint LoadFromStream(InputStream&, IntRect&)
-        void SetRepeated(bint)
-        void SetSmooth(bint)
-        void Update(Uint8*)
-        void Update(Uint8*, unsigned int, unsigned int, unsigned int,
+        void bind()
+        Image copyToImage()
+        bint create(unsigned int, unsigned int)
+        unsigned int getHeight()
+        unsigned int getWidth()
+        bint isRepeated()
+        bint isSmooth()
+        bint loadFromFile(char*)
+        bint loadFromFile(char*, IntRect&)
+        bint loadFromImage(Image&)
+        bint loadFromImage(Image&, IntRect&)
+        bint loadFromMemory(void*, size_t)
+        bint loadFromMemory(void*, size_t, IntRect&)
+        # bint loadFromStream(InputStream&)
+        # bint loadFromStream(InputStream&, IntRect&)
+        void setRepeated(bint)
+        void setSmooth(bint)
+        void update(Uint8*)
+        void update(Uint8*, unsigned int, unsigned int, unsigned int,
                     unsigned int)
-        void Update(Image&)
-        void Update(Image&, unsigned int, unsigned int)
-        void Update(RenderWindow&)
-        void Update(RenderWindow&, unsigned int, unsigned int)
+        void update(Image&)
+        void update(Image&, unsigned int, unsigned int)
+        void update(RenderWindow&)
+        void update(RenderWindow&, unsigned int, unsigned int)
 
     cdef cppclass String:
         String()
         String(Uint32*)
-        Uint32* GetData()
-        size_t GetSize()
-        string ToAnsiString()
+        Uint32* getData()
+        size_t getSize()
+        string toAnsiString()
 
     cdef cppclass Glyph:
         Glyph()
-        int Advance
-        IntRect Bounds
-        IntRect TextureRect
+        int advance
+        IntRect bounds
+        IntRect textureRect
 
     cdef cppclass Font:
         Font()
         Font(Font&)
-        Glyph& GetGlyph(Uint32, unsigned int, bint)
-        Texture& GetTexture(unsigned int)
-        int GetKerning(Uint32, Uint32, unsigned int)
-        int GetLineSpacing(unsigned int)
-        bint LoadFromFile(char*)
-        bint LoadFromMemory(void*, size_t)
+        Glyph& getGlyph(Uint32, unsigned int, bint)
+        Texture& getTexture(unsigned int)
+        int getKerning(Uint32, Uint32, unsigned int)
+        int getLineSpacing(unsigned int)
+        bint loadFromFile(char*)
+        bint loadFromMemory(void*, size_t)
 
     cdef cppclass Drawable:
         pass
 
     cdef cppclass Transformable:
         Transformable()
-        Vector2f& GetOrigin()
-        Vector2f& GetPosition()
-        float GetRotation()
-        Vector2f& GetScale()
-        Transform& GetTransform()
-        Transform& GetInverseTransform()
-        void Move(float, float)
-        void Move(Vector2f&)
-        void Rotate(float)
-        void Scale(float, float)
-        void Scale(Vector2f&)
-        void SetOrigin(float, float)
-        void SetOrigin(Vector2f&)
-        void SetPosition(float, float)
-        void SetPosition(Vector2f&)
-        void SetRotation(float)
-        void SetScale(float, float)
-        void SetScale(Vector2f&)        
+        Vector2f& getOrigin()
+        Vector2f& getPosition()
+        float getRotation()
+        Vector2f& getScale()
+        Transform& getTransform()
+        Transform& getInverseTransform()
+        void move(float, float)
+        void move(Vector2f&)
+        void rotate(float)
+        void scale(float, float)
+        void scale(Vector2f&)
+        void setOrigin(float, float)
+        void setOrigin(Vector2f&)
+        void setPosition(float, float)
+        void setPosition(Vector2f&)
+        void setRotation(float)
+        void setScale(float, float)
+        void setScale(Vector2f&)        
 
     cdef cppclass Text:
         Text()
@@ -388,80 +389,80 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Text(String&)
         Text(String&, Font&)
         Text(String&, Font&, unsigned int)
-        Vector2f FindCharacterPos(size_t)
-        unsigned int GetCharacterSize()
-        Color& GetColor()
-        Font& GetFont()
-        FloatRect GetGlobalBounds()
-        FloatRect GetLocalBounds()
-        String& GetString()
-        unsigned long GetStyle()
-        void SetCharacterSize(unsigned int)
-        void SetColor(Color&)
-        void SetFont(Font&)
-        void SetString(char*)
-        void SetString(String&)
-        void SetStyle(unsigned long)
+        Vector2f findCharacterPos(size_t)
+        unsigned int getCharacterSize()
+        Color& getColor()
+        Font& getFont()
+        FloatRect getGlobalBounds()
+        FloatRect getLocalBounds()
+        String& getString()
+        unsigned long getStyle()
+        void setCharacterSize(unsigned int)
+        void setColor(Color&)
+        void setFont(Font&)
+        void setString(char*)
+        void setString(String&)
+        void setStyle(unsigned long)
 
     cdef cppclass Sprite:
         Sprite()
         Sprite(Texture&)
         Sprite(Texture&, IntRect&)
-        Color& GetColor()
-        FloatRect GetGlobalBounds()
-        FloatRect GetLocalBounds()
-        Texture* GetTexture()
-        IntRect& GetTextureRect()
-        void SetColor(Color&)
-        void SetTexture(Texture&)
-        void SetTexture(Texture&, bint)
-        void SetTextureRect(IntRect&)
+        Color& getColor()
+        FloatRect getGlobalBounds()
+        FloatRect getLocalBounds()
+        Texture* getTexture()
+        IntRect& getTextureRect()
+        void setColor(Color&)
+        void setTexture(Texture&)
+        void setTexture(Texture&, bint)
+        void setTextureRect(IntRect&)
 
     cdef cppclass View:
         View()
         View(FloatRect&)
         View(Vector2f&, Vector2f&)
-        Vector2f& GetCenter()
-        Transform& GetInverseTransform()
-        Transform& GetTransform()
-        float GetRotation()
-        FloatRect& GetViewport()
-        Vector2f& GetSize()
-        void Move(float, float)
-        void Move(Vector2f&)
-        void Reset(FloatRect&)
-        void Rotate(float)
-        void SetCenter(float, float)
-        void SetCenter(Vector2f&)
-        void SetFromRect(FloatRect&)
-        void SetRotation(float)
-        void SetSize(float, float)
-        void SetSize(Vector2f&)
-        void SetViewport(FloatRect&)
-        void Zoom(float)
+        Vector2f& getCenter()
+        Transform& getInverseTransform()
+        Transform& getTransform()
+        float getRotation()
+        FloatRect& getViewport()
+        Vector2f& getSize()
+        void move(float, float)
+        void move(Vector2f&)
+        void reset(FloatRect&)
+        void rotate(float)
+        void setCenter(float, float)
+        void setCenter(Vector2f&)
+        void setFromRect(FloatRect&)
+        void setRotation(float)
+        void setSize(float, float)
+        void setSize(Vector2f&)
+        void setViewport(FloatRect&)
+        void zoom(float)
 
     cdef cppclass Shader:
         Shader()
         Shader(Shader)
-        void Bind()
-        bint LoadFromFile(char*, declshader.Type)
-        bint LoadFromFile(char*, char*)
-        bint LoadFromMemory(char*, declshader.Type)
-        bint LoadFromMemory(char*, char*)
-        # bint LoadFromStream(InputStream&, declshader.Type)
-        # bint LoadFromStream(InputStream&, InputStream&)
-        void SetCurrentTexture(char*)
-        void SetParameter(char*, float)
-        void SetParameter(char*, float, float)
-        void SetParameter(char*, float, float, float)
-        void SetParameter(char*, float, float, float, float)
-        void SetParameter(char*, Vector2f&)
-        void SetParameter(char*, Vector3f&)
-        void SetParameter(char*, Color&)
-        void SetParameter(char*, Transform&)
-        void SetParameter(char*, Texture&)
-        void SetParameter(char*, declshader.CurrentTexture)
-        void Unbind()
+        void bind()
+        bint loadFromFile(char*, declshader.Type)
+        bint loadFromFile(char*, char*)
+        bint loadFromMemory(char*, declshader.Type)
+        bint loadFromMemory(char*, char*)
+        # bint loadFromStream(InputStream&, declshader.Type)
+        # bint loadFromStream(InputStream&, InputStream&)
+        void setCurrentTexture(char*)
+        void setParameter(char*, float)
+        void setParameter(char*, float, float)
+        void setParameter(char*, float, float, float)
+        void setParameter(char*, float, float, float, float)
+        void setParameter(char*, Vector2f&)
+        void setParameter(char*, Vector3f&)
+        void setParameter(char*, Color&)
+        void setParameter(char*, Transform&)
+        void setParameter(char*, Texture&)
+        void setParameter(char*, declshader.CurrentTexture)
+        void unbind()
 
     cdef cppclass ContextSettings:
         ContextSettings()
@@ -471,11 +472,11 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         ContextSettings(unsigned int, unsigned int, unsigned int, unsigned int)
         ContextSettings(unsigned int, unsigned int, unsigned int, unsigned int,
                         unsigned int)
-        unsigned int AntialiasingLevel
-        unsigned int DepthBits
-        unsigned int MajorVersion
-        unsigned int MinorVersion
-        unsigned int StencilBits
+        unsigned int antialiasingLevel
+        unsigned int depthBits
+        unsigned int majorVersion
+        unsigned int minorVersion
+        unsigned int stencilBits
 
     cdef cppclass WindowHandle:
         pass
@@ -483,10 +484,10 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass RenderStates:
         RenderStates()
         RenderStates(RenderStates&)
-        BlendMode BlendMode
-        Shader* Shader
-        Texture* Texture
-        Transform Transform
+        BlendMode blendMode
+        Shader* shader
+        Texture* texture
+        Transform transform
 
     cdef cppclass Vertex:
         Vertex()
@@ -494,41 +495,41 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Vertex(Vector2f&, Color&)
         Vertex(Vector2f&, Vector2f&)
         Vertex(Vector2f&, Color&, Vector2f&)
-        Vector2f Position
-        Color Color
-        Vector2f TexCoords
+        Vector2f position
+        Color color
+        Vector2f texCoords
 
     cdef cppclass VertexArray:
         VertexArray()
         VertexArray(PrimitiveType, unsigned int)
         Vertex& operator[](unsigned int)
-        void Append(Vertex&)
-        void Clear()
-        FloatRect GetBounds()
-        PrimitiveType GetPrimitiveType()
-        unsigned int GetVertexCount()
-        void Resize(unsigned int)
-        void SetPrimitiveType(PrimitiveType)
+        void append(Vertex&)
+        void clear()
+        FloatRect getBounds()
+        PrimitiveType getPrimitiveType()
+        unsigned int getVertexCount()
+        void resize(unsigned int)
+        void setPrimitiveType(PrimitiveType)
 
     cdef cppclass RenderTarget:
-        void Clear()
-        void Clear(Color&)
-        void Draw(Drawable&)
-        void Draw(Drawable&, Shader*)
-        void Draw(Drawable&, RenderStates&)
-        void Draw(Vertex*, unsigned int, PrimitiveType)
-        void Draw(Vertex*, unsigned int, PrimitiveType, RenderStates&)
-        void Draw(Vertex*, unsigned int, PrimitiveType, Shader*)
-        Vector2u GetSize()
-        void SetView(View&)
-        View& GetView()
-        View& GetDefaultView()
-        IntRect GetViewport(View&)
-        Vector2f ConvertCoords(unsigned int, unsigned int)
-        Vector2f ConvertCoords(unsigned int, unsigned int, View&)
-        void PopGLStates()
-        void PushGLStates()
-        void ResetGLStates()
+        void clear()
+        void clear(Color&)
+        void draw(Drawable&)
+        void draw(Drawable&, Shader*)
+        void draw(Drawable&, RenderStates&)
+        void draw(Vertex*, unsigned int, PrimitiveType)
+        void draw(Vertex*, unsigned int, PrimitiveType, RenderStates&)
+        void draw(Vertex*, unsigned int, PrimitiveType, Shader*)
+        Vector2u getSize()
+        void setView(View&)
+        View& getView()
+        View& getDefaultView()
+        IntRect getViewport(View&)
+        Vector2f convertCoords(unsigned int, unsigned int)
+        Vector2f convertCoords(unsigned int, unsigned int, View&)
+        void popGLStates()
+        void pushGLStates()
+        void resetGLStates()
 
     cdef cppclass RenderWindow:
         RenderWindow()
@@ -537,99 +538,99 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         RenderWindow(VideoMode, char*, unsigned long, ContextSettings&)
         RenderWindow(WindowHandle window_handle)
         RenderWindow(WindowHandle window_handle, ContextSettings&)
-        void Close()
-        void Create(VideoMode, char*)
-        void Create(VideoMode, char*, unsigned long)
-        void Create(VideoMode, char*, unsigned long, ContextSettings&)
-        void Display() nogil
-        void EnableVerticalSync(bint)
-        Vector2i GetPosition()
-        ContextSettings& GetSettings()
-        unsigned long GetSystemHandle()
-        bint IsOpen()
-        bint PollEvent(Event&)
-        void SetActive()
-        void SetActive(bint)
-        void SetIcon(unsigned int, unsigned int, Uint8*)
-        void SetJoystickThreshold(float)
-        void SetFramerateLimit(unsigned int)
-        void SetKeyRepeatEnabled(bint)
-        void SetMouseCursorVisible(bint)
-        void SetPosition(Vector2i&)
-        void SetSize(Vector2u)
-        void SetTitle(char*)
-        void SetVerticalSyncEnabled(bint)
-        void SetVisible(bint)
-        bint WaitEvent(Event&)
+        void close()
+        void create(VideoMode, char*)
+        void create(VideoMode, char*, unsigned long)
+        void create(VideoMode, char*, unsigned long, ContextSettings&)
+        void display() nogil
+        void enableVerticalSync(bint)
+        Vector2i getPosition()
+        ContextSettings& getSettings()
+        unsigned long getSystemHandle()
+        bint isOpen()
+        bint pollEvent(Event&)
+        void setActive()
+        void setActive(bint)
+        void setIcon(unsigned int, unsigned int, Uint8*)
+        void setJoystickThreshold(float)
+        void setFramerateLimit(unsigned int)
+        void setKeyRepeatEnabled(bint)
+        void setMouseCursorVisible(bint)
+        void setPosition(Vector2i&)
+        void setSize(Vector2u)
+        void setTitle(char*)
+        void setVerticalSyncEnabled(bint)
+        void setVisible(bint)
+        bint waitEvent(Event&)
 
     cdef cppclass RenderTexture:
         RenderTexture()
-        bint Create(unsigned int, unsigned int)
-        bint Create(unsigned int, unsigned int, bint depth)
-        void SetSmooth(bint)
-        bint IsSmooth()
-        bint SetActive()
-        bint SetActive(bint)
-        void Display()
-        Texture& GetTexture()
-        bint IsAvailable()
+        bint create(unsigned int, unsigned int)
+        bint create(unsigned int, unsigned int, bint depth)
+        void setSmooth(bint)
+        bint isSmooth()
+        bint setActive()
+        bint setActive(bint)
+        void display()
+        Texture& getTexture()
+        bint isAvailable()
     
     cdef cppclass Shape:
         Shape()
-        Color& GetFillColor()
-        FloatRect GetLocalBounds()
-        FloatRect GetGlobalBounds()
-        Transform& GetInverseTransform()
-        Vector2f& GetOrigin()
-        Color& GetOutlineColor()
-        float GetOutlineThickness()
-        Vector2f GetPoint(unsigned int)
-        unsigned int GetPointCount()
-        Vector2f& GetPosition()
-        float GetRotation()
-        Vector2f& GetScale()
-        Texture* GetTexture()
-        IntRect& GetTextureRect()
-        Transform& GetTransform()
-        void Move(float, float)
-        void Move(Vector2f&)
-        void Rotate(float)
-        void SetFillColor(Color&)
-        void Scale(float, float)
-        void Scale(Vector2f&)
-        void SetOrigin(float, float)
-        void SetOrigin(Vector2f&)
-        void SetOutlineColor(Color&)
-        void SetOutlineThickness(float)
-        void SetPosition(float, float)
-        void SetPosition(Vector2f&)
-        void SetRotation(float)
-        void SetScale(float, float)
-        void SetScale(Vector2f&)
-        void SetTexture(Texture*)
-        void SetTexture(Texture*, bint)
-        void SetTextureRect(IntRect&)
+        Color& getFillColor()
+        FloatRect getLocalBounds()
+        FloatRect getGlobalBounds()
+        Transform& getInverseTransform()
+        Vector2f& getOrigin()
+        Color& getOutlineColor()
+        float getOutlineThickness()
+        Vector2f getPoint(unsigned int)
+        unsigned int getPointCount()
+        Vector2f& getPosition()
+        float getRotation()
+        Vector2f& getScale()
+        Texture* getTexture()
+        IntRect& getTextureRect()
+        Transform& getTransform()
+        void move(float, float)
+        void move(Vector2f&)
+        void rotate(float)
+        void setFillColor(Color&)
+        void scale(float, float)
+        void scale(Vector2f&)
+        void setOrigin(float, float)
+        void setOrigin(Vector2f&)
+        void setOutlineColor(Color&)
+        void setOutlineThickness(float)
+        void setPosition(float, float)
+        void setPosition(Vector2f&)
+        void setRotation(float)
+        void setScale(float, float)
+        void setScale(Vector2f&)
+        void setTexture(Texture*)
+        void setTexture(Texture*, bint)
+        void setTextureRect(IntRect&)
 
     cdef cppclass RectangleShape:
         RectangleShape()
         RectangleShape(Vector2f&)
-        Vector2f& GetSize()
-        void SetSize(Vector2f&)
+        Vector2f& getSize()
+        void setSize(Vector2f&)
 
     cdef cppclass CircleShape:
         CircleShape()
         CircleShape(float)
         CircleShape(float, unsigned int)
-        unsigned int GetPointCount()
-        float GetRadius()
-        void SetPointCount(unsigned int)
-        void SetRadius(float)
+        unsigned int getPointCount()
+        float getRadius()
+        void setPointCount(unsigned int)
+        void setRadius(float)
 
     cdef cppclass ConvexShape:
         ConvexShape()
         ConvexShape(unsigned int)
-        unsigned int GetPointCount()
-        void SetPointCount(unsigned int)
+        unsigned int getPointCount()
+        void setPointCount(unsigned int)
 
 
 # Hacks for static methods and attributes. Some similar hacks are
@@ -638,13 +639,13 @@ cdef extern from "SFML/Graphics.hpp":
     cdef Time Time_Zero "sf::Time::Zero"
     cdef int Shader_Fragment "sf::Shader::Fragment"
     cdef int Shader_Vertex "sf::Shader::Vertex"
-    cdef Time Time_Seconds "sf::Seconds" (float)
-    cdef Time Time_Milliseconds "sf::Milliseconds" (Int32)
-    cdef Time Time_Microseconds "sf::Microseconds" (Int64)
+    cdef Time Time_seconds "sf::seconds" (float)
+    cdef Time Time_milliseconds "sf::milliseconds" (Int32)
+    cdef Time Time_microseconds "sf::microseconds" (Int64)
     RenderStates RenderStates_Default "sf::RenderStates::Default"
-    cdef VideoMode& VideoMode_GetDesktopMode "sf::VideoMode::GetDesktopMode" ()
-    cdef vector[VideoMode]& GetFullscreenModes "sf::VideoMode::GetFullscreenModes" ()
+    cdef VideoMode& VideoMode_getDesktopMode "sf::VideoMode::getDesktopMode" ()
+    cdef vector[VideoMode]& getFullscreenModes "sf::VideoMode::getFullscreenModes" ()
     cdef Transform Transform_Identity "sf::Transform::Identity"
-    cdef unsigned int Texture_GetMaximumSize "sf::Texture::GetMaximumSize"()
-    cdef Font& Font_GetDefaultFont "sf::Font::GetDefaultFont" ()
-    cdef bint Shader_IsAvailable "sf::Shader::IsAvailable" ()
+    cdef unsigned int Texture_getMaximumSize "sf::Texture::getMaximumSize"()
+    cdef Font& Font_getDefaultFont "sf::Font::getDefaultFont" ()
+    cdef bint Shader_isAvailable "sf::Shader::isAvailable" ()

@@ -40,7 +40,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Keyboard":
     cdef cppclass Key:
         pass
 
-    bint IsKeyPressed(Key)
+    bint isKeyPressed(Key)
 
     int A
     int B

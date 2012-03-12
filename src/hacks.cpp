@@ -113,7 +113,7 @@ private:
 void replace_error_handler()
 {
     static MyBuff my_buff;
-    sf::Err().rdbuf(&my_buff);
+    sf::err().rdbuf(&my_buff);
 }
 
 
@@ -128,7 +128,7 @@ CppDrawable::CppDrawable(void* drawable):
 {
 }
 
-void CppDrawable::Draw(sf::RenderTarget& target, sf::RenderStates states) const
+void CppDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     // The string parameters to PyObject_CallMethod() are char*, so in
     // theory they can be modified, and string litterals are const char*
@@ -162,7 +162,7 @@ CppShape::CppShape(void* shape) : shape(shape)
 {
 }
 
-unsigned int CppShape::GetPointCount() const
+unsigned int CppShape::getPointCount() const
 {
     char method_name[] = "get_point_count";
     char format[] = "";
@@ -193,7 +193,7 @@ unsigned int CppShape::GetPointCount() const
     return count;
 }
 
-sf::Vector2f CppShape::GetPoint(unsigned int index) const
+sf::Vector2f CppShape::getPoint(unsigned int index) const
 {
     char method_name[] = "get_point";
     char format[] ="I";
@@ -210,9 +210,9 @@ sf::Vector2f CppShape::GetPoint(unsigned int index) const
     return point;
 }
 
-void CppShape::Update()
+void CppShape::update()
 {
-    sf::Shape::Update();
+    sf::Shape::update();
 }
 
 
@@ -224,13 +224,13 @@ CppSoundStream::CppSoundStream(void* sound_stream) : sound_stream(sound_stream)
 {
 }
 
-void CppSoundStream::Initialize(unsigned int channel_count,
+void CppSoundStream::initialize(unsigned int channel_count,
                                 unsigned int sample_rate)
 {
-    sf::SoundStream::Initialize(channel_count, sample_rate);
+    sf::SoundStream::initialize(channel_count, sample_rate);
 }
 
-bool CppSoundStream::OnGetData(sf::SoundStream::Chunk& data)
+bool CppSoundStream::onGetData(sf::SoundStream::Chunk& data)
 {
     char method_name[] = "on_get_data";
     char format[] = "O";
@@ -267,7 +267,7 @@ bool CppSoundStream::OnGetData(sf::SoundStream::Chunk& data)
     return status;
 }
 
-void CppSoundStream::OnSeek(sf::Time time_offset)
+void CppSoundStream::onSeek(sf::Time time_offset)
 {
     char method_name[] = "on_seek";
     char format[] = "O";
