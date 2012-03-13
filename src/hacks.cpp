@@ -25,6 +25,8 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
+// This file contains code that couldn't be written in Cython.
+
 
 #include "hacks.hpp"
 #include "sf.h"
@@ -34,9 +36,9 @@
 #include <cassert>
 #include <cstdio>
 
-
-// This file contains code that couldn't be written in Cython.
-
+// For some users, compilation seems to fail because the compiler
+// doesn't know about sf::Transformable. This might fix it.
+#include <SFML/Graphics/Transformable.hpp>
 
 
 // This should be big enough to contain any message error
