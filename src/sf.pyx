@@ -530,18 +530,30 @@ cdef class Vector2f:
             return self
         return NotImplemented
 
-    def __div__(a, b):
+    def _division(a, b):
         if isinstance(a, Vector2f) and isinstance(b, (int, float)):
             return Vector2f(a.x / <float>b, a.y / <float>b)
 
         return NotImplemented
 
-    def __idiv__(self, b):
+    def __div__(a, b):
+        return a._division(b)
+
+    def __truediv__(a, b):
+        return a._division(b)
+
+    def _idivision(self, b):
         if isinstance(b, (int, float)):
             self.p_this.x /= <float>b
             self.p_this.y /= <float>b
             return self
         return NotImplemented
+
+    def __idiv__(self, b):
+        return self.__idivision(b)
+
+    def __itruediv__(self, b):
+        return self.__idivision(b)
 
     def copy(self):
         return Vector2f(self.p_this.x, self.p_this.y)
