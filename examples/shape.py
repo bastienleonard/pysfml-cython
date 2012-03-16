@@ -1,7 +1,16 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
 
+from random import randint
+
 import sf
+
+
+def random_color():
+    return sf.Color(randint(0, 255), randint(0, 255), randint(0, 255))
+
+def random_position(window):
+    return (randint(0, window.view.width), randint(0, window.view.height))
 
 
 class CustomShape(sf.Shape):
@@ -20,32 +29,43 @@ class CustomShape(sf.Shape):
 
 
 def main():
-    window = sf.RenderWindow(sf.VideoMode(640, 480), 'Shape example')
+    window = sf.RenderWindow(sf.VideoMode(800, 600), 'Shape example')
     window.framerate_limit = 60
     running = True
-    circle = sf.CircleShape(100.0)
-    circle.fill_color = sf.Color.YELLOW
-    circle.position = (100, 50)
-    
-    rectangle = sf.RectangleShape((100, 50))
-    rectangle.position = (200, 350)
-    rectangle.fill_color = sf.Color.GREEN
-    rectangle.outline_color = sf.Color.BLUE
-    rectangle.outline_thickness = 2.0
+    clock = sf.Clock()
 
-    shapes = [circle, rectangle, CustomShape()]
+    custom_shapes = [CustomShape()]
+    rectangles = []
+    circles = []
+
+    for i in range(30):
+        circle = sf.CircleShape(randint(5, 20))
+        circle.fill_color = random_color()
+        circle.position = random_position(window)
+        circles.append(circle)
+
+    for i in range(100):
+        rectangle = sf.RectangleShape((randint(10, 30), randint(10, 30)))
+        rectangle.position = random_position(window)
+        rectangle.fill_color = random_color()
+        rectangle.outline_color = random_color()
+        rectangle.outline_thickness = randint(1, 2)
+        rectangles.append(rectangle)
 
     while running:
         for event in window.iter_events():
             if event.type == sf.Event.CLOSED:
                 running = False
 
-        rectangle.rotate(2)
+        frame_time = clock.restart().as_milliseconds()
+
+        for r in rectangles:
+            r.rotate(frame_time * 0.3)
 
         window.clear(sf.Color.WHITE)
 
-        for s in shapes:
-            window.draw(s)
+        for shape in custom_shapes + rectangles + circles:
+            window.draw(shape)
 
         window.display()
 
