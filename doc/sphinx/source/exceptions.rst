@@ -35,10 +35,6 @@ Exceptions
 .. module:: sfml
 
 
-Currently, only one exception exists, but more specific exceptions will probably
-be used in the future.
-
-
 .. exception:: PySFMLException
 
    Raised when any important error is encountered. Typically, file loading

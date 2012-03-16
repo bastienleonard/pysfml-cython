@@ -28,6 +28,10 @@
 # SUCH DAMAGE.
 
 
+# When creating a Windows installer, drop the SFML and dependent DLLs
+# in the current folder and they will be included in the installer.
+
+
 # Set to False if you don't have Cython installed. The script will
 # then build the extension module from the sf.cpp file, like a regular
 # extension.
