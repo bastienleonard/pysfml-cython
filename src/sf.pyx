@@ -502,6 +502,7 @@ cdef class Vector2f:
             self.p_this.x += b.x
             self.p_this.y += b.y
             return self
+
         return NotImplemented
 
     def __sub__(a, b):
@@ -513,6 +514,7 @@ cdef class Vector2f:
             self.p_this.x -= b.x
             self.p_this.y -= b.y
             return self
+
         return NotImplemented
 
     def __mul__(a, b):
@@ -528,6 +530,7 @@ cdef class Vector2f:
             self.p_this.x *= b
             self.p_this.y *= b
             return self
+
         return NotImplemented
 
     def __div__(a, b):
@@ -543,18 +546,22 @@ cdef class Vector2f:
 
         return NotImplemented
 
-    def _idivision(self, b):
+    def __idiv__(self, b):
         if isinstance(b, (int, float)):
             self.p_this.x /= <float>b
             self.p_this.y /= <float>b
             return self
+
         return NotImplemented
 
-    def __idiv__(self, b):
-        return self.__idivision(b)
-
+    # /= method for Python 3
     def __itruediv__(self, b):
-        return self.__idivision(b)
+        if isinstance(b, (int, float)):
+            self.p_this.x /= <float>b
+            self.p_this.y /= <float>b
+            return self
+
+        return NotImplemented
 
     def copy(self):
         return Vector2f(self.p_this.x, self.p_this.y)
