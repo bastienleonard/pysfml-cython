@@ -33,6 +33,7 @@
 # extension.
 USE_CYTHON = True
 
+import glob
 import os.path
 from distutils.core import setup
 from distutils.extension import Extension
@@ -59,7 +60,7 @@ else:
 with open('README.md', 'r') as f:
     long_description = f.read()
 
-kwargs = dict(name='PySFML 2',
+kwargs = dict(name='pySFML',
               ext_modules=ext_modules,
               version='0.0.1',
               description='A Python binding for SFML 2',
@@ -68,6 +69,9 @@ kwargs = dict(name='PySFML 2',
               author_email='bastien.leonard@gmail.com',
               url='https://github.com/bastienleonard/pysfml2-cython',
               license='BSD',
+              scripts=glob.glob(os.path.join('examples', '*.py')),
+              data_files=[('', glob.glob('*.dll')),
+                          (os.path.join('lib', 'site-packages', 'pysfml2-cython'), ['LICENSE.txt', 'SFML-LICENSE.txt'])],
               classifiers=[
                   'Development Status :: 3 - Alpha',
                   'Intended Audience :: Developers',
