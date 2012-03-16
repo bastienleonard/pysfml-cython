@@ -3,7 +3,7 @@
 
 from random import randint
 
-import sf
+import sfml as sf
 
 
 def random_color():

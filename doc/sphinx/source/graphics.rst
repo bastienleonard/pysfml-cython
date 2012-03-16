@@ -31,7 +31,7 @@
 Graphics
 ========
 
-.. module:: sf
+.. module:: sfml
 
 
 
@@ -102,7 +102,7 @@ Classes
    same way that the C++ class does..
 
    The following colors are available as static attibutes, e.g. you can use
-   ``sf.Color.WHITE`` to obtain a reference to the white color.
+   ``sfml.Color.WHITE`` to obtain a reference to the white color.
 
     * BLACK
     * WHITE
@@ -338,8 +338,8 @@ Image display and effects
 
       Set a pixel of the image. Equivalent to :meth:`set_pixel()`. Example::
 
-         image[0,0] = sf.Color(10, 20, 30)  # Create tuple implicitly
-         image[(0,0)] = sf.Color(10, 20, 30)  # Create tuple explicitly
+         image[0,0] = sfml.Color(10, 20, 30)  # Create tuple implicitly
+         image[(0,0)] = sfml.Color(10, 20, 30)  # Create tuple explicitly
 
    .. method:: copy(Image source, int dest_x, int dest_y\
                     [, source_rect, apply_alpha])
@@ -366,15 +366,15 @@ Image display and effects
 
    .. classmethod:: load_from_file(filename[, area])
 
-      *area* can be either a tuple or an :class:`sf.IntRect`.
+      *area* can be either a tuple or an :class:`IntRect`.
 
    .. classmethod:: load_from_image(image[, area])
 
-      *area* can be either a tuple or an :class:`sf.IntRect`.
+      *area* can be either a tuple or an :class:`IntRect`.
 
    .. classmethod:: load_from_memory(bytes data[, area])
 
-      *area* can be either a tuple or an :class:`sf.IntRect`.
+      *area* can be either a tuple or an :class:`IntRect`.
 
    .. method:: bind()
    .. method:: update(object source, int p1=-1, int p2=-1, int p3=-1, int p4=-1)
@@ -446,9 +446,9 @@ Image display and effects
 
        shader.set_parameter('offset', 2.f);
        shader.set_parameter('color', 0.5f, 0.8f, 0.3f);
-       shader.set_parameter('matrix', transform); # transform is a sf.Transform
-       shader.set_parameter('overlay', texture); # texture is a sf.Texture
-       shader.set_parameter('texture', sf.Shader.CURRENT_TEXTURE);
+       shader.set_parameter('matrix', transform); # transform is a sfml.Transform
+       shader.set_parameter('overlay', texture); # texture is a sfml.Texture
+       shader.set_parameter('texture', sfml.Shader.CURRENT_TEXTURE);
 
    The special :attr:`Shader.CURRENT_TEXTURE` argument maps the given
    texture variable to the current texture of the object being drawn
@@ -461,7 +461,7 @@ Image display and effects
 
    Which is in fact just a shortcut for this::
 
-       states = sf.RenderStates()
+       states = sfml.RenderStates()
        states.shader = shader;
        window.draw(sprite, states)
 
@@ -477,7 +477,7 @@ Image display and effects
    result.
 
    Shaders can also be used to apply global post-effects to the
-   current contents of the target (like the old ``sf.PostFx`` class in
+   current contents of the target (like the old ``PostFx`` class in
    SFML 1). This can be done in two different ways:
 
    * Draw everything to a :class:`RenderTexture`, then draw it to the main
@@ -567,15 +567,15 @@ Windowing
 
    *style* can be one of:
 
-   ======================= ===========
-   Name                    Description
-   ======================= ===========
-   ``sf.Style.NONE``
-   ``sf.Style.TITLEBAR``
-   ``sf.Style.RESIZE``
-   ``sf.Style.CLOSE``
-   ``sf.Style.FULLSCREEN``
-   ======================= ===========
+   ========================= ===========
+   Name                      Description
+   ========================= ===========
+   ``sfml.Style.NONE``
+   ``sfml.Style.TITLEBAR``
+   ``sfml.Style.RESIZE``
+   ``sfml.Style.CLOSE``
+   ``sfml.Style.FULLSCREEN``
+   ========================= ===========
 
    .. attribute:: active
    .. attribute:: cursor_position
@@ -623,7 +623,7 @@ Windowing
       Return an iterator which yields the current pending events. Example::
         
          for event in window.iter_events():
-             if event.type == sf.Event.CLOSED:
+             if event.type == sfml.Event.CLOSED:
                  # ...
 
    .. method:: poll_event()
@@ -712,7 +712,7 @@ Text
 
       The default font (Arial), as a class attribute::
 
-         print sf.Font.DEFAULT_FONT
+         print sfml.Font.DEFAULT_FONT
 
 
    .. classmethod:: load_from_file(filename)
@@ -751,14 +751,14 @@ Text
 
       Can be one or more of the following:
 
-      * ``sf.Text.REGULAR``
-      * ``sf.Text.BOLD``
-      * ``sf.Text.ITALIC``
-      * ``sf.Text.UNDERLINED``
+      * ``sfml.Text.REGULAR``
+      * ``sfml.Text.BOLD``
+      * ``sfml.Text.ITALIC``
+      * ``sfml.Text.UNDERLINED``
 
       Example::
 
-         text.style = sf.Text.BOLD | sf.Text.ITALIC
+         text.style = sfml.Text.BOLD | sfml.Text.ITALIC
 
    .. method:: find_character_pos(int index)
 

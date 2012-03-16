@@ -33,6 +33,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. module:: sfml
+
+
 Welcome to pySFML 2 - Cython's documentation!
 =============================================
 
@@ -52,9 +55,9 @@ between SFML and this binding should be fairly easy to grasp.
 
 .. note::
 
-   A current limitation is that :class:`sf.Texture` objects won't work
+   A current limitation is that :class:`Texture` objects won't work
    as expected unless they are created after your
-   :class:`sf.RenderWindow`.  It isn't a big problem in practice, but
+   :class:`RenderWindow`.  It isn't a big problem in practice, but
    it's something to keep in mind until the issue is
    fixed. **Update:** this seems to be related to a bug in SFML:
    https://github.com/LaurentGomila/SFML/issues/160

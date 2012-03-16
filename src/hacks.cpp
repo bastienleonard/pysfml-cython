@@ -29,7 +29,7 @@
 
 
 #include "hacks.hpp"
-#include "sf.h"
+#include "sfml.h"
 
 #include <iostream>
 

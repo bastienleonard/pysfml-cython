@@ -32,7 +32,7 @@ Events
 ======
 
 
-.. module:: sf
+.. module:: sfml
 
 
 .. _event_types_reference:
@@ -79,16 +79,16 @@ Type                                                                          At
 
    In Python, it becomes::
 
-      if event.type == sf.Event.KEY_PRESSED and event.code == sf.Keyboard.ESCAPE:
+      if event.type == sfml.Event.KEY_PRESSED and event.code == sfml.Keyboard.ESCAPE:
           # ...
 
    .. attribute:: NAMES
 
       A class attribute that maps event codes to a short description::
 
-         >>> sf.Event.NAMES[sf.Event.CLOSED]
+         >>> sfml.Event.NAMES[sfml.Event.CLOSED]
          'Closed'
-         >>> sf.Event.NAMES[sf.Event.KEY_PRESSED]
+         >>> sfml.Event.NAMES[sfml.Event.KEY_PRESSED]
          'Key pressed'
 
       If you want to print this information about a specific object,

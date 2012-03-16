@@ -6,7 +6,7 @@
 import math
 import random
 
-import sf
+import sfml as sf
 
 
 def main():

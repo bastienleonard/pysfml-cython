@@ -27,6 +27,8 @@
    OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS DOCUMENTATION,
    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+.. module:: sfml
+
 
 .. _building_the_module:
 
@@ -144,7 +146,7 @@ Building without Cython
    doesn't apply anymore. But I am going to publish source releases
    that will follow the same principle.
 
-If you downloaded a release that already contains the sf.cpp file, you don't
+If you downloaded a release that already contains the sfml.cpp file, you don't
 need to install Cython.
 
 Make sure that ``USE_CYTHON`` is set to ``False`` in setup.py.  You can then
@@ -184,7 +186,7 @@ automate Cython invocation is only installed for Python 2. It's
 probably possible to install it for Python 3, but it's not complicated
 to invoke Cython manually::
 
-    cython --cplus sf.pyx
+    cython --cplus sfml.pyx
 
 The next step is to invoke the ``setup3k.py`` script to build the
 module. Since we called Cython already, make sure that ``USE_CYTHON``
@@ -198,24 +200,24 @@ version of the interpreter, but I'm not sure that's the case for all
 of them as well as Windows.)
 
 (Also note that on GNU/Linux, the generated file won't be called
-``sf.so`` but something like ``sf.cpython-32mu.so``. Apparently, on
-Windows it's still ``sf.pyd``.)
+``sfml.so`` but something like ``sfml.cpython-32mu.so``. Apparently,
+on Windows it's still ``sfml.pyd``.)
 
 The second problem is that the SFML API uses raw strings a lot. This
 maps well into Python 2: you just use normal string litterals most of
 the time, except when you want to use the Unicode functionality
-exposed in the :py:class:`sf.Text` class.
+exposed in the :py:class:`Text` class.
 
 However, in Python 3, string literals are Unicode by default, and you
 need to use the ``b`` prefix if you want a raw string.  For example,
-when you create a :py:class:`sf.RenderWindow`::
+when you create a :py:class:`RenderWindow`::
 
-    window = sf.RenderWindow(video_mode, b'The title')
+    window = sfml.RenderWindow(video_mode, b'The title')
 
-Finally, compilation may fail because the ``src/sf.h`` file generated
+Finally, compilation may fail because the ``src/sfml.h`` file generated
 by Cython uses the deprecated ``DL_IMPORT()`` macro. In the root of
 the project, there is a ``patch.py`` script that will remove the
-offending macros for you. The trick is ``src/sf.h`` will not exist at
+offending macros for you. The trick is ``src/sfml.h`` will not exist at
 first; the setup script will create it, then try to compile it and
 fail. That's when you need to use ``patch.py``, and build the module
 again.

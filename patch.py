@@ -11,9 +11,9 @@ import re
 
 
 def patch_sf_h():
-    """Remove the DL_IMPORT macros in src/sf.h."""
+    """Remove the DL_IMPORT macros in src/sfml.h."""
 
-    filename = os.path.join('src', 'sf.h')
+    filename = os.path.join('src', 'sfml.h')
 
     with open(filename, 'r') as f:
         source = f.read()

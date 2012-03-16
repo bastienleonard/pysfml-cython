@@ -33,7 +33,7 @@ API reference
 
 
 This reference is splitted in sections for readability only.
-Every class is available in the same ``sf`` namespace.
+Every class is available in the same ``sfml`` namespace.
 
 
 

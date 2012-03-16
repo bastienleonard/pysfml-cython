@@ -31,6 +31,9 @@
 System
 ======
 
+.. module:: sfml
+
+
 
 .. function:: Time seconds(float seconds)
 
@@ -47,7 +50,7 @@ System
 
    Using one keyword argument is equivalent to calling the
    corresponding function. For example,
-   ``sf.seconds(10) == sf.Time(seconds=10)``.
+   ``sfml.seconds(10) == sfml.Time(seconds=10)``.
 
    This class provides the following special methods:
 

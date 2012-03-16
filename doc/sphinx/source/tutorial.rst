@@ -28,16 +28,25 @@
    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-.. module:: sf
+.. module:: sfml
 
 
 Tutorial
 ========
 
+.. warning::
+
+   The module has recently been renamed from ``sf`` to ``sfml``, to be
+   more clear and avoid clashes. However, it's easy to still use
+   ``sf`` as the namespace in your code; just write ``import sfml as
+   sf``. This is the approach that we follow in this tutorial and in
+   the examples. The reference uses ``sfml`` though, since it's the
+   "official" namespace.
+
 Welcome to pySMFL's official tuturial! You are going to learn how to
 display an image. But first, here is the full listing::
 
-   import sf
+   import sfml as sf
 
 
    def main():

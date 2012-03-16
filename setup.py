@@ -50,11 +50,11 @@ def src(path):
 libs = ['sfml-graphics', 'sfml-window', 'sfml-audio', 'sfml-system']
 
 if USE_CYTHON:
-    ext_modules = [Extension('sf', [src('sf.pyx'), src('hacks.cpp')],
+    ext_modules = [Extension('sfml', [src('sfml.pyx'), src('hacks.cpp')],
                              language='c++',
                              libraries=libs)]
 else:
-    ext_modules = [Extension('sf', [src('sf.cpp'), src('hacks.cpp')],
+    ext_modules = [Extension('sfml', [src('sfml.cpp'), src('hacks.cpp')],
                              libraries=libs)]
 
 with open('README.md', 'r') as f:

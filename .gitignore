@@ -1,7 +1,7 @@
 build/
-sf.so
-sf.cpython-32mu.so
-sf.cpython-64mu.so
-src/sf.cpp
-src/sf.h
+sfml.so
+sfml.cpython-32mu.so
+sfml.cpython-64mu.so
+src/sfml.cpp
+src/sfml.h
 *~

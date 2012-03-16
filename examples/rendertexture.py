@@ -5,7 +5,7 @@
 # because of a bug in the drivers. See the corresponding SFML issue:
 # https://github.com/LaurentGomila/SFML/issues/101
 
-import sf
+import sfml as sf
 
 
 def main():

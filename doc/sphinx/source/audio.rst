@@ -31,7 +31,7 @@
 Audio
 =====
 
-.. currentmodule:: sf
+.. currentmodule:: sfml
 
 
 .. class:: SoundBuffer
@@ -68,9 +68,9 @@ Audio
 
       Read-only. Can be one of:
 
-      * sf.Sound.STOPPED
-      * sf.Sound.PAUSED
-      * sf.Sound.PLAYING
+      * ``sfml.Sound.STOPPED``
+      * ``sfml.Sound.PAUSED``
+      * ``sfml.Sound.PLAYING``
 
    .. attribute:: volume
 

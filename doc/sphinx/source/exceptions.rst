@@ -32,7 +32,7 @@ Exceptions
 ==========
 
 
-.. module:: sf
+.. module:: sfml
 
 
 Currently, only one exception exists, but more specific exceptions will probably
@@ -42,7 +42,7 @@ be used in the future.
 .. exception:: PySFMLException
 
    Raised when any important error is encountered. Typically, file loading
-   methods such as :meth:`sf.Texture.load_from_file()` return the new object if
+   methods such as :meth:`Texture.load_from_file()` return the new object if
    everything went well, and raise this exception otherwise.
 
    A simple example of error handling::

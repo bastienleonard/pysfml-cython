@@ -9,7 +9,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-import sf
+import sfml as sf
 
 
 class CustomStream(sf.SoundStream):

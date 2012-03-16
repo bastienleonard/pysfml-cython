@@ -3,7 +3,7 @@
 
 import struct
 
-import sf
+import sfml as sf
 
 
 # This example shows how you can manipulate the raw string given by

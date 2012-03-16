@@ -6,7 +6,7 @@
 
 import math
 
-import sf
+import sfml as sf
 
 
 NOTHING, BLUR, COLORIZE, EDGE, FISHEYE, WAVE, PIXELATE = range(7)
