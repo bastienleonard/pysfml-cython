@@ -530,17 +530,18 @@ cdef class Vector2f:
             return self
         return NotImplemented
 
-    def _division(a, b):
+    def __div__(a, b):
         if isinstance(a, Vector2f) and isinstance(b, (int, float)):
             return Vector2f(a.x / <float>b, a.y / <float>b)
 
         return NotImplemented
 
-    def __div__(a, b):
-        return a._division(b)
-
+    # / method for Python 3
     def __truediv__(a, b):
-        return a._division(b)
+        if isinstance(a, Vector2f) and isinstance(b, (int, float)):
+            return Vector2f(a.x / <float>b, a.y / <float>b)
+
+        return NotImplemented
 
     def _idivision(self, b):
         if isinstance(b, (int, float)):
@@ -796,6 +797,21 @@ cdef class Time:
         return NotImplemented
 
     def __div__(a, b):
+        if isinstance(a, (int, float)) and isinstance(b, Time):
+            a, b = b, a
+
+        if isinstance(a, Time):
+            if isinstance(b, int):
+                return wrap_time_instance(
+                    new decl.Time((<Time>a).p_this[0] / <decl.Int64>b))
+            if isinstance(b, float):
+                return wrap_time_instance(
+                    new decl.Time((<Time>a).p_this[0] / <float>b))
+
+        return NotImplemented
+
+    # / method for Python 3
+    def __truediv__(a, b):
         if isinstance(a, (int, float)) and isinstance(b, Time):
             a, b = b, a
 
