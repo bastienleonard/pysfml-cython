@@ -6,5 +6,4 @@
 - Add in-place operator overloads in Time, and possibly in other
   classes that I forgot.
 
-- Convert Unicode arguments to UTF-8, instead of requiring Python 3
-  users to use byte literals all the time.
+- Support the low-level graphics API.
