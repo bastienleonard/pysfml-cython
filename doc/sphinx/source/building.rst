@@ -211,17 +211,6 @@ Unicode object to these methods, they now encode it in UTF-8 before
 passing them to SFML. You can change the encoding by setting the
 :attr:`default_encoding` variable at any time.
 
-The second problem is that the SFML API uses raw strings a lot. This
-maps well into Python 2: you just use normal string litterals most of
-the time, except when you want to use the Unicode functionality
-exposed in the :py:class:`Text` class.
-
-However, in Python 3, string literals are Unicode by default, and you
-need to use the ``b`` prefix if you want a raw string.  For example,
-when you create a :py:class:`RenderWindow`::
-
-    window = sfml.RenderWindow(video_mode, b'The title')
-
 Finally, compilation may fail because the ``src/sfml.h`` file generated
 by Cython uses the deprecated ``DL_IMPORT()`` macro. In the root of
 the project, there is a ``patch.py`` script that will remove the
