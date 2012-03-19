@@ -66,6 +66,16 @@ cdef class RenderWindow
 
 decl.PyEval_InitThreads()
 
+# Currently, this encoding is used when the user passes a Unicode
+# object to method that will call a SFML method which only supports
+# std::string argument (that's the case most of the time, AFAIK the
+# only exception is Text which interacts with sf::String for ``true''
+# Unicode support). The user-supplised Unicode object will be encoded
+# with this encoding and the resulting bytes will be passed to
+# SFML. This is mostly for Python 3 users, so they don't have to use
+# byte strings all the time.
+default_encoding = 'utf-8'
+
 
 # If you add a class that inherits drawables to the module, you *must*
 # add it to this list. It used in RenderTarget.draw(), to know
@@ -1029,10 +1039,17 @@ cdef class SoundBuffer:
             return <int>self.p_this.getSampleCount()
 
     @classmethod
-    def load_from_file(cls, char* filename):
+    def load_from_file(cls, filename):
         cdef declaudio.SoundBuffer *p = new declaudio.SoundBuffer()
+        cdef char *c_filename
 
-        if p.loadFromFile(filename):
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
+
+        if p.loadFromFile(c_filename):
             return wrap_sound_buffer_instance(p, True)
 
         raise PySFMLException()
@@ -1072,8 +1089,16 @@ cdef class SoundBuffer:
                 free(p_samples)
                 raise PySFMLException()
 
-    def save_to_file(self, char* filename):
-        self.p_this.saveToFile(filename)
+    def save_to_file(self, filename):
+        cdef char *c_filename
+
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
+
+        self.p_this.saveToFile(c_filename)
 
 
 cdef SoundBuffer wrap_sound_buffer_instance(
@@ -1357,10 +1382,17 @@ cdef class Music(SoundStream):
             return wrap_time_instance(p)
 
     @classmethod
-    def open_from_file(cls, char* filename):
+    def open_from_file(cls, filename):
         cdef declaudio.Music *p = new declaudio.Music()
+        cdef char *c_filename
 
-        if p.openFromFile(filename):
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
+
+        if p.openFromFile(c_filename):
             return wrap_music_instance(p)
 
         raise PySFMLException()
@@ -1607,10 +1639,17 @@ cdef class Font:
             del self.p_this
 
     @classmethod
-    def load_from_file(cls, char* filename):
+    def load_from_file(cls, filename):
         cdef decl.Font *p = new decl.Font()
+        cdef char *c_filename
 
-        if p.loadFromFile(filename):
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
+
+        if p.loadFromFile(c_filename):
             return wrap_font_instance(p, True)
 
         raise PySFMLException()
@@ -1763,8 +1802,16 @@ cdef class Image:
 
         return ret
 
-    def save_to_file(self, char* filename):
-        self.p_this.saveToFile(filename)
+    def save_to_file(self, filename):
+        cdef char *c_filename
+
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
+
+        self.p_this.saveToFile(c_filename)
 
     def set_pixel(self, int x, int y, Color color):
         self.p_this.setPixel(x, y, color.p_this[0])
@@ -1822,17 +1869,24 @@ cdef class Texture:
             return self.p_this.getWidth()
 
     @classmethod
-    def load_from_file(cls, char *filename, object area=None):
+    def load_from_file(cls, filename, object area=None):
         cdef decl.IntRect cpp_rect
         cdef decl.Texture *p_cpp_instance = new decl.Texture()
+        cdef char *c_filename
+
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
 
         if area is None:
-            if p_cpp_instance.loadFromFile(filename):
+            if p_cpp_instance.loadFromFile(c_filename):
                 return wrap_texture_instance(p_cpp_instance, True)
         else:
             cpp_rect = convert_to_int_rect(area)
 
-            if p_cpp_instance.loadFromFile(filename, cpp_rect):
+            if p_cpp_instance.loadFromFile(c_filename, cpp_rect):
                 return wrap_texture_instance(p_cpp_instance, True)
 
         raise PySFMLException()
@@ -3115,14 +3169,22 @@ cdef public RenderTarget wrap_render_target_instance(decl.RenderTarget
     
     
 cdef class RenderWindow(RenderTarget):
-    def __init__(self, VideoMode mode, char* title, int style=Style.DEFAULT,
+    def __init__(self, VideoMode mode, title, int style=Style.DEFAULT,
                   ContextSettings settings=None):
+        cdef char *c_title
+
+        if isinstance(title, str):
+            py_title = title.encode(default_encoding)
+            c_title = py_title
+        else:
+            c_title = <bytes?>title
+
         if settings is None:
             self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
-                mode.p_this[0], title, style)
+                mode.p_this[0], c_title, style)
         else:
             self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
-                mode.p_this[0], title, style, settings.p_this[0])
+                mode.p_this[0], c_title, style, settings.p_this[0])
 
     def __dealloc__(self):
         del self.p_this
@@ -3200,8 +3262,16 @@ cdef class RenderWindow(RenderTarget):
                     .getSystemHandle())
 
     property title:
-        def __set__(self, char* value):
-            (<decl.RenderWindow*>self.p_this).setTitle(value)
+        def __set__(self, value):
+            cdef char *c_title
+
+            if isinstance(value, str):
+                py_title = value.encode(default_encoding)
+                c_title = py_title
+            else:
+                c_title = <bytes?>value
+
+            (<decl.RenderWindow*>self.p_this).setTitle(c_title)
 
     property vertical_sync_enabled:
         def __set__(self, bint value):
@@ -3227,13 +3297,21 @@ cdef class RenderWindow(RenderTarget):
     def close(self):
         (<decl.RenderWindow*>self.p_this).close()
 
-    def create(self, VideoMode mode, char* title, int style=Style.DEFAULT,
+    def create(self, VideoMode mode, title, int style=Style.DEFAULT,
                ContextSettings settings=None):
+        cdef char *c_title
+
+        if isinstance(title, str):
+            py_title = title.encode(default_encoding)
+            c_title = py_title
+        else:
+            c_title = <bytes?>title
+
         if settings is None:
-            (<decl.RenderWindow*>self.p_this).create(mode.p_this[0], title,
+            (<decl.RenderWindow*>self.p_this).create(mode.p_this[0], c_title,
                                                      style)
         else:
-            (<decl.RenderWindow*>self.p_this).create(mode.p_this[0], title,
+            (<decl.RenderWindow*>self.p_this).create(mode.p_this[0], c_title,
                                                      style, settings.p_this[0])
 
     def display(self):

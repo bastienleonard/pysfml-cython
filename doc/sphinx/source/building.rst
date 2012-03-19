@@ -203,6 +203,14 @@ of them as well as Windows.)
 ``sfml.so`` but something like ``sfml.cpython-32mu.so``. Apparently,
 on Windows it's still ``sfml.pyd``.)
 
+The second problem used to be that you had to use bytes instead of
+Unicode e.g. when passing a filename or window title to SFML. This is
+now gone, except possibly in methods that I forget to fix; make sure
+to report the issue if you encounter such a case. When you pass a
+Unicode object to these methods, they now encode it in UTF-8 before
+passing them to SFML. You can change the encoding by setting the
+:attr:`default_encoding` variable at any time.
+
 The second problem is that the SFML API uses raw strings a lot. This
 maps well into Python 2: you just use normal string litterals most of
 the time, except when you want to use the Unicode functionality

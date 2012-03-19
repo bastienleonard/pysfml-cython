@@ -34,6 +34,15 @@ System
 .. module:: sfml
 
 
+.. attribute:: default_encoding
+
+   Currently, this encoding is used when the user passes a Unicode
+   object to method that will call a SFML method which only supports
+   ``std::string`` argument. The user-supplised Unicode object will be
+   encoded with this encoding and the resulting bytes will be passed
+   to SFML. This is mostly for Python 3 users, so they don't have to
+   use byte strings all the time. Here is the list of valid encodings:
+   http://docs.python.org/py3k/library/codecs.html#standard-encodings
 
 .. function:: Time seconds(float seconds)
 
