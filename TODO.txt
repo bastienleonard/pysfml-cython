@@ -5,5 +5,3 @@
 
 - Add in-place operator overloads in Time, and possibly in other
   classes that I forgot.
-
-- Support the low-level graphics API.
