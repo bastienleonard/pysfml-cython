@@ -51,12 +51,13 @@ Graphics
            target.draw(self.logo)
            target.draw(self.princess)
 
-   See ``examples/customdrawable.py`` for a working example.
-   TODO: update the low-level API example and explain it here.
+   *target* and *states* are :class:`RenderTarget` and
+   :class:`RenderStates` objects, respectively.  See
+   ``examples/customdrawable.py`` for a working example.
 
-   The :class:`Transformable` class now contains the operations that can
-   be appied to a drawable. Most drawable (i.e. objects that can be drawn)
-   are transformable as well.
+   The :class:`Transformable` class now contains the operations that
+   can be appied to a drawable. Most drawable (i.e. objects that can
+   be drawn on a target) are transformable as well.
 
    C++ documentation:
 
