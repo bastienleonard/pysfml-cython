@@ -100,7 +100,7 @@ Classes
 .. class:: Color(int r, int g, int b[, int a=255])
 
    Note: this class overrides some comparison and arithmetic operators in the
-   same way that the C++ class does..
+   same way that C++ class does.
 
    The following colors are available as static attibutes, e.g. you can use
    ``sfml.Color.WHITE`` to obtain a reference to the white color.
@@ -355,9 +355,9 @@ Image display and effects
 
 .. class:: Texture([int width[, int height]])
 
-   This class has been recently introduced in SFML 2. It basically
-   replaces the :class:`Image` class, except when you need to access
-   or set pixels, which is only possible with Images.
+   This class has been introduced in SFML 2. It basically replaces the
+   :class:`Image` class, except when you need to access or set pixels,
+   which is only possible with Images.
 
    .. attribute:: MAXIMUM_SIZE
    .. attribute:: height   
@@ -405,6 +405,13 @@ Image display and effects
          this won't work::
 
              sprite.texture_rect.top = 10
+
+         Instead, you need to explicitely set the property to the
+         desired value:
+
+             rect = sprite.texture_rect
+             # ...
+             sprite.texture_rect = rect
 
    .. method:: set_texture(texture[, adjust_to_new_size=False])
 
@@ -458,12 +465,12 @@ Image display and effects
    To apply a shader to a drawable, you must pass it as an additional
    parameter to :meth:`RenderTarget.draw`::
 
-       window.draw(sprite, shader);
+       window.draw(sprite, shader)
 
    Which is in fact just a shortcut for this::
 
        states = sfml.RenderStates()
-       states.shader = shader;
+       states.shader = shader
        window.draw(sprite, states)
 
    Shaders can be used on any drawable, but some combinations are not
@@ -497,9 +504,9 @@ Image display and effects
    custom OpenGL geometry::
 
       window.active = True
-      shader.bind();
-      ... render OpenGL geometry ...
-      shader.unbind();
+      shader.bind()
+      # render OpenGL geometry ...
+      shader.unbind()
 
 
    .. attribute:: IS_AVAILABLE
