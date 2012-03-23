@@ -3169,22 +3169,25 @@ cdef public RenderTarget wrap_render_target_instance(decl.RenderTarget
     
     
 cdef class RenderWindow(RenderTarget):
-    def __init__(self, VideoMode mode, title, int style=Style.DEFAULT,
+    def __init__(self, VideoMode mode=None, title=None, int style=Style.DEFAULT,
                   ContextSettings settings=None):
         cdef char *c_title
 
-        if isinstance(title, str):
-            py_title = title.encode(default_encoding)
-            c_title = py_title
+        if mode is None:
+            self.p_this = <decl.RenderTarget*>new decl.RenderWindow()
         else:
-            c_title = <bytes?>title
+            if isinstance(title, str):
+                py_title = title.encode(default_encoding)
+                c_title = py_title
+            else:
+                c_title = <bytes?>title
 
-        if settings is None:
-            self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
-                mode.p_this[0], c_title, style)
-        else:
-            self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
-                mode.p_this[0], c_title, style, settings.p_this[0])
+            if settings is None:
+                self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
+                    mode.p_this[0], c_title, style)
+            else:
+                self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
+                    mode.p_this[0], c_title, style, settings.p_this[0])
 
     def __dealloc__(self):
         del self.p_this

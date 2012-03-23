@@ -1,7 +1,4 @@
 - Optimize audio streaming.
 
-- Add an empty RenderWindow constructor, to let the user delay the
-  window creation.
-
 - Add in-place operator overloads in Time, and possibly in other
   classes that I forgot.
