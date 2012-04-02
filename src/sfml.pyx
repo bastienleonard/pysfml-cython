@@ -1938,6 +1938,10 @@ cdef class Texture:
     def bind(self):
         self.p_this.bind()
 
+    def copy_to_image(self):
+        return wrap_image_instance(new decl.Image(self.p_this.copyToImage()),
+                                   True)
+
     def update(self, object source, int p1=-1, int p2=-1, int p3=-1, int p4=-1):
         if isinstance(source, bytes):
             if p1 == -1:

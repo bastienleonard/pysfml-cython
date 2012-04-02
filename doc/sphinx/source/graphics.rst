@@ -380,6 +380,7 @@ Image display and effects
       *area* can be either a tuple or an :class:`IntRect`.
 
    .. method:: bind()
+   .. method:: copy_to_image()
    .. method:: update(object source, int p1=-1, int p2=-1, int p3=-1, int p4=-1)
 
       This method can be called in three ways, to be consistent with
