@@ -1726,11 +1726,17 @@ cdef class Image:
 
     property height:
         def __get__(self):
-            return self.p_this.getHeight()
+            return self.size[1]
+
+    property size:
+        def __get__(self):
+            cdef decl.Vector2u size = self.p_this.getSize()
+
+            return (size.x, size.y)
 
     property width:
         def __get__(self):
-            return self.p_this.getWidth()
+            return self.size[0]
 
     @classmethod
     def load_from_file(cls, char *filename):
@@ -1848,7 +1854,7 @@ cdef class Texture:
 
     property height:
         def __get__(self):
-            return self.p_this.getHeight()
+            return self.size[1]
 
     property repeated:
         def __get__(self):
@@ -1856,6 +1862,12 @@ cdef class Texture:
 
         def __set__(self, bint value):
             self.p_this.setRepeated(value)
+
+    property size:
+        def __get__(self):
+            cdef decl.Vector2u size = self.p_this.getSize()
+
+            return (size.x, size.y)
 
     property smooth:
         def __get__(self):
@@ -1866,7 +1878,7 @@ cdef class Texture:
 
     property width:
         def __get__(self):
-            return self.p_this.getWidth()
+            return self.size[0]
 
     @classmethod
     def load_from_file(cls, filename, object area=None):
@@ -3054,9 +3066,9 @@ cdef class RenderTarget:
         cdef decl.Vector2f res
 
         if view is None:
-            res = self.p_this.convertCoords(x, y)
+            res = self.p_this.convertCoords(decl.Vector2i(x, y))
         else:
-            res = self.p_this.convertCoords(x, y, view.p_this[0])
+            res = self.p_this.convertCoords(decl.Vector2i(x, y), view.p_this[0])
 
         return (res.x, res.y)
 

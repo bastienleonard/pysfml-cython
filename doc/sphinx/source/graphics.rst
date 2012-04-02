@@ -322,6 +322,7 @@ Image display and effects
 .. class:: Image(int width, int height[, color])
 
    .. attribute:: height
+   .. attribute:: size
    .. attribute:: width
 
    .. classmethod:: load_from_file(filename)
@@ -362,6 +363,7 @@ Image display and effects
    .. attribute:: MAXIMUM_SIZE
    .. attribute:: height   
    .. attribute:: repeated
+   .. attribute:: size
    .. attribute:: smooth
    .. attribute:: width
 
