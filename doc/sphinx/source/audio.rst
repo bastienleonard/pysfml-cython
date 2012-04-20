@@ -34,6 +34,34 @@ Audio
 .. currentmodule:: sfml
 
 
+
+.. class:: Listener
+
+   The audio listener is the point in the scene from where all the
+   sounds are heard. The audio listener defines the global properties
+   of the audio environment: where and how sounds and musics are
+   heard.
+
+   If :class:`View` is the eyes of the user, then :class:`Listener` is his
+   ears (they are often linked together -- same position,
+   orientation, etc.).
+
+   Because the listener is unique in the scene, this class only
+   contains static functions and doesn't have to be instanciated.
+
+   Usage example::
+
+       # Move the listener to the position (1, 0, -5)
+       sfml.Listener.set_position(1, 0, -5)
+
+       # Make it face the right axis (1, 0, 0)
+       sfml.Listener.set_direction(1, 0, 0)
+
+       # Reduce the global volume
+       sfml.Listener.set_global_volume(50)
+
+
+
 .. class:: SoundBuffer
 
    The constructor will raise ``NotImplementedError``. Use one of the class

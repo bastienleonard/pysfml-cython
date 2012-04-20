@@ -136,3 +136,14 @@ cdef extern from "SFML/Audio.hpp" namespace "sf":
         void setRelativeToListener(bint)
         void setVolume(float)
         void stop()
+
+
+cdef extern from "SFML/Audio.hpp":
+    cdef decl.Vector3f Listener_getDirection "sf::Listener::getDirection" ()
+    cdef float Listener_getGlobalVolume "sf::Listener::getGlobalVolume" ()
+    cdef decl.Vector3f Listener_getPosition "sf::Listener::getPosition" ()
+    cdef void Listener_setGlobalVolume "sf::Listener::setGlobalVolume" (float)
+    cdef void Listener_setDirection "sf::Listener::setDirection" (float, float, float)
+    cdef void Listener_setDirection "sf::Listener::setDirection" (decl.Vector3f&)
+    cdef void Listener_setPosition "sf::Listener::setPosition" (float, float, float)
+    cdef void Listener_setPosition "sf::Listener::setPosition" (decl.Vector3f&)

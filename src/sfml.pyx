@@ -998,6 +998,37 @@ cdef Color wrap_color_instance(decl.Color *p_cpp_instance):
 
 
 
+cdef class Listener:
+    @classmethod
+    def get_direction(cls):
+        cdef decl.Vector3f d = declaudio.Listener_getDirection()
+
+        return (d.x, d.y, d.z)
+
+    @classmethod
+    def get_global_volume(cls):
+        return declaudio.Listener_getGlobalVolume()
+
+    @classmethod
+    def get_position(cls):
+        cdef decl.Vector3f pos = declaudio.Listener_getPosition()
+
+        return (pos.x, pos.y, pos.z)
+
+    @classmethod
+    def set_global_volume(cls, float volume):
+        declaudio.Listener_setGlobalVolume(volume)
+
+    @classmethod
+    def set_direction(cls, float x, float y, float z):
+        declaudio.Listener_setDirection(x, y, z)
+
+    @classmethod
+    def set_position(cls, float x, float y, float z):
+        declaudio.Listener_setPosition(x, y, z)
+
+
+
 cdef class SoundBuffer:
     cdef declaudio.SoundBuffer *p_this
     cdef bint delete_this
