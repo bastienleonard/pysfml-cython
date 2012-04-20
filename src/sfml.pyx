@@ -999,6 +999,9 @@ cdef Color wrap_color_instance(decl.Color *p_cpp_instance):
 
 
 cdef class Listener:
+    def __init__(self):
+        raise NotImplementedError("This class only contains static methods")
+
     @classmethod
     def get_direction(cls):
         cdef decl.Vector3f d = declaudio.Listener_getDirection()

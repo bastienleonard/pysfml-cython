@@ -47,7 +47,9 @@ Audio
    orientation, etc.).
 
    Because the listener is unique in the scene, this class only
-   contains static functions and doesn't have to be instanciated.
+   contains static functions and doesn't have to be
+   instanciated. Calling the constructor will raise
+   ``NotImplementedError``.
 
    Usage example::
 
@@ -59,6 +61,42 @@ Audio
 
        # Reduce the global volume
        sfml.Listener.set_global_volume(50)
+
+   .. classmethod:: get_direction()
+
+      Get the current direction of the listener in the scene, as a
+      tuple of three floats.
+
+   .. classmethod:: get_global_volume()
+
+      Get the current value of the global volume, as a ``float``.
+
+   .. classmethod:: get_position()
+
+      Get the current position of the listener in the scene, as a
+      tuple of three floats.
+
+   .. classmethod:: set_global_volume(float volume)
+
+      Change the global volume of all the sounds and musics.
+
+      The volume is a number between 0 and 100; it is combined with
+      the individual volume of each sound / music. The default value
+      for the volume is 100 (maximum).
+
+   .. classmethod:: set_direction(float x, float y, float z)
+
+      Set the orientation of the listener in the scene.
+
+      The orientation defines the 3D axes of the listener (left, up,
+      front) in the scene. The orientation vector doesn't have to be
+      normalized. The default listener's orientation is (0, 0, -1).
+
+   .. classmethod:: set_position(float x, float y, float z)
+
+      Set the position of the listener in the scene.
+
+      The default listener's position is (0, 0, 0).
 
 
 
