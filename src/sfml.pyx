@@ -1665,8 +1665,9 @@ cdef class Font:
         <decl.Font*>&decl.Font_getDefaultFont(), False)
 
     def __init__(self):
-        self.p_this = new decl.Font()
-        self.delete_this = True
+        self.delete_this = False
+        raise NotImplementedError(
+            "Use class methods like load_from_file() to load your fonts")
 
     def __dealloc__(self):
         if self.delete_this:

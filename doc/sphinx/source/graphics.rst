@@ -719,20 +719,114 @@ Text
 
 .. class:: Font()
 
+   The constructor will raise ``NotImplementedError`` if called.  Use
+   class methods like :meth:`load_from_file()` or :meth:`load_from_memory()`
+   instead.
+
+   The following types of fonts are supported: TrueType, Type 1, CFF,
+   OpenType, SFNT, X11 PCF, Windows FNT, BDF, PFR and Type 42.
+
+   Once it's loaded, you can retrieve three types of information about the font:
+
+   * Global metrics, such as the line spacing
+   * Per-glyph metrics, such as bounding box or kerning
+   * Pixel representation of glyphs
+
+   Fonts alone are not very useful: they hold the font data but cannot
+   make anything useful of it. To do so you need to use the
+   :class:`Text` class, which is able to properly output text with
+   several options such as character size, style, color, position,
+   rotation, etc. This separation allows more flexibility and better
+   performances: a font is a heavy resource, and any operation on it
+   is slow (often too slow for real-time applications). On the other
+   hand, a :class:`Text` is a lightweight object which can combine the
+   glyphs data and metrics of a font to display any text on a render
+   target. Note that it is also possible to bind several text
+   instances to the same font.
+
+   Usage example::
+
+       # Load a font from a file, catch PySFMLException
+       # if you want to handle the error
+       font = sfml.Font.load_from_file('arial.ttf'))
+ 
+       # Create a text which uses our font
+       text1 = sfml.Text()
+       text1.font font
+       text1.character_size = 30
+       text1.style = sfml.Text.REGULAR
+ 
+       # Create another text using the same font, but with different parameters
+       text2 = sfml.Text()
+       text2.font = font
+       text2.character_size = 50
+       text1.style = sfml.Text.ITALICE
+
+   Apart from loading font files, and passing them to instances of
+   :class:`Text`, you should normally not have to deal directly with
+   this class. However, it may be useful to access the font metrics or
+   rasterized glyphs for advanced usage.
+
    .. attribute:: DEFAULT_FONT
 
       The default font (Arial), as a class attribute::
 
          print sfml.Font.DEFAULT_FONT
 
+      This font is provided for convenience, it is used by text
+      instances by default. It is provided so that users don't have to
+      provide and load a font file in order to display text on
+      screen.
 
    .. classmethod:: load_from_file(filename)
-   .. classmethod:: load_from_memory(str data)
+
+      Load the font from *filename*, and return a new font object.
+
+      Note that this class method knows nothing about the standard
+      fonts installed on the user's system, so you can't load them
+      directly.
+
+      :exc:`PySFMLException` is raised if an error occurs.
+
+   .. classmethod:: load_from_memory(bytes data)
+
+      Load the font from the string/bytes object (for Python 2/3,
+      respectively) and return a new font object.
+
+      .. warning::
+
+         SFML cannot preload all the font data in this function, so
+         you should keep a reference to the *data* object as long as
+         the font is used.
 
    .. method:: get_glyph(int code_point, int character_size, bool bold)
+
+      Return a glyph corresponding to *code_point* and *character_size*.
+
    .. method:: get_texture(int character_size)
+
+      Retrieve the texture containing the loaded glyphs of a certain size.
+
+      The contents of the returned texture changes as more glyphs are
+      requested, thus it is not very relevant. It is mainly used
+      internally by :class:`Text`.
+
    .. method:: get_kerning(int first, int second, int character_size)
+
+      Return the kerning offset of two glyphs.
+
+      The kerning is an extra offset (negative) to apply between two
+      glyphs when rendering them, to make the pair look more
+      "natural". For example, the pair "AV" have a special kerning to
+      make them closer than other characters. Most of the glyphs pairs
+      have a kerning offset of zero, though.
+
    .. method:: get_line_spacing(int character_size)
+
+      Get the line spacing.
+
+      Line spacing is the vertical offset to apply between two
+      consecutive lines of text.
 
 
 
