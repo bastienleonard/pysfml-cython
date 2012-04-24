@@ -752,7 +752,7 @@ Text
  
        # Create a text which uses our font
        text1 = sfml.Text()
-       text1.font font
+       text1.font = font
        text1.character_size = 30
        text1.style = sfml.Text.REGULAR
  
@@ -760,7 +760,7 @@ Text
        text2 = sfml.Text()
        text2.font = font
        text2.character_size = 50
-       text1.style = sfml.Text.ITALICE
+       text1.style = sfml.Text.ITALIC
 
    Apart from loading font files, and passing them to instances of
    :class:`Text`, you should normally not have to deal directly with
