@@ -1,0 +1,13 @@
+0.1:
+
+- The module is now called sfml. To keep using the sf prefix, import the module
+  with “import sfml as sf”.
+- Python 3 users don't need to use bytes instead of strings anymore. When a C++
+  method expects a byte string and the user passes a Unicode object, it is
+  encoded to a byte string with sfml.default_encoding (UTF-8 by default, you can
+  change it as needed).
+- Added the Listener class.
+- Added audio streaming (still lacking performance-wise).
+- Added Texture.copy_to_image()
+- Improved examples.
+- Fixed various bugs and memory leaks.
