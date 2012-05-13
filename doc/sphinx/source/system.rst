@@ -44,12 +44,6 @@ System
    use byte strings all the time. Here is the list of valid encodings:
    http://docs.python.org/py3k/library/codecs.html#standard-encodings
 
-.. function:: Time seconds(float seconds)
-
-.. function:: Time milliseconds(int milliseconds)
-
-.. function:: Time microseconds(int microseconds)
-
 
 .. class:: Time(seconds=-1.0, milliseconds=-1, microseconds=-1)
 

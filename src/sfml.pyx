@@ -863,28 +863,6 @@ cdef public Time wrap_time_instance(decl.Time *p_cpp_instance):
     return ret
 
 
-def seconds(float seconds):
-    cdef decl.Time *p = new decl.Time()
-
-    p[0] = decl.Time_seconds(seconds)
-
-    return wrap_time_instance(p)
-
-def milliseconds(int milliseconds):
-    cdef decl.Time *p = new decl.Time()
-
-    p[0] = decl.Time_milliseconds(milliseconds)
-
-    return wrap_time_instance(p)
-
-def microseconds(int microseconds):
-    cdef decl.Time *p = new decl.Time()
-
-    p[0] = decl.Time_microseconds(microseconds)
-
-    return wrap_time_instance(p)
-
-
 
 cdef class Clock:
     cdef decl.Clock *p_this
