@@ -44,7 +44,8 @@ Tutorial
    "official" namespace.
 
 Welcome to pySMFL's official tuturial! You are going to learn how to
-display an image. But first, here is the full listing::
+display an image and move it based on user input. But first, here is
+the full listing::
 
    import sfml as sf
 
@@ -61,6 +62,11 @@ display an image. But first, here is the full listing::
            for event in window.iter_events():
                if event.type == sf.Event.CLOSED:
                    running = False
+
+           if sf.Keyboard.is_key_pressed(sf.Keyboard.RIGHT):
+               sprite.move(5, 0)
+           elif sf.Keyboard.is_key_pressed(sf.Keyboard.LEFT):
+               sprite.move(-5, 0)
 
            window.clear(sf.Color.WHITE)
            window.draw(sprite)
@@ -200,8 +206,8 @@ This line tells SFML to ensure that the window isn't updated more than
 60 times per second. It should to go in the setup code.
 
 
-Handling events
----------------
+Event handling basics
+---------------------
 
 The most common way to handle events in pySFML is to use
 :meth:`RenderWindow.iter_events()`. You can still use
@@ -240,10 +246,26 @@ In our case, we just use the "closed" event to stop the program::
         if event.type == sf.Event.CLOSED:
             running = False
 
-See :ref:`event_types_reference` for the list of all events and the
-attributes they use.
+Most event objects contain special attributes containing useful
+values, but ``CLOSED`` doesn't, it just tells you that the user want
+to close your application. ``KEY_PRESSED`` is another common event
+type. Events of this type contain several attributes, but the most
+important one is ``code``. It's an integer that maps to one of the
+constants in the :class:`Keyboard` class.
 
-To do: talk about the other kinds of events and their attributes.
+For example, if we wanted to close the window when the user presses
+the Escape key, our event loop could look like this::
+
+   while running:
+       for event in window.iter_events():
+           if event.type == sf.Event.CLOSED:
+               running = False
+           elif event.type == sf.Event.KEY_PRESSED:
+               if event.code == sf.Keyboard.ESCAPE:
+                   running = False
+
+See :ref:`event_types_reference` for the list of all events and the
+attributes they contain.
 
 
 Drawing the image
@@ -281,6 +303,42 @@ Now, we can display the sprite in the game loop::
     window.clear(sf.Color.WHITE)
     window.draw(sprite)
     window.display()
+
+
+Real-time input handling
+------------------------
+
+What if we want to do something as long as the user is pressing a
+certain key? For example, we want to move our logo as long as the user
+is pressing the right arrow key, or the left key. In that case, it's
+not enough to know that the user just pressed the key. We want to know
+whether he is still holding it or not.
+
+To achieve that, you would need to set a boolean to ``True`` as soon
+as the user is pressing the key. When you get the "release" event for
+that key, you set it back to ``False``. And you read the value of that
+boolean to know whether the right key is pressed or not.
+
+As it turns out, SFML has this kind of feature built in. You can call
+:meth:`Keyboard.is_key_pressed` with the code the key as an argument;
+it will return ``True`` if this key is currently pressed. The key
+codes are class attributes in :class:`Keyboard`: for example,
+:attr:`Keyboard.LEFT` and :attr:`Keyboard.RIGHT` map to the left and
+right arrow keys. Your event loop would then look something like this::
+
+   while running:
+       for event in window.iter_events():
+           if event.type == sf.Event.CLOSED:
+               running = False
+
+       if sf.Keyboard.is_key_pressed(sf.Keyboard.RIGHT):
+           sprite.move(5, 0)
+       elif sf.Keyboard.is_key_pressed(sf.Keyboard.LEFT):
+           sprite.move(-5, 0)
+
+The :class:`Mouse` class provides a similar class method,
+:meth:`Mouse.is_button_pressed`, for when you need to know whether a
+mouse button is pressed.
 
 
 Images and textures
