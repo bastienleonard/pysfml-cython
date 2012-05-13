@@ -39,9 +39,8 @@ Graphics
 
 .. note:: Creating your own drawables
 
-   A drawable is an object that can be draw directly to render target,
-   e.g. you can write ``window.draw(a_drawable)``. The object can also
-   be drawn using the low-level API.
+   A drawable is an object that can be drawn directly to render
+   target, e.g. you can write ``window.draw(a_drawable)``.
 
    In the past, creating a drawable involved inheriting the ``Drawable``
    class and overriding its ``render()`` method. With the new graphics API,
@@ -51,9 +50,9 @@ Graphics
            target.draw(self.logo)
            target.draw(self.princess)
 
-   *target* and *states* are :class:`RenderTarget` and
-   :class:`RenderStates` objects, respectively.  See
-   ``examples/customdrawable.py`` for a working example.
+   *target* and *states* are :class:`RenderTarget` and :class:`RenderStates`
+   objects, respectively.  See ``examples/customdrawable.py`` for a working
+   example, which also shows how you can use the low-level API.
 
    The :class:`Transformable` class now contains the operations that
    can be appied to a drawable. Most drawable (i.e. objects that can
