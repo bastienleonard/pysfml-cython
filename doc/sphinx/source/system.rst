@@ -53,13 +53,16 @@ System
 
 .. class:: Time(seconds=-1.0, milliseconds=-1, microseconds=-1)
 
-   .. attribute:: ZERO
-
-      Predefind "zero" time value (class attribute).
+   Instead of forcing the user to use a specific time units, SFML uses
+   this class to encapsulate time values. The user can get an actual
+   time value by using the following methods: :meth:`as_seconds`,
+   :meth:`as_milliseconds` and :meth:`as_microseconds`. You can also
+   create your own time objects by calling the constructor with one
+   keyword argument.
 
    Using one keyword argument is equivalent to calling the
-   corresponding function. For example,
-   ``sfml.seconds(10) == sfml.Time(seconds=10)``.
+   corresponding function. For example, ``sfml.seconds(10) ==
+   sfml.Time(seconds=10)``.
 
    This class provides the following special methods:
 
@@ -67,31 +70,78 @@ System
    * Arithmetic operators: ``+``, ``-``, ``*``, ``/``, unary ``-``.
    * ``str()`` returns a representation of the number of seconds.
 
-   .. method:: float as_seconds()
-   .. method:: int as_milliseconds()
-   .. method:: int as_microseconds()
+   .. attribute:: ZERO
 
+      Predefind "zero" time value (class attribute).
+
+   .. method:: as_seconds()
+
+      Return a ``float`` containing the number of seconds for this time object.
+
+   .. method:: as_milliseconds()
+
+      Return an ``int`` containing the number of milliseconds for this time
+      object.
+
+   .. method:: as_microseconds()
+
+      Return an ``int`` containing the number of microseconds for this time
+      object.
 
 .. class:: Clock
 
-   .. attribute:: Time elapsed_time
+   Utility class that measures the elapsed time.
 
-   .. method:: Time restart()
+   Its provides the most precise time that the underlying OS can
+   achieve (generally microseconds or nanoseconds). It also ensures
+   monotonicity, which means that the returned time can never go
+   backward, even if the system time is changed.
+
+   Usage example::
+
+      clock = sfml.Clock()
+      ...
+      time1 = clock.elapsed_time
+      ...
+      time2 = clock.restart()
+
+   The :class:`Time` object returned by the clock can then be
+   converted to a number of seconds, milliseconds or even
+   microseconds.
+
+   .. attribute:: elapsed_time
+
+      A :class:`Time` object containing the time elapsed since the
+      last call to :meth:`restart`, or the construction of the
+      instance if :meth:`restart` has not been called yet.
+
+   .. method:: restart()
+
+      Restart the clock, and return a :class:`Time` object containing
+      the elapsed time since the clock started.
 
 
 
 .. class:: Vector2f(float x=0.0; float y=0.0)
 
    You don't have to use this class; everywhere you can pass a
-   :class:`Vector2f`, you should be able to pass a tuple as well. However, it
-   can be more practical to use it, as it overrides arithmetic and comparison
-   operators, is mutable and requires that you use ``x`` and ``y`` members
-   instead of indexing.
+   :class:`Vector2f`, you should be able to pass a tuple as
+   well. However, it can be more practical to use it, as it overrides
+   arithmetic and comparison operators, is mutable and requires that
+   you use the :attr:`x` and :attr:`y` members instead of indexing.
 
    .. attribute:: x
+
+      *x* coordinate for this vector.
+
    .. attribute:: y
 
+      *y* coordinate for this vector.
+
    .. classmethod:: from_tuple(t)
+
+      Return a vector with the *x* and *y* components taking from the
+      tuple.
 
    .. method:: copy()
 
