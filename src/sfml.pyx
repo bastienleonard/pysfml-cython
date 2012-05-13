@@ -590,10 +590,6 @@ cdef class Vector2f:
         def __set__(self, float value):
             self.p_this.y = value
 
-    @classmethod
-    def from_tuple(cls, tuple t):
-        return Vector2f(t[0], t[1])
-
 
 cdef public decl.Vector2f convert_to_vector2f(value):
     if isinstance(value, Vector2f):

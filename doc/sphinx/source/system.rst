@@ -132,11 +132,6 @@ System
 
       *y* coordinate for this vector.
 
-   .. classmethod:: from_tuple(t)
-
-      Return a vector with the *x* and *y* components taking from the
-      tuple.
-
    .. method:: copy()
 
       Return a new :class:`Vector2f` with ``x`` and ``y`` set to the
