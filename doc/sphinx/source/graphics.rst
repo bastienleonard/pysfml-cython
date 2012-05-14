@@ -409,7 +409,7 @@ Image display and effects
              sprite.texture_rect.top = 10
 
          Instead, you need to explicitely set the property to the
-         desired value:
+         desired value::
 
              rect = sprite.texture_rect
              # ...
