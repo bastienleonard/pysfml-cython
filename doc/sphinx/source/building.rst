@@ -169,6 +169,7 @@ If you get an error related with ``DL_IMPORT``, refer to the end of
 
 
 .. _python3:
+
 Building a Python 3 module
 --------------------------
 
