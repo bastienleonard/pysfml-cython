@@ -139,13 +139,13 @@ When you create a :class:`VideoMode`, you can choose the bits per
 pixel with a third argument. If you don't, it is set to 32, which is
 what we do in our examples, since it's probably the most common value.
 
-In the former examples, any video mode size works because we run in
+In the previous examples, any video mode size works because we run in
 windowed mode. But if we want to run in fullscreen mode, we have to
 choose one of the allowed modes.  The
-:meth:`VideoMode.get_fullscreen_modes()` class method returns a
-list of all the valid fullscreen modes. They are sorted from best to
-worst, so ``sf.VideoMode.get_fullscreen_modes()[0]`` will always be
-the highest-quality mode available::
+:meth:`VideoMode.get_fullscreen_modes()` class method returns a list
+of all the valid fullscreen modes. They are sorted from best to worst,
+so ``sf.VideoMode.get_fullscreen_modes()[0]`` will always be the
+highest-quality mode available::
 
     window = sf.RenderWindow(sf.VideoMode.get_fullscreen_modes[0], 'SFML Window', sf.Style.FULLSCREEN)
 
@@ -266,6 +266,13 @@ the Escape key, our event loop could look like this::
 
 See :ref:`event_types_reference` for the list of all events and the
 attributes they contain.
+
+.. note::
+
+   In fullscreen mode, you can't rely on the window manager's controls
+   to send the ``CLOSED`` event, so it's a good idea to set shortcut
+   like we just did to make sure the user is able to close the
+   application.
 
 
 Drawing the image
