@@ -839,7 +839,7 @@ cdef class Time:
         return NotImplemented
 
     def __neg__(self):
-        return microseconds(-self.p_this.asMicroseconds())
+        return Time(microseconds=-self.p_this.asMicroseconds())
 
     def as_seconds(self):
         return self.p_this.asSeconds()
