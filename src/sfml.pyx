@@ -2248,7 +2248,7 @@ cdef class Text(Transformable):
 cdef class Sprite(Transformable):
     cdef Texture texture
 
-    def __cinit__(self, Texture texture=None, IntRect rectangle=None):
+    def __init__(self, Texture texture=None, IntRect rectangle=None):
         if texture is None:
             self.texture = None
             self.p_this = <decl.Transformable*>new decl.Sprite()
