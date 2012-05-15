@@ -785,13 +785,13 @@ cdef class Time:
 
     def __add__(a, b):
         if isinstance(a, Time) and isinstance(b, Time):
-            return a.p_this[0] + b.p_this[0]
+            return Time(microseconds=a.as_microseconds() + b.as_microseconds())
 
         return NotImplemented
 
     def __sub__(a, b):
         if isinstance(a, Time) and isinstance(b, Time):
-            return a.p_this[0] - b.p_this[0]
+            return Time(microseconds=a.as_microseconds() - b.as_microseconds())
 
         return NotImplemented
 
@@ -801,11 +801,9 @@ cdef class Time:
 
         if isinstance(a, Time):
             if isinstance(b, int):
-                return wrap_time_instance(
-                    new decl.Time((<Time>a).p_this[0] * <decl.Int64>b))
+                return Time(microseconds=a.as_microseconds() * b)
             if isinstance(b, float):
-                return wrap_time_instance(
-                    new decl.Time((<Time>a).p_this[0] * <float>b))
+                return Time(seconds=a.as_seconds() * b)
 
         return NotImplemented
 
@@ -815,11 +813,9 @@ cdef class Time:
 
         if isinstance(a, Time):
             if isinstance(b, int):
-                return wrap_time_instance(
-                    new decl.Time((<Time>a).p_this[0] / <decl.Int64>b))
+                return Time(microseconds=a.as_microseconds() / b)
             if isinstance(b, float):
-                return wrap_time_instance(
-                    new decl.Time((<Time>a).p_this[0] / <float>b))
+                return Time(seconds=a.as_seconds() / b)
 
         return NotImplemented
 
@@ -830,11 +826,9 @@ cdef class Time:
 
         if isinstance(a, Time):
             if isinstance(b, int):
-                return wrap_time_instance(
-                    new decl.Time((<Time>a).p_this[0] / <decl.Int64>b))
+                return Time(microseconds=a.as_microseconds() / b)
             if isinstance(b, float):
-                return wrap_time_instance(
-                    new decl.Time((<Time>a).p_this[0] / <float>b))
+                return Time(seconds=a.as_seconds() / b)
 
         return NotImplemented
 
