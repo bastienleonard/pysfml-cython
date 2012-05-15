@@ -851,7 +851,7 @@ cdef class Time:
         return self.p_this.asMicroseconds()
 
 
-cdef public Time wrap_time_instance(decl.Time *p_cpp_instance):
+cdef public object wrap_time_instance(decl.Time *p_cpp_instance):
     cdef Time ret = Time.__new__(Time)
 
     ret.p_this = p_cpp_instance
@@ -1257,7 +1257,7 @@ cdef class Chunk:
             self.p_this.sampleCount = len(value)
                 
 
-cdef public Chunk wrap_chunk_instance(declaudio.Chunk *p, bint delete_this):
+cdef public object wrap_chunk_instance(declaudio.Chunk *p, bint delete_this):
     cdef Chunk ret = Chunk.__new__(Chunk)
 
     ret.p_this = p
@@ -3005,7 +3005,7 @@ cdef class RenderStates:
             self.p_this.transform = value.p_this[0]
 
 
-cdef public RenderStates wrap_render_states_instance(decl.RenderStates *p):
+cdef public object wrap_render_states_instance(decl.RenderStates *p):
     cdef RenderStates ret = RenderStates.__new__(RenderStates)
 
     ret.p_this = p
@@ -3183,8 +3183,8 @@ cdef void call_render(RenderTarget target, object drawable, object x) except *:
         target.p_this.draw((<decl.Drawable*>&cpp_drawable)[0])
 
 
-cdef public RenderTarget wrap_render_target_instance(decl.RenderTarget
-                                                     *p_cpp_instance):
+cdef public object wrap_render_target_instance(decl.RenderTarget
+                                               *p_cpp_instance):
     cdef RenderTarget ret = RenderTarget.__new__(RenderTarget)
     ret.p_this = p_cpp_instance
 
