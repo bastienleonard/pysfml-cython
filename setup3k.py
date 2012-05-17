@@ -52,6 +52,7 @@ if USE_CYTHON:
 def src(path):
     return os.path.join('src', path)
 
+
 print("\nIf the build fails, run patch.py and try again\n"
         "----------------------------------------------\n", file=sys.stderr)
 
@@ -70,7 +71,7 @@ with open('README.md', 'r') as f:
 
 kwargs = dict(name='pySFML',
               ext_modules=ext_modules,
-              version='0.1',
+              version='0.1.1',
               description='A Python binding for SFML 2',
               long_description=long_description,
               author='Bastien Léonard',

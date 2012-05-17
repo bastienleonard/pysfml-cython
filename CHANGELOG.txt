@@ -1,3 +1,21 @@
+0.1.1:
+
+- The seconds(), milliseconds() and microseconds() functions are
+  removed. Use the Time constructor with keyword arguments instead,
+  e.g. milliseconds(200) becomes Time(milliseconds=200).
+- Made Sprite more straightforward to inherit, __cinit__() won't raise
+  errors because it automatically gets passed the constructor
+  arguments anymore.
+- Fixed a bug in Time where some arithemtic operators would always
+  raise an exception.
+- Fixed a bug in RenderStates where internal attributes and properties
+  got mismatched because they had the same name.
+- Added a __repr__() method in Time (mostly to have more readable unit
+  test errors, __str__() already existed in the past).
+- Documentation: added a "caveats" page, and a new tutorial for people
+  who are coming from a C++ SFML background.
+- Added some unit tests.
+
 0.1:
 
 - The module is now called sfml. To keep using the sf prefix, import the module
@@ -8,6 +26,6 @@
   change it as needed).
 - Added the Listener class.
 - Added audio streaming (still lacking performance-wise).
-- Added Texture.copy_to_image()
+- Added Texture.copy_to_image().
 - Improved examples.
 - Fixed various bugs and memory leaks.
