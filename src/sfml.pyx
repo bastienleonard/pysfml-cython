@@ -2949,9 +2949,11 @@ cdef ContextSettings wrap_context_settings_instance(
 
 cdef class RenderStates:
     cdef decl.RenderStates *p_this
-    cdef Transform transform
-    cdef Texture texture
-    cdef Shader shader
+    # m prefixes are used to distinguish these attributes from the
+    # Python properties
+    cdef Transform m_transform
+    cdef Texture m_texture
+    cdef Shader m_shader
 
     DEFAULT = wrap_render_states_instance(
         new decl.RenderStates(decl.RenderStates_Default))
@@ -2979,26 +2981,26 @@ cdef class RenderStates:
 
     property shader:
         def __get__(self):
-            return self.shader
+            return self.m_shader
 
         def __set__(self, Shader value):
-            self.shader = value
+            self.m_shader = value
             self.p_this.shader = value.p_this
 
     property texture:
         def __get__(self):
-            return self.texture
+            return self.m_texture
 
         def __set__(self, Texture value):
-            self.texture = value
+            self.m_texture = value
             self.p_this.texture = value.p_this
 
     property transform:
         def __get__(self):
-            return self.transform
+            return self.m_transform
 
         def __set__(self, Transform value):
-            self.transform = value
+            self.m_transform = value
             self.p_this.transform = value.p_this[0]
 
 
