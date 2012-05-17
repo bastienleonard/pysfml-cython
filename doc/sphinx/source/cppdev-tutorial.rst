@@ -131,8 +131,21 @@ class. This is covered in :ref:`Creating your own
 drawables<graphicsref_custom_drawables>`.
 
 
+Time
+----
+
+Time values are created with :class:`Time`'s constructor using keyword
+arguments, instead of calling a global function. For example,
+``sf::milliseconds(200)`` becomes ``sfml.Time(milliseconds=200)``.
+
+
 "Missing" features
 ------------------
+
+:class:`Vector2f` has been ported, but tuples are used instead of
+``Vector2i`` and ``Vector3f``. These classes are used so sparsely that
+it doesn't seem worth porting them. Note that you can pass tuples
+instead of :class:`Vector2f` objects.
 
 The network and threading parts of SFML aren't ported in this module,
 since similar features are already provided by the standard library.
