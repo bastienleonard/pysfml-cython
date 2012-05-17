@@ -40,8 +40,8 @@ Welcome to pySFML 2 - Cython's documentation!
 =============================================
 
 A new Python 2/3 binding for SFML 2, made with `Cython
-<http://cython.org>`_.  Most features of SFML are currently available,
-but this is still a work in progress.  Feel free to report any issue
+<http://cython.org>`_. Most features of SFML are currently available,
+but this is still a work in progress. Feel free to report any issue
 you encounter.
 
 You can find the source code, downloads and the issue tracker here:
@@ -56,7 +56,7 @@ between SFML and this binding should be fairly easy to grasp.
 .. note::
 
    Make sure you read the :ref:`caveats` page, so that you know what
-   the most important current limitations.
+   the most important current limitations are.
 
 Contents:
 
