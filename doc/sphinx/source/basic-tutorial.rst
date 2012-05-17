@@ -31,8 +31,8 @@
 .. module:: sfml
 
 
-Tutorial
-========
+pySFML basics
+=============
 
 .. warning::
 
@@ -270,7 +270,7 @@ attributes they contain.
 .. note::
 
    In fullscreen mode, you can't rely on the window manager's controls
-   to send the ``CLOSED`` event, so it's a good idea to set shortcut
+   to send the ``CLOSED`` event, so it's a good idea to set a shortcut
    like we just did to make sure the user is able to close the
    application.
 

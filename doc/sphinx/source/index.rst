@@ -67,7 +67,7 @@ Contents:
    caveats
    changelog
    building
-   tutorial
+   tutorials
    reference
    licenses
 

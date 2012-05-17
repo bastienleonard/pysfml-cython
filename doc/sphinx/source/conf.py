@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# PySFML 2 - Cython documentation build configuration file, created by
+# pySFML - Cython documentation build configuration file, created by
 # sphinx-quickstart on Fri Feb 18 08:41:37 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pySFML 2 - Cython'
-copyright = u'2011, Bastien Léonard'
+copyright = u'2011, 2012 Bastien Léonard'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

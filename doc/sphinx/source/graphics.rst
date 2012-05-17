@@ -35,7 +35,7 @@ Graphics
 
 
 
-.. _custom_drawables:
+.. _graphicsref_custom_drawables:
 
 .. note:: Creating your own drawables
 
@@ -170,8 +170,9 @@ Classes
 
       * A built-in drawable, such as :class:`Sprite` or :class:`Text`,
         or a user-made drawable (see :ref:`Creating your own drawables
-        <custom_drawables>`). You can pass a second argument of type
-        :class:`Shader` or :class:`RenderStates`. Example::
+        <graphicsref_custom_drawables>`). You can pass a second
+        argument of type :class:`Shader` or
+        :class:`RenderStates`. Example::
 
             window.draw(sprite, shader)
 

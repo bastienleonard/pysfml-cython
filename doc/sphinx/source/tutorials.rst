@@ -28,28 +28,13 @@
    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-.. module:: sfml
+Tutorials
+=========
 
 
-.. _caveats:
 
-Caveats
-=======
+.. toctree::
+   :maxdepth: 2
 
-Currently, the binding doesn't work correctly when built straight from
-the Git repo, see this forum post:
-http://en.sfml-dev.org/forums/index.php?topic=5311.msg52943#msg52943
-If you want to build from the source, you're encouraged to use the
-latest source release. See :ref:`building_without_cython`.
-
-Windows programs crash just before exiting. My guess is that it's
-related to the destruction of static objects; I'll try to fix it for
-the next minor release.
-
-A current limitation is that :class:`Texture` objects won't work as
-expected unless they are created after your :class:`RenderWindow`. It
-isn't a big problem in practice, but it's something to keep in mind
-until the issue is fixed. This seems to be related to a bug in SFML:
-https://github.com/LaurentGomila/SFML/issues/160 It may also be
-dependent on the platform, but even if it works correctly on your
-system, you shouldn't rely on it for now.
+   basic-tutorial
+   cppdev-tutorial
