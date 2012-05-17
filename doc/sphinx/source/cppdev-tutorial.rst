@@ -154,7 +154,7 @@ module. ``threading`` is the general, high-level module for threading
 stuff. For URL retrieval, ``urllib`` and ``urllib2`` are provided.
 
 You may also want to check non standard libraries such as `Twisted
-<http://twistedmatrix.com/>`_ or `request
+<http://twistedmatrix.com/>`_ or `requests
 <http://docs.python-requests.org/en/latest/index.html>`_.
 
 Most streaming features are also currently missing.
