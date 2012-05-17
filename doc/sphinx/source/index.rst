@@ -68,6 +68,7 @@ Contents:
    :maxdepth: 2
 
    introduction
+   caveats
    changelog
    building
    tutorial

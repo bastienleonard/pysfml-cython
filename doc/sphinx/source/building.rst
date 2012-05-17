@@ -129,6 +129,8 @@ In the end, the command will look something like this::
     python setup.py build_ext --inplace --compiler=mingw32
 
 
+.. _building_without_cython:
+
 Building without Cython
 -----------------------
 
@@ -165,7 +167,7 @@ When you've done so, you can build the module by typing this command::
     python setup.py build_ext
 
 If you get an error related with ``DL_IMPORT``, refer to the end of
-:ref:`the Python 3 section<python3>`.
+the :ref:`python3` section.
 
 
 .. _python3:
