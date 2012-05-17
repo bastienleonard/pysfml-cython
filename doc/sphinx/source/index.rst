@@ -44,7 +44,7 @@ A new Python 2/3 binding for SFML 2, made with `Cython
 but this is still a work in progress.  Feel free to report any issue
 you encounter.
 
-You can find the source code and the issue tracker here:
+You can find the source code, downloads and the issue tracker here:
 https://github.com/bastienleonard/pysfml2-cython
 
 Currently the reference mostly lists the available classes, their
@@ -55,12 +55,8 @@ between SFML and this binding should be fairly easy to grasp.
 
 .. note::
 
-   A current limitation is that :class:`Texture` objects won't work
-   as expected unless they are created after your
-   :class:`RenderWindow`.  It isn't a big problem in practice, but
-   it's something to keep in mind until the issue is
-   fixed. **Update:** this seems to be related to a bug in SFML:
-   https://github.com/LaurentGomila/SFML/issues/160
+   Make sure you read the :ref:`caveats` page, so that you know what
+   the most important current limitations.
 
 Contents:
 
