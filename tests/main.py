@@ -79,6 +79,10 @@ class TestTransform(unittest.TestCase):
     def random_transform(self):
         return sf.Transform(*[random.triangular(0.0, 5.0) for i in range(9)])
 
+    def test_init(self):
+        self.assertEqual(sf.Transform().matrix, sf.Transform.IDENTITY.matrix)
+        self.assertRaises(sf.PySFMLException, TypeError, *range(10))
+
     def test_copy(self):
         for i in range(10):
             t1 = self.random_transform()

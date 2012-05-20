@@ -609,12 +609,18 @@ cdef class Transform:
     IDENTITY = wrap_transform_instance(
         <decl.Transform*>&decl.Transform_Identity)
 
-    def __init__(self, float a00, float a01, float a02,
-                  float a10, float a11, float a12,
-                  float a20, float a21, float a22):
-        self.p_this = new decl.Transform(a00, a01, a02,
-                                         a10, a11, a12,
-                                         a20, a21, a22)
+    def __init__(self, *args):
+        if len(args) == 0:
+            self.p_this = new decl.Transform()
+        elif len(args) == 9:
+            a = args
+            self.p_this = new decl.Transform(a[0], a[1], a[2],
+                                             a[3], a[4], a[5],
+                                             a[6], a[7], a[8])
+        else:
+            raise TypeError(
+                "Transform takes 0 or 9 arguments, received {0}"
+                .format(len(args)))
 
     def __dealloc__(self):
         del self.p_this
