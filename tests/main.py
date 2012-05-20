@@ -81,7 +81,7 @@ class TestTransform(unittest.TestCase):
 
     def test_init(self):
         self.assertEqual(sf.Transform().matrix, sf.Transform.IDENTITY.matrix)
-        self.assertRaises(sf.PySFMLException, TypeError, *range(10))
+        self.assertRaises(TypeError, sf.Transform, *range(10))
 
     def test_copy(self):
         for i in range(10):
