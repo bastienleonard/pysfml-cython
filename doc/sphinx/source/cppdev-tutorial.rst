@@ -51,6 +51,29 @@ e.g. ``sf::Event::Closed`` becomes :attr:`sfml.Event.CLOSED`. Events
 are an exception, see :ref:`cpptut_events`.
 
 
+Object initialization with class methods
+----------------------------------------
+
+C++ SFML has a general pattern for creating objects when their
+initialization may fail:
+
+- Allocate an "empty" object.
+- Call a method that will initialize the object, e.g. ``loadFromFile()``.
+- If this method returned ``false``, handle the error.
+
+In pySFML, you typically just have to call a class method,
+e.g. :meth:`Texture.load_from_file`. If you want to handle possible
+errors at this point, you write an ``except`` block (see
+:ref:`cpptut_error_handling`). Otherwise, the exception will propagate
+to the next handler.
+
+In some cases, class methods are the only way to initialize an
+object. In that case, the constructor will raise
+``NotImplementedError`` if you call it. In other cases, the
+constructors peform some kind of default initialization, while class
+methods do more specific work.
+
+
 Properties
 ----------
 
@@ -77,7 +100,7 @@ now returns a new copy every time you access it. Eventually, I will
 either hack it to behave like an actual attribute, or rewrite it as
 ``get_texture_rect()/set_texture_rect()`` methods.
 
-I tend to use a method instead of an attribute, when I feel like a
+I tend to use a method instead of an attribute when I feel like a
 ``get*()`` method involves some kind of computation. For example,
 :meth:`View.get_inverse_transform` is a method instead of a property
 because I somehow feel like it involves something heavier than simply
@@ -106,6 +129,8 @@ retrieved in ``for`` loop with :meth:`RenderWindow.iter_event`::
        if event.type == sfml.Event.CLOSED:
            ...
 
+
+.. _cpptut_error_handling:
 
 Error handling
 --------------
