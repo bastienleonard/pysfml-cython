@@ -607,7 +607,7 @@ cdef class Transform:
     cdef decl.Transform *p_this
 
     IDENTITY = wrap_transform_instance(
-        <decl.Transform*>&decl.Transform_Identity)
+        new decl.Transform(decl.Transform_Identity))
 
     def __init__(self, *args):
         if len(args) == 0:
