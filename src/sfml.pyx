@@ -676,6 +676,11 @@ cdef class Transform:
 
         return wrap_transform_instance(p)
 
+    def copy(self):
+        cdef decl.Transform *p = new decl.Transform(self.p_this[0])
+
+        return wrap_transform_instance(p)
+
     def get_inverse(self):
         cdef decl.Transform *p = new decl.Transform()
 

@@ -75,6 +75,16 @@ class TestTime(unittest.TestCase):
                          sf.Time(seconds=t.as_seconds() / f))
 
 
+class TestTransform(unittest.TestCase):
+    def random_transform(self):
+        return sf.Transform(*[random.triangular(0.0, 5.0) for i in range(9)])
+
+    def test_copy(self):
+        for i in range(10):
+            t1 = self.random_transform()
+            t2 = t1.copy()
+            self.assertEqual(t1.matrix, t2.matrix)
+
 
 if __name__ == '__main__':
     unittest.main()

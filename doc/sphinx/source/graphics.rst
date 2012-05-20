@@ -242,6 +242,10 @@ Classes
    .. attribute:: matrix
 
    .. method:: combine(transform)
+   .. method:: copy()
+
+      Return a new transform object with the same content as self.
+
    .. method:: get_inverse()
    .. method:: rotate(float angle[, float center_x, float center_y])
    .. method:: scale(float scale_x, float scale_y[, float, center_y,\
