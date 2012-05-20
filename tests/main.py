@@ -89,6 +89,13 @@ class TestTransform(unittest.TestCase):
             t2 = t1.copy()
             self.assertEqual(t1.matrix, t2.matrix)
 
+    def test_imul(self):
+        t1 = self.random_transform()
+        t2 = self.random_transform()
+        t3 = t1.copy()
+        t3 *= t2
+        self.assertEqual((t1 * t2).matrix, t3.matrix)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -235,7 +235,7 @@ Classes
 
    This class provides the following special methods:
 
-   * ``*`` operator.
+   * ``*`` and ``*=`` operators.
    * ``str()`` returns the content of the matrix in a human-readable format.
 
    .. attribute:: IDENTITY

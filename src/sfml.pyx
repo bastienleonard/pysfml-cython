@@ -664,6 +664,13 @@ cdef class Transform:
 
         return NotImplemented
 
+    def __imul__(self, b):
+        if isinstance(b, Transform):
+            self.p_this[0] *= (<Transform>b).p_this[0]
+            return self
+
+        return NotImplemented
+
     property matrix:
         def __get__(self):
             cdef float *p = <float*>self.p_this.getMatrix()
