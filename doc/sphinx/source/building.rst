@@ -47,6 +47,10 @@ directory inside ``Lib\site-packages\``, but Windows wouldn't find the
 DLLs at runtime (it works for Pygame's installer though, I have no
 idea why).
 
+Christoph Gohlke also provides installers, with support for Python 2.6
+as wellas  native 64 bits installers on his website:
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#pysfml2
+
 You should be able to use pySFML 2 without installing anything
 else. Feedback is welcome.
 
@@ -148,6 +152,14 @@ module by typing this command::
 
 Building with Cython installed
 ------------------------------
+
+.. warning::
+
+   Currently, modules built straight from the repo probably won't work
+   (this may depend on your Cython version). Consider using a source
+   release, or read this forum post if you still want to build from
+   Git:
+   http://en.sfml-dev.org/forums/index.php?topic=5311.msg52943#msg52943
 
 .. warning::
 
