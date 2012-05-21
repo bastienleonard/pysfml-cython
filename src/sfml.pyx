@@ -1078,10 +1078,10 @@ cdef class SoundBuffer:
         raise PySFMLException()
 
     @classmethod
-    def load_from_memory(cls, char* data):
+    def load_from_memory(cls, bytes data):
         cdef declaudio.SoundBuffer *p = new declaudio.SoundBuffer()
 
-        if p.loadFromMemory(data, len(data)):
+        if p.loadFromMemory(<char*>data, len(data)):
             return wrap_sound_buffer_instance(p, True)
 
         raise PySFMLException()
