@@ -1082,31 +1082,16 @@ cdef class SoundBuffer:
 
         raise PySFMLException()
 
-    # TODO: use str/bytes instead of list
     @classmethod
-    def load_from_samples(cls, list samples, unsigned int channels_count,
+    def load_from_samples(cls, bytes samples, unsigned int channel_count,
                           unsigned int sample_rate):
-        cdef declaudio.SoundBuffer *p_sb = new declaudio.SoundBuffer()
-        cdef decl.Int16 *p_samples = <decl.Int16*>malloc(
-            len(samples) * sizeof(decl.Int16))
-        cdef decl.Int16 *p_temp = NULL
+        cdef declaudio.SoundBuffer *p = new declaudio.SoundBuffer()
 
-        if p_samples == NULL:
-            cpython.exc.PyErr_NoMemory()
+        if p.loadFromSamples(<decl.Int16*>(<char*>samples), len(samples),
+                             channel_count, sample_rate):
+            return wrap_sound_buffer_instance(p, True)
         else:
-            p_temp = p_samples
-
-            for sample in samples:
-                p_temp[0] = <int>sample
-                preinc(p_temp)
-
-            if p_sb.loadFromSamples(p_samples, len(samples), channels_count,
-                                    sample_rate):
-                free(p_samples)
-                return wrap_sound_buffer_instance(p_sb, True)
-            else:
-                free(p_samples)
-                raise PySFMLException()
+            raise PySFMLException()
 
     def save_to_file(self, filename):
         cdef char *c_filename

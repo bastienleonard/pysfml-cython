@@ -351,11 +351,13 @@ Audio
       fails. *data* should be ``str`` object in Python 2, and a
       ``bytes`` object in Python 3.
 
-   .. classmethod:: load_from_samples(list samples, int channels_count,\
+   .. classmethod:: load_from_samples(list samples, int channel_count,\
                                       int sample_rate)
 
-      Load the sound buffer from a list of audio
-      samples. :exc:`PySFMLException` is raised if loading fails.
+      Load the sound buffer from a list of audio samples. *samples*
+      should be a ``bytes`` object in Python 3, and a string in
+      Python 2. Each sample must be stored on two bytes (``Int16`` in
+      C++ SFML). :exc:`PySFMLException` is raised if loading fails.
 
    .. method:: save_to_file(filename)
 
