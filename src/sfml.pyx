@@ -1657,10 +1657,10 @@ cdef class Font:
         raise PySFMLException()
 
     @classmethod
-    def load_from_memory(cls, char* data):
+    def load_from_memory(cls, bytes data):
         cdef decl.Font *p = new decl.Font()
 
-        if p.loadFromMemory(data, len(data)):
+        if p.loadFromMemory(<char*>data, len(data)):
             return wrap_font_instance(p, True)
 
         raise PySFMLException()
@@ -1750,18 +1750,16 @@ cdef class Image:
         raise PySFMLException()
 
     @classmethod
-    def load_from_memory(cls, char* mem):
+    def load_from_memory(cls, bytes mem):
         cdef decl.Image *p_cpp_instance = new decl.Image()
 
-        if p_cpp_instance.loadFromMemory(mem, len(mem)):
+        if p_cpp_instance.loadFromMemory(<char*>mem, len(mem)):
             return wrap_image_instance(p_cpp_instance, True)
 
         raise PySFMLException()
 
-    # TODO: maybe this should be moved to the constructor, since the method
-    # was renamed from LoadFromPixels() to Create()
     @classmethod
-    def load_from_pixels(cls, int width, int height, char *pixels):
+    def load_from_pixels(cls, int width, int height, bytes pixels):
         cdef decl.Image *p_cpp_instance = new decl.Image()
 
         p_cpp_instance.create(width, height, <unsigned char*>pixels)
@@ -2813,11 +2811,11 @@ cdef class Shader:
         raise PySFMLException()
 
     @classmethod
-    def load_both_types_from_memory(cls, char *vertex_shader,
-                                    char *fragment_shader):
+    def load_both_types_from_memory(cls, bytes vertex_shader,
+                                    bytes fragment_shader):
         cdef decl.Shader *p = new decl.Shader()
 
-        if p.loadFromMemory(vertex_shader, fragment_shader):
+        if p.loadFromMemory(<char*>vertex_shader, <char*>fragment_shader):
             return wrap_shader_instance(p, True)
 
         raise PySFMLException()
@@ -2832,10 +2830,10 @@ cdef class Shader:
         raise PySFMLException()
 
     @classmethod
-    def load_from_memory(cls, char* shader, int type):
+    def load_from_memory(cls, bytes shader, int type):
         cdef decl.Shader *p = new decl.Shader()
 
-        if p.loadFromMemory(shader, <declshader.Type>type):
+        if p.loadFromMemory(<char*>shader, <declshader.Type>type):
             return wrap_shader_instance(p, True)
 
         raise PySFMLException()
