@@ -1057,10 +1057,6 @@ cdef class SoundBuffer:
 
             return ret
 
-    property sample_count:
-        def __get__(self):
-            return <int>self.p_this.getSampleCount()
-
     @classmethod
     def load_from_file(cls, filename):
         cdef declaudio.SoundBuffer *p = new declaudio.SoundBuffer()
@@ -1256,10 +1252,6 @@ cdef class Chunk:
     def __dealloc__(self):
         if self.delete_this:
             del self.p_this
-
-    property sample_count:
-        def __get__(self):
-            return <int>self.p_this.sampleCount
 
     property samples:
         def __get__(self):

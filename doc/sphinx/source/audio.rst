@@ -38,12 +38,6 @@ Audio
 
    A chunk of audio data to stream. See :class:`SoundStream`.
 
-   .. attribute:: sample_count
-
-      Normally you should use ``len(self.samples)``, but accessing
-      this attribute might be faster, since it just reads the
-      appropriate C++ attribute.
-
    .. attribute:: samples
 
       Should be a string in Python 2, and bytes in Python 3.
@@ -344,11 +338,6 @@ Audio
       The samples stored in the buffer, as a byte string (``str`` in
       Python 2, ``bytes`` in Python 3). Use ``len()`` to get the
       number of samples.
-
-   .. attribute:: sample_count
-
-      The number of samples stored in the buffer. This is equal with
-      ``len(samples)``, but it might be faster.
 
    .. classmethod:: load_from_file(filename)
 
