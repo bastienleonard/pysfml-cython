@@ -128,6 +128,10 @@ System
    arithmetic and comparison operators, is mutable and requires that
    you use the :attr:`x` and :attr:`y` members instead of indexing.
 
+   This class provides the following special methods:
+
+   * Comparison operators: ``==`` and ``!=``.
+
    .. attribute:: x
 
       *x* coordinate for this vector.

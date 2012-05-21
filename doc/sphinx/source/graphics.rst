@@ -201,6 +201,10 @@ Classes
    well. However, it can be more practical to use it, as it provides
    useful methods and is mutable.
 
+   This class provides the following special methods:
+
+   * Comparison operators: ``==`` and ``!=``.
+
    .. attribute:: left
    .. attribute:: top
    .. attribute:: width
@@ -222,6 +226,10 @@ Classes
    :class:`FloatRect`, you should be able to pass a tuple as
    well. However, it can be more practical to use it, as it provides
    useful methods and is mutable.
+
+   This class provides the following special methods:
+
+   * Comparison operators: ``==`` and ``!=``.
 
    .. attribute:: left
    .. attribute:: top
