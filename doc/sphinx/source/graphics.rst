@@ -118,7 +118,9 @@ Classes
    .. attribute:: b
    .. attribute:: a
 
+   .. method:: copy
 
+      Return a new Color with the same value as self.
 
 
 .. class:: Transformable
@@ -205,6 +207,11 @@ Classes
    .. attribute:: height
 
    .. method:: contains(int x, int y)
+
+   .. method:: copy
+
+      Return a new IntRect object with the same value as self.
+
    .. method:: intersects(IntRect rect[, IntRect intersection])
 
 
@@ -222,6 +229,11 @@ Classes
    .. attribute:: height
 
    .. method:: contains(int x, int y)
+
+   .. method:: copy
+
+      Return a new FloatRect object with the same value as self.
+
    .. method:: intersects(FloatRect rect[, FloatRect intersection])
 
 
@@ -422,6 +434,11 @@ Image display and effects
              rect = sprite.texture_rect
              # ...
              sprite.texture_rect = rect
+
+   .. method:: copy
+
+      Return a new Sprite object with the same value. The new sprite's
+      texture is the same as the current one (no new texture is created).
 
    .. method:: set_texture(texture[, adjust_to_new_size=False])
 

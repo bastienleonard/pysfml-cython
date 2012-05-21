@@ -22,12 +22,83 @@ class TestColor(unittest.TestCase):
             self.assertEqual(c1, c2)
 
     def test_neq(self):
-        non_equal = [(sf.Color(0, 0, 0, 1), sf.Color(0, 1, 0, 0)),
+        not_equal = [(sf.Color(0, 0, 0, 1), sf.Color(0, 1, 0, 0)),
                      (sf.Color(255, 255, 255, 255),
                       sf.Color(254, 255, 255, 255))]
 
-        for c1, c2 in non_equal:
+        for c1, c2 in not_equal:
             self.assertNotEqual(c1, c2)
+
+    def test_copy(self):
+        c1 = self.random_color()
+        c2 = c1.copy()
+        self.assertEqual(c1, c2)
+
+
+class TestIntRect(unittest.TestCase):
+    def random_rect(self):
+        return sf.IntRect(random.randint(0, 100),
+                          random.randint(0, 100),
+                          random.randint(0, 100),
+                          random.randint(0, 100))
+
+    def test_eq(self):
+        def r():
+            return random.randint(0, 100)
+
+        equal = [(sf.IntRect(l, t, w, h), sf.IntRect(l, t, w, h))
+                 for l, t, w, h in
+                 [(r(), r(), r(), r()) for i in range(100)]]
+
+        for r1, r2 in equal:
+            self.assertEqual(r1, r2)
+
+    def test_neq(self):
+        not_equal = [(sf.IntRect(0, 0, 0, 0), sf.IntRect(0, 0, 0, 10)),
+                     (sf.IntRect(0, 0, 0, 0), sf.IntRect(0, 0, 10, 0)),
+                     (sf.IntRect(0, 0, 0, 0), sf.IntRect(0, 10, 0, 0)),
+                     (sf.IntRect(0, 0, 0, 0), sf.IntRect(10, 0, 0, 0))]
+
+        for r1, r2 in not_equal:
+            self.assertNotEqual
+
+    def test_copy(self):
+        r1 = self.random_rect()
+        r2 = r1.copy()
+        self.assertEqual(r1, r2)
+
+
+class TestFloatRect(unittest.TestCase):
+    def random_rect(self):
+        return sf.FloatRect(random.triangular(0.0, 100.0),
+                            random.triangular(0.0, 100.0),
+                            random.triangular(0.0, 100.0),
+                            random.triangular(0.0, 100.0))
+
+    def test_eq(self):
+        def r():
+            return random.triangular(0.0, 100.0)
+
+        equal = [(sf.FloatRect(l, t, w, h), sf.FloatRect(l, t, w, h))
+                 for l, t, w, h in
+                 [(r(), r(), r(), r()) for i in range(100)]]
+
+        for r1, r2 in equal:
+            self.assertEqual(r1, r2)
+
+    def test_neq(self):
+        not_equal = [(sf.FloatRect(0, 0, 0, 0), sf.FloatRect(0, 0, 0, 10)),
+                     (sf.FloatRect(0, 0, 0, 0), sf.FloatRect(0, 0, 10, 0)),
+                     (sf.FloatRect(0, 0, 0, 0), sf.FloatRect(0, 10, 0, 0)),
+                     (sf.FloatRect(0, 0, 0, 0), sf.FloatRect(10, 0, 0, 0))]
+
+        for r1, r2 in not_equal:
+            self.assertNotEqual
+
+    def test_copy(self):
+        r1 = self.random_rect()
+        r2 = r1.copy()
+        self.assertEqual(r1, r2)
 
 
 class TestTime(unittest.TestCase):
@@ -73,6 +144,11 @@ class TestTime(unittest.TestCase):
         f = random.triangular(0.0, 100.0)
         self.assertEqual(t / f,
                          sf.Time(seconds=t.as_seconds() / f))
+
+    def test_copy(self):
+        t1 = self.random_time()
+        t2 = t1.copy()
+        self.assertEqual(t1, t2)
 
 
 class TestTransform(unittest.TestCase):

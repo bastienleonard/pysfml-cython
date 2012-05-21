@@ -358,6 +358,19 @@ cdef class IntRect:
         return ('IntRect(left={0.left!r}, top={0.top!r}, '
                 'width={0.width!r}, height={0.height!r})'.format(self))
 
+    def __richcmp__(IntRect x, IntRect y, int op):
+        # ==
+        if op == 2:
+            return (x.left == y.left and
+                    x.top == y.top and
+                    x.width == y.width and
+                    x.height == y.height)
+        # !=
+        elif op == 3:
+            return not x == y
+
+        return NotImplemented
+
     property left:
         def __get__(self):
             return self.p_this.left
@@ -388,6 +401,9 @@ cdef class IntRect:
 
     def contains(self, int x, int y):
         return self.p_this.contains(x, y)
+
+    def copy(self):
+        return IntRect(self.left, self.top, self.width, self.height)
 
     def intersects(self, IntRect rect, IntRect intersection=None):
         if intersection is None:
@@ -431,6 +447,19 @@ cdef class FloatRect:
         return ('FloatRect(left={0.left!r}, top={0.top!r}, '
                 'width={0.width!r}, height={0.height!r})'.format(self))
 
+    def __richcmp__(FloatRect x, FloatRect y, int op):
+        # ==
+        if op == 2:
+            return (x.left == y.left and
+                    x.top == y.top and
+                    x.width == y.width and
+                    x.height == y.height)
+        # !=
+        elif op == 3:
+            return not x == y
+
+        return NotImplemented
+
     property left:
         def __get__(self):
             return self.p_this.left
@@ -461,6 +490,9 @@ cdef class FloatRect:
 
     def contains(self, int x, int y):
         return self.p_this.contains(x, y)
+
+    def copy(self):
+        return FloatRect(self.left, self.top, self.width, self.height)
 
     def intersects(self, FloatRect rect, FloatRect intersection=None):
         if intersection is None:
@@ -865,6 +897,9 @@ cdef class Time:
     def as_microseconds(self):
         return self.p_this.asMicroseconds()
 
+    def copy(self):
+        return Time(microseconds=self.as_microseconds())
+
 
 cdef public object wrap_time_instance(decl.Time *p_cpp_instance):
     cdef Time ret = Time.__new__(Time)
@@ -976,6 +1011,9 @@ cdef class Color:
 
         def __set__(self, unsigned int value):
             self.p_this.a = value
+
+    def copy(self):
+        return Color(self.r, self.g, self.b, self.a)
 
 
 cdef Color wrap_color_instance(decl.Color *p_cpp_instance):
@@ -2299,11 +2337,23 @@ cdef class Sprite(Transformable):
 
             (<decl.Sprite*>self.p_this).setTextureRect(r)
 
+    def copy(self):
+        cdef decl.Sprite *p = new decl.Sprite((<decl.Sprite*>self.p_this)[0])
+        cdef Sprite sprite = wrap_sprite_instance(p, self.texture)
+
+        return sprite
+
     def set_texture(self, Texture texture, bint reset_rect=False):
         self.texture = texture
         (<decl.Sprite*>self.p_this).setTexture(texture.p_this[0],
                                                reset_rect)
 
+
+cdef Sprite wrap_sprite_instance(decl.Sprite *p, Texture texture):
+    cdef Sprite ret = Sprite.__new__(Sprite)
+    ret.p_this = <decl.Transformable*>p
+    ret.texture = texture
+    return ret
 
 
 

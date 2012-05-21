@@ -406,6 +406,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Sprite()
         Sprite(Texture&)
         Sprite(Texture&, IntRect&)
+        Sprite(Sprite&)
         Color& getColor()
         FloatRect getGlobalBounds()
         FloatRect getLocalBounds()

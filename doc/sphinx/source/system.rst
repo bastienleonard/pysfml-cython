@@ -82,6 +82,10 @@ System
       Return an ``int`` containing the number of microseconds for this time
       object.
 
+   .. method:: copy()
+
+      Return a new Time object with the same value as self.
+
 .. class:: Clock
 
    Utility class that measures the elapsed time.
