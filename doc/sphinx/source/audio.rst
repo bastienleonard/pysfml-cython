@@ -370,7 +370,8 @@ Audio
 
    .. method:: save_to_file(filename)
 
-      Save the sound buffer to an audio file.
+      Save the sound buffer to an audio file. :exc:`PySFMLException`
+      is raised if saving fails.
 
 
 .. class:: SoundStream

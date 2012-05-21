@@ -1121,7 +1121,8 @@ cdef class SoundBuffer:
         else:
             c_filename = <bytes?>filename
 
-        self.p_this.saveToFile(c_filename)
+        if not self.p_this.saveToFile(c_filename):
+            raise PySFMLException()
 
 
 cdef SoundBuffer wrap_sound_buffer_instance(
