@@ -222,7 +222,9 @@ cdef class Joystick:
     def get_axis_position(cls, unsigned int joystick, int axis):
         return decljoy.getAxisPosition(joystick, <decljoy.Axis> axis)
 
-    
+    @classmethod
+    def update(cls):
+        decljoy.update()
 
 
 cdef class Keyboard:

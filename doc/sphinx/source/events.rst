@@ -298,6 +298,13 @@ Type                                                                          At
       joystick is not connected, 0.0 is returned. *axis* should be an
       :ref:`axis code <refevents_axescodes>`.
 
+   .. classmetho:: update()
+
+      Update the state of all the joysticks. You don't need to call
+      this method yourself in most cases. If you haven't created any
+      window, however, you will need to call it to update the joystick
+      state.
+
 
 .. class:: Keyboard
 

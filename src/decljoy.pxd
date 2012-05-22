@@ -55,4 +55,5 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Joystick":
     bint hasAxis(unsigned int, Axis)
     bint isButtonPressed(unsigned int, unsigned int)
     float getAxisPosition(unsigned int, Axis)
+    void update()
 
