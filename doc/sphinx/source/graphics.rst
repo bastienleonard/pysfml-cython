@@ -125,8 +125,6 @@ Classes
 
 .. class:: Transformable
 
-   Abstract class.
-
    .. attribute:: origin
    .. attribute:: position
    .. attribute:: rotation
@@ -760,9 +758,9 @@ Text
 
    Once it's loaded, you can retrieve three types of information about the font:
 
-   * Global metrics, such as the line spacing
-   * Per-glyph metrics, such as bounding box or kerning
-   * Pixel representation of glyphs
+   * Global metrics, such as the line spacing.
+   * Per-glyph metrics, such as bounding box or kerning.
+   * Pixel representation of glyphs.
 
    Fonts alone are not very useful: they hold the font data but cannot
    make anything useful of it. To do so you need to use the

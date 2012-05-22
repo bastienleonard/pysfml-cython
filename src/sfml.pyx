@@ -2023,13 +2023,15 @@ cdef Texture wrap_texture_instance(decl.Texture *p_cpp_instance,
 cdef class Transformable:
     cdef decl.Transformable *p_this
 
-    def __cinit__(self, *args, **kwargs):
-        pass
-
+    # This constructor sets p_this to a new Transformable object.
+    # Because of this, it should NEVER be called by other built in
+    # Transformables (Sprite, Text, ...).
     def __init__(self, *args, **kwargs):
-        if self.__class__ == Transformable:
-            raise NotImplementedError('Transformable is abstact')
+        self.p_this = new decl.Transformable()
     
+    def __dealloc__(self):
+        del self.p_this
+
     property origin:
         def __get__(self):
             cdef decl.Vector2f origin = self.p_this.getOrigin()
@@ -2185,9 +2187,6 @@ cdef class Text(Transformable):
         self.color = wrap_color_instance(
             new decl.Color((<decl.Text*>self.p_this).getColor()))
 
-    def __dealloc__(self):
-        del self.p_this
-
     property character_size:
         def __get__(self):
             return (<decl.Text*>self.p_this).getCharacterSize()
@@ -2294,9 +2293,6 @@ cdef class Sprite(Transformable):
             self.texture = texture
             self.p_this = <decl.Transformable*>new decl.Sprite(
                 texture.p_this[0], rectangle.p_this[0])
-
-    def __dealloc__(self):
-        del self.p_this
 
     property color:
         def __get__(self):
@@ -2456,6 +2452,8 @@ cdef class RectangleShape(Shape):
     property size:
         def __get__(self):
             cdef decl.Vector2f s = (<decl.RectangleShape*>self.p_this).getSize()
+
+            convert_to_vector2f(1)
 
             return (s.x, s.y)
 
