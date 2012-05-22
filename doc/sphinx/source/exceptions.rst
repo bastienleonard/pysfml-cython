@@ -46,7 +46,7 @@ Exceptions
       try:
           texture = sf.Texture.load_from_file('texture.png')
       except sf.PySFMLException as e:
-          # Handle error: pring message, log it, ...
+          pass # Handle error: pring message, log it, ...
 
    In C++::
 
