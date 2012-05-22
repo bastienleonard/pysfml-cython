@@ -140,7 +140,7 @@ Classes
       Instead, use ``isinstance()``::
 
         if isinstance(some_object, tuple):
-            # We now know that some_object is a tuple
+            pass # We now know that some_object is a tuple
 
    .. attribute:: x
    .. attribute:: y
@@ -183,7 +183,7 @@ Classes
         and can pass a :class:`Shader` or :class:`RenderStates` as a
         third argument. Example::
 
-            window.draw(vertices, sf::QUADS, shader)
+            window.draw(vertices, sfml.QUADS, shader)
 
         See ``examples/vertices.py`` for a working example.
 
@@ -487,11 +487,11 @@ Image display and effects
    The value of the variables can be changed at any time with
    :meth:`set_parameter`::
 
-       shader.set_parameter('offset', 2.f);
-       shader.set_parameter('color', 0.5f, 0.8f, 0.3f);
+       shader.set_parameter('offset', 2.0)
+       shader.set_parameter('color', 0.5, 0.8, 0.3)
        shader.set_parameter('matrix', transform); # transform is a sfml.Transform
-       shader.set_parameter('overlay', texture); # texture is a sfml.Texture
-       shader.set_parameter('texture', sfml.Shader.CURRENT_TEXTURE);
+       shader.set_parameter('overlay', texture) # texture is a sfml.Texture
+       shader.set_parameter('texture', sfml.Shader.CURRENT_TEXTURE)
 
    The special :attr:`Shader.CURRENT_TEXTURE` argument maps the given
    texture variable to the current texture of the object being drawn
@@ -667,7 +667,7 @@ Windowing
         
          for event in window.iter_events():
              if event.type == sfml.Event.CLOSED:
-                 # ...
+                 pass # ...
 
    .. method:: poll_event()
    .. method:: restore_gl_states()
@@ -780,7 +780,7 @@ Text
 
        # Load a font from a file, catch PySFMLException
        # if you want to handle the error
-       font = sfml.Font.load_from_file('arial.ttf'))
+       font = sfml.Font.load_from_file('arial.ttf')
  
        # Create a text which uses our font
        text1 = sfml.Text()
