@@ -3150,8 +3150,8 @@ cdef class RenderTarget:
                     "The optional second argument has type {0}. "
                     "Only Shader and RenderStates are supported."
                     .format(type(x)))
-        elif isinstance(drawable, list):
-            vertex_count = len(<list>drawable)
+        elif isinstance(drawable, (list, tuple)):
+            vertex_count = len(drawable)
             vertex = <decl.Vertex*>malloc(vertex_count * sizeof(decl.Vertex))
 
             if vertex == NULL:
@@ -3160,13 +3160,13 @@ cdef class RenderTarget:
             the_type = <int?>x
 
             for i in range(vertex_count):
-                if not isinstance(<list>drawable[i], Vertex):
+                if not isinstance(drawable[i], Vertex):
                     free(vertex)
                     raise TypeError(
                         "The list should contain vertex objects, {0} found"
-                        .format(type(list[i])))
+                        .format(type(drawable[i])))
 
-                vertex[i] = (<Vertex>(<list>drawable[i])).p_this[0]
+                vertex[i] = (<Vertex>(drawable[i])).p_this[0]
 
             if y is None:
                 self.p_this.draw(vertex, vertex_count,

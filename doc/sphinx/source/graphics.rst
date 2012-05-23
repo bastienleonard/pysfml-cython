@@ -176,7 +176,7 @@ Classes
 
             window.draw(sprite, shader)
 
-      * A list of :class:`Vertex` objects. You must pass a
+      * A list or a tuple of :class:`Vertex` objects. You must pass a
         :ref:`primitive type <primitive_types>` as a second argument,
         and can pass a :class:`Shader` or :class:`RenderStates` as a
         third argument. Example::
