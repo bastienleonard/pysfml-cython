@@ -441,6 +441,8 @@ Audio
 
    .. attribute:: volume
 
+      A value between 0 (muted) and 100 (full volume and default value).
+
    .. method:: initialize(int channel_count, int sample_rate)
 
       This method must be called by user-defined streams. It's not
