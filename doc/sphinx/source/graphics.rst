@@ -98,25 +98,38 @@ Classes
 
 .. class:: Color(int r, int g, int b[, int a=255])
 
-   Note: this class overrides some comparison and arithmetic operators in the
-   same way that C++ class does.
+   This class provides the following special methods:
+
+   * Comparison operators: ``==`` and ``!=``.
+   * Arithmetic operators: ``+`` and ``*``.
 
    The following colors are available as static attibutes, e.g. you can use
    ``sfml.Color.WHITE`` to obtain a reference to the white color.
 
-    * BLACK
-    * WHITE
-    * RED
-    * GREEN
-    * BLUE
-    * YELLOW
-    * MAGENTA
-    * CYAN
+   * BLACK
+   * WHITE
+   * RED
+   * GREEN
+   * BLUE
+   * YELLOW
+   * MAGENTA
+   * CYAN
 
    .. attribute:: r
+
+      Red component.
+
    .. attribute:: g
+
+      Green component.
+
    .. attribute:: b
+
+      Blue component.
+
    .. attribute:: a
+
+      Alpha (opacity) component.
 
    .. method:: copy
 
@@ -125,10 +138,118 @@ Classes
 
 .. class:: Transformable
 
+   Decomposed transform defined by a position, a rotation and a scale.
+
+   This class is provided for convenience, on top of
+   :class:`Transform`.
+
+   :class:`Transform`, as a low-level class, offers a great level of
+   flexibility but it's not always convenient to manage. One can
+   easily combine any kind of operation, such as a translation
+   followed by a rotation followed by a scaling, but once the result
+   transform is built, there's no way to go backward and, say, change
+   only the rotation without modifying the translation and
+   scaling. The entire transform must be recomputed, which means that
+   you need to retrieve the initial translation and scale factors as
+   well, and combine them the same way you did before updating the
+   rotation. This is a tedious operation, and it requires to store all
+   the individual components of the final transform.
+
+   That's exactly what Transformable was written for: it hides these
+   variables and the composed transform behind an easy to use
+   interface. You can set or get any of the individual components
+   without worrying about the others. It also provides the composed
+   transform (as a :class:`Transform` object), and keeps it
+   up-to-date.
+
+   In addition to the position, rotation and scale, Transformable
+   provides an "origin" component, which represents the local origin
+   of the three other components. Let's take an example with a 10x10
+   pixels sprite. By default, the sprite is positionned/rotated/scaled
+   relatively to its top-left corner, because it is the local point
+   (0, 0). But if we change the origin to be (5, 5), the sprite will
+   be positionned/rotated/scaled around its center instead. And if we
+   set the origin to (10, 10), it will be transformed around its
+   bottom-right corner.
+
+   To keep the Transformable class simple, there's only one origin for
+   all the components. You cannot position the sprite relatively to
+   its top-left corner while rotating it around its center, for
+   example. To do this kind of thing, use :class:`Transform` directly.
+
+   Transformable can be used as a base class. It is often combined
+   with :ref:`draw() method <graphicsref_custom_drawables>` - that's
+   what SFML's sprites, texts and shapes do::
+
+      // TODO: port to Python
+      class MyEntity : public sf::Transformable, public sf::Drawable
+      {
+          virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
+          {
+              states.transform *= getTransform();
+              target.draw(..., states);
+          }
+      };
+
+      MyEntity entity;
+      entity.setPosition(10, 20);
+      entity.setRotation(45);
+      window.draw(entity);
+
+   It can also be used as a member, if you don't want to use its API
+   directly (because you don't need all its functions, or you have
+   different naming conventions for example)::
+
+      // TODO: port to Python
+      class MyEntity
+      {
+      public :
+          void SetPosition(const MyVector& v)
+          {
+              myTransform.setPosition(v.x(), v.y());
+          }
+
+          void Draw(sf::RenderTarget& target) const
+          {
+              target.draw(..., myTransform.getTransform());
+          }
+
+      private :
+          sf::Transformable myTransform;
+      };
+
    .. attribute:: origin
+
+      The local origin of the object, as a tuple. When setting the
+      attribute, you can also pass a :class:`Vector2f`. The origin of
+      an object defines the center point for all transformations
+      (position, scale, rotation). The coordinates of this point must
+      be relative to the top-left corner of the object, and ignore all
+      transformations (position, scale, rotation). The default origin
+      of a transformable object is (0, 0).
+
    .. attribute:: position
+
+      The position of the object, as a tuple. When setting the
+      attribute, you can also pass a :class:`Vector2f`. This method
+      completely overwrites the previous position. See :meth:`move` to
+      apply an offset based on the previous position instead. The
+      default position of a transformable object is (0, 0).
+
    .. attribute:: rotation
+
+      The orientation of the object, as a float in the range [0,
+      360]. This method completely overwrites the previous
+      rotation. See :meth:`rotate` to add an angle based on the
+      previous rotation instead. The default rotation of a
+      transformable object is 0.
+
    .. attribute:: scale
+
+      The scale factors of the object. This method completely
+      overwrites the previous scale. See the :meth:`scale` to add a
+      factor based on the previous scale instead. The default scale of
+      a transformable object is (1, 1).
 
       The object returned by this property will behave like a tuple,
       but it might be important in some cases to know that its exact
@@ -141,13 +262,46 @@ Classes
             pass # We now know that some_object is a tuple
 
    .. attribute:: x
+
+      Shortcut for ``self.position[0]``.
+
    .. attribute:: y
 
+      Shortcut for ``self.position[1]``.
+
    .. method:: get_inverse_transform()
+
+      Return the inverse of the combined :class:`Transform` of the
+      object.
+
    .. method:: get_transform()
+
+      Return the combined :class:`Transform` of the object.
+
    .. method:: move(float x, float y)
+
+      Move the object by a given offset. This method adds to the
+      current position of the object, unlike :meth:`position` which
+      overwrites it. So it is equivalent to the following code::
+
+         object.position = object.position + offset
+
    .. method:: rotate(float angle)
 
+      Rotate the object. This method adds to the current rotation of
+      the object, unlike :meth:`rotation` which overwrites it. So it
+      is equivalent to the following code::
+
+         object.rotation = object.rotation + angle
+
+   .. method:: scale(float x, float y)
+
+      Scale the object. This method multiplies the current scale of
+      the object, unlike the :attr:`scale` attribute which overwrites
+      it. So it is equivalent to the following code::
+
+         scale = object.scale
+         object.scale(scale[0] * factor_x, scale[1] * factor_y)
 
 
 .. class:: RenderTarget
@@ -421,11 +575,81 @@ Image display and effects
 
    This class inherits :class:`Transformable`.
 
+   Drawable representation of a texture, with its own transformations,
+   color, etc.
+
+   It inherits all the attributes from :class:`Transformable`:
+   position, rotation, scale, origin. It also adds sprite-specific
+   properties such as the texture to use, the part of it to display,
+   and some convenience functions to change the overall color of the
+   sprite, or to get its bounding rectangle.
+
+   Sprite works in combination with the :class:`Texture` class, which
+   loads and provides the pixel data of a given texture.
+
+   The separation of Sprite and :class:`Texture` allows more
+   flexibility and better performances: indeed a :class:`Texture` is a
+   heavy resource, and any operation on it is slow (often too slow for
+   real-time applications). On the other side, a sf::Sprite is a
+   lightweight object which can use the pixel data of a
+   :class:`Texture` and draw it with its own
+   transformation/color/blending attributes.
+
+   Usage example::
+
+      # Load a texture
+      texture = sfml.Texture.load_from_file('texture.png')
+ 
+      # Create a sprite
+      sprite = sfml.Sprite(texture)
+      sprite.texture_rect = sfml.IntRect(10, 10, 50, 30)
+      sprite.color = sfml.Color(255, 255, 255, 200)
+      sprite.position = (100, 25)
+
+      # Draw it
+      window.draw(sprite)
+
    .. attribute:: color
+
+      The global color of the sprite. This color is modulated
+      (multiplied) with the sprite's texture. It can be used to
+      colorize the sprite, or change its global opacity. By default,
+      the sprite's color is opaque white.
+
    .. attribute:: global_bounds
+
+      Read-only. The global bounding rectangle of the entity, as a
+      :class:`FloatRect`.
+
+      The returned rectangle is in global coordinates, which means
+      that it takes into account the transformations (translation,
+      rotation, scale, ...) that are applied to the entity. In other
+      words, this function returns the bounds of the sprite in the
+      global 2D world's coordinate system.
+
    .. attribute:: local_bounds
+
+      Read-only. The local bounding rectangle of the entity, as a
+      :class:`FloatRect`.
+
+      The returned rectangle is in local coordinates, which means that
+      it ignores the transformations (translation, rotation, scale,
+      ...) that are applied to the entity. In other words, this
+      function returns the bounds of the entity in the entity's
+      coordinate system.
+
    .. attribute:: texture
+
+      The source :class:`Texture` of the sprite, or ``None`` if no
+      texture has been set. Also see :meth:`set_texture`, which lets
+      you provide another argument.
+
    .. attribute:: texture_rect
+
+      The sub-rectangle of the texture displayed by the sprite, as an
+      :class:`IntRect`. The texture rect is useful when you only want
+      to display a part of the texture. By default, the texture rect
+      covers the entire texture.
 
       .. warning::
 
@@ -446,7 +670,12 @@ Image display and effects
       Return a new Sprite object with the same value. The new sprite's
       texture is the same as the current one (no new texture is created).
 
-   .. method:: set_texture(texture[, adjust_to_new_size=False])
+   .. method:: set_texture(texture[, reset_rect=False])
+
+      Change the source :class:`Texture` of the sprite. If
+      *reset_rect* is ``True``, the :attr:`texture_rect` property of
+      the sprite is automatically adjusted to the size of the new
+      texture. If it is ``False``, the texture rect is left unchanged.
 
 
 
