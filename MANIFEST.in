@@ -1,5 +1,6 @@
 include setup.py setup3k.py patch.py README.md CHANGELOG.txt LICENSE.txt
 recursive-include src *.py *.pyx *.pxd *.cpp *.hpp *.c *.h
+recursive-include tests *.py
 recursive-include examples *.py *.txt *.png *.jpg *.bmp *.sfx *.wav *.ttf 
 include doc/sphinx/source/*.rst
 include doc/sphinx/source/conf.py
