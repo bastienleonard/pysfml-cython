@@ -1,3 +1,27 @@
+0.1.2:
+
+- Added copy() methods in Transform, IntRect, FloatRect, Time and Sprite.
+- Added == and != operators in IntRect and FloatRect.
+- Transform's constructor now creates an identity transform when
+  called with no arguments.
+- Transform now supports the *= operator. (It already worked in the
+  past, because Python will automatically use the * operator if *=
+  isn't provided, but it's slower.)
+- SoundBuffer.save_to_file() now raises an exception in case of
+  failure. (In the past, it didn't report errors in any way.)
+- Removed Chunk.sample_count and SoundBuffer.sample_count. Instead,
+  use len(Chunk.samples) and len(SoundBuffer.samples),
+  respectively.
+- SoundBuffer.load_from_samples() now uses strings/bytes (for Python
+  2/3, respectively) instead of list.
+- Fixed bugs in Font, Image and Shader classmethods that load from
+  strings/bytes objects.
+- Added Joystick.update().
+- Transformable isn't abstract anymore, and can be inherited safely.
+- Completed the events and audio documentation, added documentation
+  for some graphics classes.
+- Expanded the tutorial for C++ developers.
+
 0.1.1:
 
 - The seconds(), milliseconds() and microseconds() functions are
