@@ -1,6 +1,9 @@
 0.1.2:
 
 - Added copy() methods in Transform, IntRect, FloatRect, Time and Sprite.
+- RenderTarget.draw() now also accepts a tuple of vertices. Also fixed
+  error handling when the objects contained in the list/tuple have the
+  wrong type.
 - Added == and != operators in IntRect and FloatRect.
 - Transform's constructor now creates an identity transform when
   called with no arguments.
