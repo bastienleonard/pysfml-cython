@@ -2323,28 +2323,27 @@ cdef class Sprite(Transformable):
         def __set__(self, Texture value):
             self.texture = value
             (<decl.Sprite*>self.p_this).setTexture(value.p_this[0])
-
-    property texture_rect:
-        def __get__(self): 
-            cdef decl.IntRect r = (<decl.Sprite*>self.p_this).getTextureRect()
-
-            return IntRect(r.left, r.top, r.width, r.height)
            
-        def __set__(self, IntRect value):
-            cdef decl.IntRect r = convert_to_int_rect(value)
-
-            (<decl.Sprite*>self.p_this).setTextureRect(r)
-
     def copy(self):
         cdef decl.Sprite *p = new decl.Sprite((<decl.Sprite*>self.p_this)[0])
         cdef Sprite sprite = wrap_sprite_instance(p, self.texture)
 
         return sprite
 
+    def get_texture_rect(self): 
+        cdef decl.IntRect r = (<decl.Sprite*>self.p_this).getTextureRect()
+
+        return IntRect(r.left, r.top, r.width, r.height)
+
     def set_texture(self, Texture texture, bint reset_rect=False):
         self.texture = texture
         (<decl.Sprite*>self.p_this).setTexture(texture.p_this[0],
                                                reset_rect)
+
+    def set_texture_rect(self, IntRect rect):
+        cdef decl.IntRect r = convert_to_int_rect(value)
+
+        (<decl.Sprite*>self.p_this).setTextureRect(r)
 
 
 cdef Sprite wrap_sprite_instance(decl.Sprite *p, Texture texture):

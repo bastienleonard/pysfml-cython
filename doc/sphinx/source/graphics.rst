@@ -644,39 +644,49 @@ Image display and effects
       texture has been set. Also see :meth:`set_texture`, which lets
       you provide another argument.
 
-   .. attribute:: texture_rect
-
-      The sub-rectangle of the texture displayed by the sprite, as an
-      :class:`IntRect`. The texture rect is useful when you only want
-      to display a part of the texture. By default, the texture rect
-      covers the entire texture.
-
-      .. warning::
-
-         This property returns a copy of the rectangle, so code like
-         this won't work::
-
-             sprite.texture_rect.top = 10
-
-         Instead, you need to explicitely set the property to the
-         desired value::
-
-             rect = sprite.texture_rect
-             # ...
-             sprite.texture_rect = rect
-
    .. method:: copy
 
       Return a new Sprite object with the same value. The new sprite's
       texture is the same as the current one (no new texture is created).
 
+   .. method:: get_texture_rect
+
+      Return the sub-rectangle of the texture displayed by the sprite,
+      as an :class:`IntRect`. The texture rect is useful when you only
+      want to display a part of the texture. By default, the texture
+      rect covers the entire texture.
+
+      .. warning::
+
+         This method returns a copy of the rectangle, so code like
+         this won't work::
+
+             sprite.get_texture_rect().top = 10
+             # Or this:
+             rect = sprite.get_texture_rect()
+             rect.top = 10
+
+         Instead, you need to call :meth:`set_texture_rect` with the
+         desired rect::
+
+             rect = sprite.get_texture_rect()
+             rect.top = 10
+             sprite.set_texture_rect(rect)
+
    .. method:: set_texture(texture[, reset_rect=False])
 
-      Change the source :class:`Texture` of the sprite. If
-      *reset_rect* is ``True``, the :attr:`texture_rect` property of
-      the sprite is automatically adjusted to the size of the new
-      texture. If it is ``False``, the texture rect is left unchanged.
+      Set the source :class:`Texture` of the sprite. If *reset_rect*
+      is ``True``, the texture rect of the sprite is automatically
+      adjusted to the size of the new texture. If it is ``False``, the
+      texture rect is left unchanged.
 
+   .. method:: set_texture_rect(rect)
+
+      Set the sub-rectangle of the texture displayed by the sprite, as
+      an :class:`IntRect`. The texture rect is useful when you only
+      want to display a part of the texture. By default, the texture
+      rect covers the entire texture. *rect* may an :class:`IntRect`
+      or a tuple.
 
 
 .. class:: Shader
