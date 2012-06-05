@@ -2341,7 +2341,7 @@ cdef class Sprite(Transformable):
                                                reset_rect)
 
     def set_texture_rect(self, IntRect rect):
-        cdef decl.IntRect r = convert_to_int_rect(value)
+        cdef decl.IntRect r = convert_to_int_rect(rect)
 
         (<decl.Sprite*>self.p_this).setTextureRect(r)
 
