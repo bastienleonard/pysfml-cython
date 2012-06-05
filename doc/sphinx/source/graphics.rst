@@ -858,10 +858,12 @@ Windowing
    ========================= ===========
 
    .. attribute:: active
-   .. attribute:: cursor_position
-   .. attribute:: default_view
    .. attribute:: framerate_limit
    .. attribute:: height
+
+      Unlike :attr:`RenderTarget.height`, this property can be
+      modified.
+
    .. attribute:: joystick_threshold
    .. attribute:: key_repeat_enabled
    .. attribute:: mouse_cursor_visible
@@ -869,6 +871,8 @@ Windowing
    .. attribute:: position
    .. attribute:: settings
    .. attribute:: size
+
+      Unlike :attr:`RenderTarget.size`, this property can be modified.
 
    .. attribute:: system_handle
 
@@ -881,6 +885,9 @@ Windowing
    .. attribute:: vertical_sync_enabled
    .. attribute:: view
    .. attribute:: width
+
+      Unlike :attr:`RenderTarget.width`, this property can be
+      modified.
 
    .. classmethod:: from_window_handle(long window_handle\
                                        [, ContextSettings settings])

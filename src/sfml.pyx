@@ -3278,15 +3278,12 @@ cdef class RenderWindow(RenderTarget):
         def __set__(self, int value):
             (<decl.RenderWindow*>self.p_this).setFramerateLimit(value)
 
-    property size:
+    property height:
         def __get__(self):
-            cdef decl.Vector2u size = self.p_this.getSize()
+            return self.size[1]
 
-            return (size.x, size.y)
-
-        def __set__(self, tuple value):
-            x, y = value
-            (<decl.RenderWindow*>self.p_this).setSize(decl.Vector2u(x, y))
+        def __set__(self, int value):
+            self.size[1] = value
 
     property joystick_threshold:
         def __set__(self, bint value):
@@ -3326,6 +3323,16 @@ cdef class RenderWindow(RenderTarget):
 
             return wrap_context_settings_instance(p)
 
+    property size:
+        def __get__(self):
+            cdef decl.Vector2u size = self.p_this.getSize()
+
+            return (size.x, size.y)
+
+        def __set__(self, tuple value):
+            x, y = value
+            (<decl.RenderWindow*>self.p_this).setSize(decl.Vector2u(x, y))
+
     property system_handle:
         def __get__(self):
             return (<unsigned long>(<decl.RenderWindow*>self.p_this)
@@ -3350,6 +3357,13 @@ cdef class RenderWindow(RenderTarget):
     property visible:
         def __set__(self, bint value):
             (<decl.RenderWindow*>self.p_this).setVisible(value)
+
+    property width:
+        def __get__(self):
+            return self.size[0]
+
+        def __set__(self, int value):
+            self.size[0] = value
 
     @classmethod
     def from_window_handle(cls, unsigned long window_handle,
