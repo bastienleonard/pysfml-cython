@@ -422,7 +422,7 @@ cdef IntRect wrap_int_rect_instance(decl.IntRect *p_cpp_instance):
     return ret
 
 
-cdef decl.IntRect convert_to_int_rect(value):
+cdef decl.IntRect convert_to_int_rect(value) except *:
     if isinstance(value, IntRect):
         return (<IntRect>value).p_this[0]
 
@@ -625,7 +625,7 @@ cdef class Vector2f:
             self.p_this.y = value
 
 
-cdef public decl.Vector2f convert_to_vector2f(value):
+cdef public decl.Vector2f convert_to_vector2f(value) except *:
     if isinstance(value, Vector2f):
         return (<Vector2f>value).p_this[0]
 
