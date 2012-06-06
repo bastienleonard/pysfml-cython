@@ -45,13 +45,21 @@ but this is still a work in progress. Feel free to report any issue
 you encounter.
 
 You can find the source code, downloads and the issue tracker here:
-https://github.com/bastienleonard/pysfml2-cython
+https://github.com/bastienleonard/pysfml2-cython.
 
-Currently the reference mostly lists the available classes, their
-members, and information specific to this binding.  For more detailed
-documentation, please see the `SFML 2 documentation
-<http://sfml-dev.org/documentation/2.0/annotated>`_.  The mapping
-between SFML and this binding should be fairly easy to grasp.
+There is also a thread on the official forums:
+http://en.sfml-dev.org/forums/index.php?topic=5311.0. I use it to make
+announcements and answer questions, but if you want to report an
+issue, please consider using the Github tracker. I sometimes forget
+bugs and suggestions that I read on the forums.
+
+Currently, some classes' members are still undocumented in the
+graphics section. If you need more detailed information about them,
+please see the `SFML 2 documentation
+<http://sfml-dev.org/documentation/2.0/annotated>`_.
+
+If you haved used SFML in the past, you will probably want to read
+:ref:`cpptut`.
 
 .. note::
 
