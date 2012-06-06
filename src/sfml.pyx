@@ -1975,9 +1975,6 @@ cdef class Texture:
 
         raise PySFMLException()
 
-    def bind(self):
-        self.p_this.bind()
-
     def copy_to_image(self):
         return wrap_image_instance(new decl.Image(self.p_this.copyToImage()),
                                    True)

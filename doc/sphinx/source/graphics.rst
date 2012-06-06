@@ -28,8 +28,9 @@
    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-Graphics
-========
+==========
+ Graphics
+==========
 
 .. module:: sfml
 
@@ -66,13 +67,13 @@ Graphics
 
 
 Misc
-----
+====
 
 
 .. _blend_modes:
 
 Blend modes
-^^^^^^^^^^^
+-----------
 
 .. attribute:: BLEND_ALPHA
 .. attribute:: BLEND_ADD
@@ -83,7 +84,7 @@ Blend modes
 .. _primitive_types:
 
 Primitive types
-^^^^^^^^^^^^^^^
+---------------
 
 .. attribute:: POINTS
 .. attribute:: LINES
@@ -94,7 +95,7 @@ Primitive types
 
 
 Classes
-^^^^^^^
+-------
 
 .. class:: Color(int r, int g, int b[, int a=255])
 
@@ -178,7 +179,7 @@ Classes
    example. To do this kind of thing, use :class:`Transform` directly.
 
    Transformable can be used as a base class. It is often combined
-   with :ref:`draw() method <graphicsref_custom_drawables>` - that's
+   with :ref:`draw() method <graphicsref_custom_drawables>` --- that's
    what SFML's sprites, texts and shapes do::
 
       // TODO: port to Python
@@ -434,7 +435,7 @@ Classes
 
 
 Image display and effects
--------------------------
+=========================
 
 
 
@@ -535,41 +536,221 @@ Image display and effects
 
 .. class:: Texture([int width[, int height]])
 
-   This class has been introduced in SFML 2. It basically replaces the
-   :class:`Image` class, except when you need to access or set pixels,
-   which is only possible with Images.
+   The constructor serves the same purpose as ``Texture.create()`` in
+   C++ SFML. It raises :exc:`PySFMLException` if texture creation fails.
+
+   :class:`Image` living on the graphics card that can be used for
+   drawing.
+
+   A texture lives in the graphics card memory, therefore it is very
+   fast to draw a texture to a render target, or copy a render target
+   to a texture (the graphics card can access both directly).
+
+   Being stored in the graphics card memory has some drawbacks. A
+   texture cannot be manipulated as freely as a :class:`Image`, you
+   need to prepare the pixels first and then upload them to the
+   texture in a single operation (see :meth:`update`).
+
+   Texture makes it easy to convert from/to :class:`Image`, but keep
+   in mind that these calls require transfers between the graphics
+   card and the central memory, therefore they are slow operations.
+
+   A texture can be loaded from an image, but also directly from a
+   file/memory/stream. The necessary shortcuts are defined so that you
+   don't need an image first for the most common cases. However, if
+   you want to perform some modifications on the pixels before
+   creating the final texture, you can load your file to a
+   :class:`Image`, do whatever you need with the pixels, and then call
+   :meth:`load_from_image`.
+
+   Since they live in the graphics card memory, the pixels of a
+   texture cannot be accessed without a slow copy first. And they
+   cannot be accessed individually. Therefore, if you need to read the
+   texture's pixels (like for pixel-perfect collisions), it is
+   recommended to store the collision information separately, for
+   example in an array of booleans.
+
+   Like :class:`Image`, Texture can handle a unique internal
+   representation of pixels, which is RGBA 32 bits. This means that a
+   pixel must be composed of 8 bits red, green, blue and alpha
+   channels --- just like a :class:`Color`.
+
+   Usage example::
+
+      # This example shows the most common use of Texture:
+      # drawing a sprite
+
+      # Load a texture from a file
+      texture = sfml.load_from_file('texture.png')
+
+      # Assign it to a sprite
+      sprite = sfml.Sprite(texture)
+
+      # Draw the textured sprite
+      window.draw(sprite)
+
+   ::
+
+      # This example shows another common use of Texture:
+      # streaming real-time data, like video frames
+
+      # Create an empty texture
+      texture = sfml.Texture(640, 480)
+
+      # Create a sprite that will display the texture
+      sprite = sfml.Sprite(texture)
+
+      while True:
+          # ...
+
+          # Update the texture
+          # Get a fresh chunk of pixels (the next frame of a movie, for example)
+          # This should be a string object in Python 2, and a bytes object in Python 3
+          pixels = get_pixels()
+          texture.update(pixels)
+
+          # draw it
+          window.draw(sprite)
+
+          # ...
 
    .. attribute:: MAXIMUM_SIZE
+
+      Read-only. The maximum texture size allowed, as a class
+      attribute. This maximum size is defined by the graphics
+      driver. You can expect a value of 512 pixels for low-end
+      graphics card, and up to 8192 pixels or more for newer hardware.
+
    .. attribute:: height   
+
+      Read-only. The height of the texture.
+
    .. attribute:: repeated
+
+      Whether the texture is repeated or not. Repeating is involved
+      when using texture coordinates outside the texture rectangle [0,
+      0, width, height]. In this case, if repeat mode is enabled, the
+      whole texture will be repeated as many times as needed to reach
+      the coordinate (for example, if the X texture coordinate is 3 *
+      width, the texture will be repeated 3 times). If repeat mode is
+      disabled, the "extra space" will instead be filled with border
+      pixels. Repeating is disabled by default.
+
+      .. warning::
+
+         On very old graphics cards, white pixels may appear when the
+         texture is repeated. With such cards, repeat mode can be used
+         reliably only if the texture has power-of-two dimensions
+         (such as 256x128).
+
    .. attribute:: size
+
+      Read-only. The size of the texture.
+
    .. attribute:: smooth
+
+      Whether the smooth filter is enabled or not. When the filter is
+      activated, the texture appears smoother so that pixels are less
+      noticeable. However if you want the texture to look exactly the
+      same as its source file, you should leave it disabled. The
+      smooth filter is disabled by default.
+
    .. attribute:: width
+
+      Read-only. The width of the texture.
 
    .. classmethod:: load_from_file(filename[, area])
 
-      *area* can be either a tuple or an :class:`IntRect`.
+      Load the texture from a file on disk. This function is a
+      shortcut for the following code::
+
+         image = sfml.Image.load_from_file(filename)
+         sfml.Texture.load_from_image(image, area)
+
+      *area*, if specified, may be either a tuple or an
+      :class:`IntRect`. Then only a sub-rectangle of the whole image
+      will be loaded. If the area rectangle crosses the bounds of the
+      image, it is adjusted to fit the image size.
+
+      The maximum size for a texture depends on the graphics driver
+      and can be retrieved with the getMaximumSize function.
+
+      :exc:`PySFMLException` is raised if the loading fails.
 
    .. classmethod:: load_from_image(image[, area])
 
-      *area* can be either a tuple or an :class:`IntRect`.
+      Load the texture from an image.
+
+      *area*, if specified, may be either a tuple or an
+      :class:`IntRect`. Then only a sub-rectangle of the whole image
+      will be loaded. If the area rectangle crosses the bounds of the
+      image, it is adjusted to fit the image size.
+
+      The maximum size for a texture depends on the graphics driver
+      and is accessible with the :attr:`MAXIMUM_SIZE` class attribute.
+
+      :exc:`PySFMLException` is raised if the loading fails.
 
    .. classmethod:: load_from_memory(bytes data[, area])
 
-      *area* can be either a tuple or an :class:`IntRect`.
+      Load the texture from a file in memory. This function is a
+      shortcut for the following code::
 
-   .. method:: bind()
+         image = sfml.Image.load_from_memory(data)
+         texture = sfml.Texture.load_from_image(image, area)
+
+      *area*, if specified, may be either a tuple or an
+      :class:`IntRect`. Then only a sub-rectangle of the whole image
+      will be loaded. If the area rectangle crosses the bounds of the
+      image, it is adjusted to fit the image size.
+
+      The maximum size for a texture depends on the graphics driver
+      and is accessible with the :attr:`MAXIMUM_SIZE` class attribute.
+
+      :exc:`PySFMLException` is raised if the loading fails.
+
    .. method:: copy_to_image()
-   .. method:: update(object source, int p1=-1, int p2=-1, int p3=-1, int p4=-1)
+
+      Copy the texture pixels to an image and return it. This method
+      performs a slow operation that downloads the texture's pixels
+      from the graphics card and copies them to a new image,
+      potentially applying transformations to pixels if necessary
+      (texture may be padded or flipped).
+
+   .. method:: update(source, ...)
 
       This method can be called in three ways, to be consistent with
-      the C++ method overloading::
+      the C++ method overloading:
 
-          update(bytes pixels[, width, height, x, y])
-          update(image[, x, y])
-          update(window[, x, y])
+      ::
 
+         update(bytes pixels[, width, height, x, y])
 
+      Update a part of the texture from an array of pixels. The size
+      of *pixels* must match the width and height arguments, and it
+      must contain 32-bits RGBA pixels. No additional check is
+      performed on the size of the pixel array or the bounds of the
+      area to update, passing invalid arguments will lead to an
+      undefined behaviour.
+
+      ::
+
+         update(image[, x, y])
+
+      Update the texture from an image. Although the source image can
+      be smaller than the texture, it's more convenient to use the *x*
+      and *y* parameters for updating a sub-area of the texture.
+
+      ::
+
+         update(window[, x, y])
+
+      Update the texture from the contents of a window. Although the
+      source window can be smaller than the texture, it's more
+      convenient to use the *x* and *y* parameters for updating a
+      sub-area of the texture. No additional check is performed on the
+      size of the window, passing a window bigger than the texture
+      will lead to an undefined behaviour.
 
 .. class:: Sprite([texture])
 
@@ -659,7 +840,7 @@ Image display and effects
       .. warning::
 
          This method returns a copy of the rectangle, so code like
-         this won't work::
+         this won't work as expected::
 
              sprite.get_texture_rect().top = 10
              # Or this:
@@ -839,7 +1020,7 @@ Image display and effects
 
 
 Windowing
----------
+=========
 
 
 .. class:: RenderWindow([VideoMode mode, title\
@@ -948,17 +1129,77 @@ Windowing
 
 .. class:: VideoMode([width, height, bits_per_pixel=32])
 
-   Note: this class overrides the comparison operators.
+   A video mode is defined by a width and a height (in pixels) and a
+   depth (in bits per pixel). Video modes are used to setup windows
+   (:class:`RenderWindow`) at creation time.
+
+   The main usage of video modes is for fullscreen mode: you have to
+   use one of the valid video modes allowed by the OS (which are
+   defined by what the monitor and the graphics card support),
+   otherwise your window creation will just fail.
+
+   VideoMode provides a static method for retrieving the list of all
+   the video modes supported by the system:
+   :class:`get_fullscreen_modes`.
+
+   A custom video mode can also be checked directly for fullscreen
+   compatibility with its :meth:`is_valid` method.
+
+   Additionnally, VideoMode provides a static method to get the mode
+   currently used by the desktop: :meth:`get_desktop_mode`. This
+   allows to build windows with the same size or pixel depth as the
+   current resolution.
+
+   Usage example::
+
+      # Display the list of all the video modes available for fullscreen
+      modes = sfml.VideoMode.get_fullscreen_modes()
+
+      for mode in modes:
+          print(mode)
+
+      # Create a window with the same pixel depth as the desktop
+      desktop_mode = sfml.VideoMode.get_desktop_mode()
+      window.create(sfml.VideoMode(1024, 768, desktop_mode.bits_per_pixel),
+                    'SFML window')
+
+   This class overrides the following special method:
+
+   * Comparison operators (``==``, ``!=``, ``<``, ``>``, ``<=`` and
+     ``>=``).
+   * ``__str__()`` returns a description of the mode in a
+     ``widthxheightxbpp`` format.
+   * ``__repr__()`` returns a string in a ``VideoMode(width, height,
+     bpp)`` format.
 
    .. attribute:: width
+
+      Video mode width, in pixels.
+
    .. attribute:: height
+
+      Video mode height, in pixels.
+
    .. attribute:: bits_per_pixel
 
+      Video mode depth, in bits per pixel.
+
    .. classmethod:: get_desktop_mode()
+
+      Return the current desktop mode.
+
    .. classmethod:: get_fullscreen_modes()
+
+      Return a list of all the video modes supported in fullscreen
+      mode. It is sorted from best to worst, so that the first element
+      will always give the best mode (higher width, height and
+      bits-per-pixel).
 
    .. method:: is_valid()
 
+      Return a boolean telling whether the mode is valid or not. This
+      is only relevant in fullscreen mode; in other cases all modes
+      are valid.
 
 
 .. class:: View
@@ -990,7 +1231,7 @@ Windowing
 
 
 Text
-----
+====
 
 
 .. class:: Font()
