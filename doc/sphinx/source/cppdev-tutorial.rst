@@ -31,6 +31,8 @@
 .. module:: sfml
 
 
+.. _cpptut:
+
 Learning pySFML from a C++ SFML background
 ==========================================
 
