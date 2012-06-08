@@ -2500,12 +2500,22 @@ cdef class ConvexShape(Shape):
         if point_count is not None:
             (<decl.ConvexShape*>self.p_this).setPointCount(<int?>point_count)
 
-    property point_count:
-        def __get__(self):
-            return (<decl.ConvexShape*>self.p_this).getPointCount()
+    def get_point(self, int index):
+        cdef decl.Vector2f point = ((<decl.ConvexShape*>self.p_this)
+                                    .getPoint(index))
 
-        def __set__(self, int value):
-            (<decl.ConvexShape*>self.p_this).setPointCount(value)
+        return (point.x, point.y)
+
+    def get_point_count(self):
+        return (<decl.ConvexShape*>self.p_this).getPointCount()
+
+    def set_point(self, int index, object point):
+        cdef decl.Vector2f cpp_point = convert_to_vector2f(point)
+
+        (<decl.ConvexShape*>self.p_this).setPoint(index, cpp_point)
+
+    def set_point_count(self, int count):
+        (<decl.ConvexShape*>self.p_this).setPointCount(count)
 
     def update(self):
         raise NotImplementedError(

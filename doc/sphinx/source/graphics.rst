@@ -496,7 +496,13 @@ Image display and effects
 
    This class inherits :class:`Shape`.
 
-   .. attribute:: point_count
+   .. method:: get_point(int index)
+   .. method:: get_point_count
+   .. method:: set_point(int index, point)
+
+      *point* may be either a tuple or a :class:`Vector2f`.
+
+   .. method:: set_point_count(int count)
 
 
 .. class:: Image(int width, int height[, color])

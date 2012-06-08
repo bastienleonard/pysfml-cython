@@ -628,7 +628,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass ConvexShape:
         ConvexShape()
         ConvexShape(unsigned int)
+        Vector2f getPoint(unsigned int)
         unsigned int getPointCount()
+        void setPoint(unsigned int, Vector2f&)
         void setPointCount(unsigned int)
 
 
