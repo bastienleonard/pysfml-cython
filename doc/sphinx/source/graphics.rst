@@ -1251,6 +1251,8 @@ Windowing
    This window contains the available window styles, as class
    attributes.
 
+   Calling the constructor will raise ``NotImplementedError``.
+
    .. attribute:: CLOSE
 
       Titlebar + close button.

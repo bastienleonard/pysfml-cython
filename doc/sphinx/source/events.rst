@@ -177,7 +177,8 @@ Type                                                                          At
 
    It only contains static functions, so it's not meant to be
    instanciated. Instead, each joystick is identified by an index that
-   is passed to the functions of this class.
+   is passed to the functions of this class. Calling the constructor
+   will raise ``NotImplementedError``.
 
    This class allows users to query the state of joysticks at any time
    and directly, without having to deal with a window and its
@@ -601,7 +602,8 @@ Type                                                                          At
 
    This class gives access to the real-time state of the mouse. It
    only contains static functions (a single mouse is assumed), so it's
-   not meant to be instanciated.
+   not meant to be instanciated. Calling the constructor will raise
+   ``NotImplementedError``.
 
    This class allows users to query the mouse state at any time and
    directly, without having to deal with a window and its
