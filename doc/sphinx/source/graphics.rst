@@ -1032,66 +1032,161 @@ Windowing
 .. class:: RenderWindow([VideoMode mode, title\
                         [, style[, ContextSettings settings]]])
 
-   *style* can be one of:
+   This class inherits :class:`RenderTarget`.
 
-   ========================= ===========
-   Name                      Description
-   ========================= ===========
-   ``sfml.Style.NONE``
-   ``sfml.Style.TITLEBAR``
-   ``sfml.Style.RESIZE``
-   ``sfml.Style.CLOSE``
-   ``sfml.Style.FULLSCREEN``
-   ========================= ===========
+   This class represents an OS window that can be painted using the other
+   graphics-related classes, such as :class:`Sprite` and
+   :class:`Text`.
+
+   The constructor creates the window with the size and pixel depth
+   defined in *mode*. If specified, *style* must be a value from the
+   :class:`Style` class. *settings* is an optional
+   :class:`ContextSettings` specifying advanced OpenGL context
+   settings such as antialiasing, depth-buffer bits, etc. You
+   shouldn't need to use it for a regular usage.
 
    .. attribute:: active
+
+      Write-only. If true, the window is activated as the current
+      target for OpenGL rendering. A window is active only on the
+      current thread, if you want to make it active on another thread
+      you have to deactivate it on the previous thread first if it was
+      active. Only one window can be active on a thread at a time,
+      thus the window previously active (if any) automatically gets
+      deactivated.
+
    .. attribute:: framerate_limit
+
+      Write-only. If set, the window will use a small delay after each
+      call to :meth:`display()` to ensure that the current frame
+      lasted long enough to match the framerate limit. SFML will try
+      to match the given limit as much as it can, but since the
+      precision depends on the underlying OS, the results may be a
+      little unprecise as well (for example, you can get 65 FPS when
+      requesting 60).
+
    .. attribute:: height
 
-      Unlike :attr:`RenderTarget.height`, this property can be
-      modified.
+      The height of the rendering region of the window. The height
+      doesn't include the titlebar and borders of the window. Unlike
+      :attr:`RenderTarget.height`, this property can be modified.
 
    .. attribute:: joystick_threshold
+
+      Write-only. The joystick threshold is the value below which no
+      :attr:`Event.JOYSTICK_MOVED` event will be generated. Default
+      value: 0.1.
+
    .. attribute:: key_repeat_enabled
+
+      Write-only. If key repeat is enabled, you will receive repeated
+      :attr:`Event.KEY_PRESSED` events while keeping a key pressed. If
+      it is disabled, you will only get a single event when the key is
+      pressed. Default value: ``True``.
+
    .. attribute:: mouse_cursor_visible
+
+      Write-only. Whether or not the mouse cursor is shown. Default
+      value: ``True``.
+
    .. attribute:: open
+
+      Read-only. Whether or not the window exists. Note that a hidden
+      window (``visible = False``) is open (so this attribute would be
+      ``True``).
+
    .. attribute:: position
+
+      The position of the window on screen. This attribute only works
+      for top-level windows (i.e. it will be ignored for windows
+      created from the :attr:`system_handle` of a child
+      window/control).
+
    .. attribute:: settings
+
+      Read-only. The settings of the OpenGL context of the
+      window. Note that these settings may be different from what was
+      passed when creating the window, if one or more settings were
+      not supported. In this case, SFML chooses the closest match.
+
    .. attribute:: size
 
-      Unlike :attr:`RenderTarget.size`, this property can be modified.
+      The size of the rendering region of the window. The size doesn't
+      include the titlebar and borders of the window. Unlike
+      :attr:`RenderTarget.size`, this property can be modified.
 
    .. attribute:: system_handle
 
       Return the system handle as a long (or int on Python 3). Windows
-      and Mac users will probably need to cast this as another type
-      suitable for their system's API. Please contact me and show me
-      your use case so that I can make the API more user-friendly.
+      and Mac users will probably need to convert this to another type
+      suitable for their system's API. You shouldn't need to use this,
+      unless you have very specific stuff to implement that pySFML
+      doesn't support, or implement a temporary workaround until a bug
+      is fixed. If you need to use it, please contact me and show me
+      your use case to see if I can make the API more user-friendly.
 
    .. attribute:: title
+
+      Write-only. The title of the window.
+
    .. attribute:: vertical_sync_enabled
-   .. attribute:: view
+
+      Write-only. Whether or not the vertical synchronization is
+      enabled. Activating vertical synchronization will limit the
+      number of frames displayed to the refresh rate of the
+      monitor. This can avoid some visual artifacts, and limit the
+      framerate to a good value (but not constant across different
+      computers). Default value: ``False``.
+
+   .. attribute:: visible
+
+      Write-only. Whether or not the window is shown. Default value:
+      ``True``.
+
    .. attribute:: width
 
-      Unlike :attr:`RenderTarget.width`, this property can be
-      modified.
+      The width of the rendering region of the window. The width
+      doesn't include the titlebar and borders of the window. Unlike
+      :attr:`RenderTarget.width`, this property can be modified.
 
    .. classmethod:: from_window_handle(long window_handle\
                                        [, ContextSettings settings])
+
+      Construct the window from an existing control. Use this class
+      method if you want to create an SFML rendering area into an
+      already existing control. The fourth parameter is an optional
+      structure specifying advanced OpenGL context settings such as
+      antialiasing, depth-buffer bits, etc. You shouldn't care about
+      these parameters for regular usage.
 
       Equivalent to this C++ constructor::
 
          RenderWindow(WindowHandle, ContextSettings=ContextSettings())
 
-   .. method:: clear([color])
    .. method:: close()
-   .. method:: convert_coords(x, y[, view])
+
+      Close the window and destroy all the attached resources. After
+      calling this function, the instance remains valid and you can
+      call :meth:`create` to recreate the window. All other methods
+      such as :meth:`poll_event` or :meth:`display` will still work
+      (i.e. you don't have to test :attr:`open` every time), and will
+      have no effect on closed windows.
+
    .. method:: create(VideoMode mode, title\
                       [, int style[, ContextSettings settings]])
+
+      Create (or recreate) the window. If the window was already
+      created, it closes it first. If *style* contains
+      :attr:`Style.FULLSCREEN`, then *mode* must be a valid video
+      mode.
+
    .. method:: display()
-   .. method:: draw()
-   .. method:: get_input()
-   .. method:: get_viewport(view)
+
+      Display on screen what has been rendered to the window so
+      far. This function is typically called after all the OpenGL
+      rendering has been done for the current frame, in order to show
+      it on screen.
+
    .. method:: iter_events()
 
       Return an iterator which yields the current pending events. Example::
@@ -1100,14 +1195,86 @@ Windowing
              if event.type == sfml.Event.CLOSED:
                  pass # ...
 
+      The traditional :meth:`poll_event()` method can be used to
+      achieve the same effect, but using this iterator makes your life
+      easier and is the recommended way to handle events.
+
    .. method:: poll_event()
-   .. method:: restore_gl_states()
-   .. method:: save_gl_states()
+
+      Pop the event on top of events stack, if any, and return
+      it. This method is not blocking: if there's no pending event
+      then it will return ``None`` and leave the event
+      unmodified. Note that more than one event may be present in the
+      events stack, thus you should always call this function in a
+      loop to make sure that you process every pending event.
+
+      ::
+
+        event = sfml.Event()
+
+        while window.poll_event(event):
+           pass # process event...
+
+      .. warning::
+
+         In most cases, you should use :meth:`iter_events` instead, as
+         it takes care of creating the event objects for you.
+
    .. method:: set_icon(int width, int height, str pixels)
-   .. method:: show(show)
+
+      Change the window's icon. *pixels* must be a string in Python 2,
+      or a bytes object in Python 3. It should contain width x height
+      pixels in 32-bits RGBA format. The OS default icon is used by
+      default.
+
    .. method:: wait_event()
 
+      Wait for an event and return it. This method is blocking: if
+      there's no pending event, it will wait until an event is
+      received. After this function returns (and no error occured),
+      the event object is always valid and filled properly. This
+      method is typically used when you have a thread that is
+      dedicated to events handling: you want to make this thread sleep
+      as long as no new event is received. Currently, there's no way
+      to handle errors.
 
+      ::
+
+        event = sfml.Event()
+
+        if window.wait_event(event):
+           pass # process event...
+
+
+.. class:: Style
+
+   This window contains the available window styles, as class
+   attributes.
+
+   .. attribute:: CLOSE
+
+      Titlebar + close button.
+
+   .. attribute:: DEFAULT
+
+      Default window style.
+
+   .. attribute:: FULLSCREEN
+
+      Fullscreen mode (this flag and all others are mutually exclusive).
+
+   .. attribute:: NONE
+
+      No border/title bar (this flag and all others are mutually
+      exclusive).
+
+   .. attribute:: RESIZE
+
+      Titlebar + resizable border + maximize button.
+
+   .. attribute:: TITLEBAR
+
+      Title bar + fixed border.
 
 
 .. class:: RenderStates(shader=None, texture=None, transform=None)
@@ -1169,7 +1336,7 @@ Windowing
       window.create(sfml.VideoMode(1024, 768, desktop_mode.bits_per_pixel),
                     'SFML window')
 
-   This class overrides the following special method:
+   This class overrides the following special methods:
 
    * Comparison operators (``==``, ``!=``, ``<``, ``>``, ``<=`` and
      ``>=``).
