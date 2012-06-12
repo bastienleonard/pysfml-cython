@@ -1053,7 +1053,8 @@ Windowing
       you have to deactivate it on the previous thread first if it was
       active. Only one window can be active on a thread at a time,
       thus the window previously active (if any) automatically gets
-      deactivated.
+      deactivated. If an error occurs, :exc:`PySFMLException` is
+      raised.
 
    .. attribute:: framerate_limit
 
@@ -1235,8 +1236,8 @@ Windowing
       the event object is always valid and filled properly. This
       method is typically used when you have a thread that is
       dedicated to events handling: you want to make this thread sleep
-      as long as no new event is received. Currently, there's no way
-      to handle errors.
+      as long as no new event is received. If an error occurs,
+      :exc:`PySFMLException` is raised.
 
       ::
 

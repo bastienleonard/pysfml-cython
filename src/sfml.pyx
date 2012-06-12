@@ -160,6 +160,9 @@ cdef class Mouse:
     X_BUTTON2 = declmouse.XButton2
     BUTTON_COUNT = declmouse.ButtonCount
 
+    def __init__(self):
+        raise NotImplementedError("This class is abstract")
+
     @classmethod
     def is_button_pressed(cls, int button):
         return declmouse.isButtonPressed(<declmouse.Button>button)
@@ -201,6 +204,9 @@ cdef class Joystick:
     V = decljoy.V
     POV_X = decljoy.PovX
     POV_Y = decljoy.PovY
+
+    def __init__(self):
+        raise NotImplementedError("This class is abstract")
 
     @classmethod
     def is_connected(cls, unsigned int joystick):
@@ -331,6 +337,9 @@ cdef class Keyboard:
     PAUSE = declkey.Pause
     KEY_COUNT = declkey.KeyCount
 
+    def __init__(self):
+        raise NotImplementedError("This class is abstract")
+
     @classmethod
     def is_key_pressed(cls, int key):
         return declkey.isKeyPressed(<declkey.Key>key)
@@ -338,6 +347,10 @@ cdef class Keyboard:
 
 
 cdef class Style:
+
+    def __init__(self):
+        raise NotImplementedError("This class is abstract")
+
     NONE = declstyle.None
     TITLEBAR = declstyle.Titlebar
     RESIZE = declstyle.Resize
@@ -3279,7 +3292,8 @@ cdef class RenderWindow(RenderTarget):
 
     property active:
         def __set__(self, bint value):
-            (<decl.RenderWindow*>self.p_this).setActive(value)
+            if not (<decl.RenderWindow*>self.p_this).setActive(value):
+                raise PySFMLException()
 
     property framerate_limit:
         def __set__(self, int value):
@@ -3429,6 +3443,8 @@ cdef class RenderWindow(RenderTarget):
 
         if (<decl.RenderWindow*>self.p_this).waitEvent(p[0]):
             return wrap_event_instance(p)
+
+        raise PySFMLException()
 
 
 cdef RenderWindow wrap_render_window_instance(
