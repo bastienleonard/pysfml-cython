@@ -1892,6 +1892,8 @@ cdef class Texture:
     cdef bint delete_this
 
     MAXIMUM_SIZE = decl.Texture_getMaximumSize()
+    NORMALIZED = decl.Texture_Normalized
+    PIXELS = decl.Texture_Pixels
 
     def __init__(self, unsigned int width=0, unsigned int height=0):
         self.p_this = new decl.Texture()
@@ -1987,6 +1989,9 @@ cdef class Texture:
                 return wrap_texture_instance(p_cpp_instance, True)
 
         raise PySFMLException()
+
+    def bind(self, int coordinate_type=Texture.NORMALIZED):
+        self.p_this.bind(<decl.CoordinateType>coordinate_type)
 
     def copy_to_image(self):
         return wrap_image_instance(new decl.Image(self.p_this.copyToImage()),

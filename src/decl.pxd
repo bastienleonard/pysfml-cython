@@ -309,6 +309,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Texture()
         Texture(Texture&)
         void bind()
+        void bind(CoordinateType)
         Image copyToImage()
         bint create(unsigned int, unsigned int)
         Vector2u getSize()
@@ -331,6 +332,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void update(Image&, unsigned int, unsigned int)
         void update(RenderWindow&)
         void update(RenderWindow&, unsigned int, unsigned int)
+
+    cdef cppclass CoordinateType "sf::Texture::CoordinateType":
+        pass
 
     cdef cppclass String:
         String()
@@ -548,8 +552,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         unsigned long getSystemHandle()
         bint isOpen()
         bint pollEvent(Event&)
-        void setActive()
-        void setActive(bint)
+        bint setActive()
+        bint setActive(bint)
         void setIcon(unsigned int, unsigned int, Uint8*)
         void setJoystickThreshold(float)
         void setFramerateLimit(unsigned int)
@@ -646,6 +650,8 @@ cdef extern from "SFML/Graphics.hpp":
     RenderStates RenderStates_Default "sf::RenderStates::Default"
     cdef VideoMode& VideoMode_getDesktopMode "sf::VideoMode::getDesktopMode" ()
     cdef vector[VideoMode]& getFullscreenModes "sf::VideoMode::getFullscreenModes" ()
+    cdef int Texture_Normalized "sf::Texture::Normalized"
+    cdef int Texture_Pixels "sf::Texture::Pixels"
     cdef Transform Transform_Identity "sf::Transform::Identity"
     cdef unsigned int Texture_getMaximumSize "sf::Texture::getMaximumSize"()
     cdef Font& Font_getDefaultFont "sf::Font::getDefaultFont" ()
