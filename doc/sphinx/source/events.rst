@@ -82,6 +82,20 @@ Type                                                                          At
       if event.type == sfml.Event.KEY_PRESSED and event.code == sfml.Keyboard.ESCAPE:
           # ...
 
+   .. note::
+
+      All the events have :class:`Event` type. There are no specific
+      subtypes like ``KeyPressedEvent`` or
+      ``MouseEnteredEvent``. Instead, events are common Python objects
+      in the sense that their attributes can be modified at runtime,
+      unlike other pySFML objects. This is how their specific
+      attributes are set.
+
+   This class provides the following special methods:
+
+   * ``str(event)`` returns a description of the event with its name
+     and its attributes.
+
    .. attribute:: NAMES
 
       A class attribute that maps event codes to a short description::
