@@ -97,11 +97,6 @@ that I will need to remove when SFML gets the missing methods. The
 reason why these methods are missing in the first place is that's
 they're not very useful, so I consider that to be a decent trade-off.
 
-Another problematic property is :attr:`Sprite.texture_rect`, which for
-now returns a new copy every time you access it. Eventually, I will
-either hack it to behave like an actual attribute, or rewrite it as
-``get_texture_rect()/set_texture_rect()`` methods.
-
 I tend to use a method instead of an attribute when I feel like a
 ``get*()`` method involves some kind of computation. For example,
 :meth:`View.get_inverse_transform` is a method instead of a property
@@ -180,7 +175,7 @@ For UDP and TCP connections, you should look into the ``socket``
 module. ``threading`` is the general, high-level module for threading
 stuff. For URL retrieval, ``urllib`` and ``urllib2`` are provided.
 
-You may also want to check non standard libraries such as `Twisted
+You may also want to check out non standard libraries such as `Twisted
 <http://twistedmatrix.com/>`_ or `requests
 <http://docs.python-requests.org/en/latest/index.html>`_.
 
