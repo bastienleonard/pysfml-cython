@@ -38,16 +38,19 @@ Building the module
 Binary releases
 ---------------
 
-If you're on Windows, you can download the current binary release at
-https://github.com/bastienleonard/pysfml2-cython/downloads, and ignore
-most of this section. The installer contains the module itself, and
-the required DLLs (SFML and dependencies). The DLLs are dropped in
-Python's folder, e.g. ``C:\Python27``. If you haven't already, make
-sure that this folder has been added to the ``PATH`` environment
-variable.
+If you're on Windows, you can download the current binary release and
+ignore most of this section.
 
-Christoph Gohlke also provides installers, with support for Python 2.6
-as well as native 64 bits installers on his website:
+Official releases are at
+https://github.com/bastienleonard/pysfml2-cython/downloads. The
+installer contains the module itself, and the required DLLs (SFML and
+dependencies). The DLLs are dropped in Python's folder,
+e.g. ``C:\Python27``. If you haven't already, make sure that this
+folder has been added to the ``PATH`` environment variable.
+
+Christoph Gohlke also provides installers which are currently more
+up-to-date, with support for Python 2.6 as well as native 64 bits
+installers on his website:
 http://www.lfd.uci.edu/~gohlke/pythonlibs/#pysfml2
 
 You should be able to use pySFML 2 without installing anything
