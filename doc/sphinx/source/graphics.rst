@@ -170,6 +170,9 @@ Classes
    .. attribute:: MAGENTA
    .. attribute:: RED
    .. attribute:: TRANSPARENT
+
+      Transparent black color, i.e. this is equal to ``Color(0, 0, 0, 0)``.
+
    .. attribute:: WHITE
    .. attribute:: YELLOW
 
