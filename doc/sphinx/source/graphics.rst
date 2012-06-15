@@ -75,10 +75,22 @@ Misc
 Blend modes
 -----------
 
-.. attribute:: BLEND_ALPHA
 .. attribute:: BLEND_ADD
+
+   Pixel = Source + Dest.
+
+.. attribute:: BLEND_ALPHA
+
+   Pixel = Source * Source.a + Dest * (1 - Source.a).
+
 .. attribute:: BLEND_MULTIPLY
+
+   Pixel = Source * Dest.
+
 .. attribute:: BLEND_NONE
+
+   Pixel = Source.
+
 
 
 .. _primitive_types:
@@ -87,11 +99,35 @@ Primitive types
 ---------------
 
 .. attribute:: POINTS
+
+   List of individual points.
+
 .. attribute:: LINES
+
+   List of individual lines. 
+
 .. attribute:: LINES_STRIP
+
+   List of connected lines, a point uses the previous point to form a line.
+
 .. attribute:: TRIANGLES
+
+   List of individual triangles.
+
 .. attribute:: TRIANGLES_FAN
+
+   List of connected triangles, a point uses the common center and the
+   previous point to form a triangle.
+
+.. attribute:: TRIANGLES_STIP
+
+   List of connected triangles, a point uses the two previous points
+   to form a triangle.
+
 .. attribute:: QUADS
+
+   List of individual quads.
+
 
 
 Classes
@@ -99,22 +135,42 @@ Classes
 
 .. class:: Color(int r, int g, int b[, int a=255])
 
+   Represents a color of 4 components:
+
+   * red,
+   * green,
+   * blue,
+   * alpha (opacity).
+
+   Each component is a public member, an unsigned integer in the range
+   [0, 255]. Thus, colors can be constructed and manipulated very
+   easily::
+
+      color = sfml.Color(255, 0, 0)  # red; you can also use Color.RED
+      color.r = 0  # make it black
+      color.b = 128  # make it dark blue
+
+   The fourth component of colors, named "alpha", represents the
+   opacity of the color. A color with an alpha value of 255 will be
+   fully opaque, while an alpha value of 0 will make a color fully
+   transparent, whatever the value of the other components is.
+
    This class provides the following special methods:
 
    * Comparison operators: ``==`` and ``!=``.
    * Arithmetic operators: ``+`` and ``*``.
 
-   The following colors are available as static attibutes, e.g. you can use
-   ``sfml.Color.WHITE`` to obtain a reference to the white color.
+   The following colors are available as static attibutes, e.g. you
+   can use :attr:`Color.WHITE` to obtain a reference to the white color:
 
-   * BLACK
-   * WHITE
-   * RED
-   * GREEN
-   * BLUE
-   * YELLOW
-   * MAGENTA
-   * CYAN
+   .. attribute:: BLACK
+   .. attribute:: WHITE
+   .. attribute:: RED
+   .. attribute:: GREEN
+   .. attribute:: BLUE
+   .. attribute:: YELLOW
+   .. attribute:: MAGENTA
+   .. attribute:: CYAN
 
    .. attribute:: r
 
