@@ -164,13 +164,14 @@ Classes
    can use :attr:`Color.WHITE` to obtain a reference to the white color:
 
    .. attribute:: BLACK
-   .. attribute:: WHITE
-   .. attribute:: RED
-   .. attribute:: GREEN
    .. attribute:: BLUE
-   .. attribute:: YELLOW
-   .. attribute:: MAGENTA
    .. attribute:: CYAN
+   .. attribute:: GREEN
+   .. attribute:: MAGENTA
+   .. attribute:: RED
+   .. attribute:: TRANSPARENT
+   .. attribute:: WHITE
+   .. attribute:: YELLOW
 
    .. attribute:: r
 

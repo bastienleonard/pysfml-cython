@@ -956,6 +956,7 @@ cdef class Color:
     YELLOW = Color(255, 255, 0)
     MAGENTA = Color(255, 0, 255)
     CYAN = Color(0, 255, 255)
+    TRANSPARENT = Color(0, 0, 0, 0)
 
     cdef decl.Color *p_this
 
