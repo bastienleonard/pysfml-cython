@@ -197,6 +197,145 @@ Classes
       Return a new Color with the same value as self.
 
 
+.. class:: IntRect(int left=0, int top=0, int width=0, int height=0)
+
+   A rectangle is defined by its top-left corner and its size.
+
+   To keep things simple, :class:`IntRect` doesn't define functions to
+   emulate the properties that are not directly members (such as
+   right, bottom, center, etc.), instead it only provides intersection
+   functions.
+
+   :class:`IntRect` uses the usual rules for its boundaries:
+
+   * The left and top edges are included in the rectangle's area.
+   * The right (left + width) and bottom (top + height) edges are
+     excluded from the rectangle's area.
+
+   This means that ``sfml.IntRect(0, 0, 1, 1)`` and ``sfml.IntRect(1,
+   1, 1, 1)`` don't intersect.
+
+   Usage example::
+
+      # Define a rectangle, located at (0, 0) with a size of 20x5
+      r1 = sfml.IntRect(0, 0, 20, 5)
+
+      # Define another rectangle, located at (4, 2) with a size of 18x10
+      r2 = sfml.IntRect(4, 2, 18, 10)
+
+      # Test intersections with the point (3, 1)
+      b1 = r1.contains(3, 1) # True
+      b2 = r2.contains(3, 1) # False
+
+      # Test the intersection between r1 and r2
+      result = sfml.IntRect()
+      b3 = r1.intersects(r2, result) # True
+      # result == (4, 2, 16, 3)
+
+   .. note::
+
+      You don't have to use this class; everywhere you can pass a
+      :class:`IntRect`, you should be able to pass a tuple as
+      well. However, it can be more practical to use it, as it
+      provides useful methods and is mutable.
+
+   This class provides the following special methods:
+
+   * Comparison operators: ``==`` and ``!=``.
+
+   .. attribute:: left
+
+      Left coordinate of the rectangle.
+
+   .. attribute:: top
+
+      Top coordinate of the rectangle.
+
+   .. attribute:: width
+
+      Width of the rectangle.
+
+   .. attribute:: height
+
+      Height of the rectangle.
+
+   .. method:: contains(int x, int y)
+
+      Return whether or not the rectangle contains the point *(x, y)*.
+
+   .. method:: copy
+
+      Return a new IntRect object with the same value as self.
+
+   .. method:: intersects(IntRect rect[, IntRect intersection])
+
+      Return whether or not the two rectangles intersect. If
+      *intersection* is provided, it will be set to the intersection
+      area.
+
+
+.. class:: FloatRect(float left=0, float top=0, float width=0, float height=0)
+
+   A rectangle is defined by its top-left corner and its size.
+
+   To keep things simple, :class`FloatRect` doesn't define functions
+   to emulate the properties that are not directly members (such as
+   right, bottom, center, etc.), instead it only provides intersection
+   functions.
+
+   :class:`FloatRect` uses the usual rules for its boundaries:
+
+   * The left and top edges are included in the rectangle's area.
+   * The right (left + width) and bottom (top + height) edges are
+     excluded from the rectangle's area.
+
+   This means that ``sfml.FloatRect(0, 0, 1, 1)`` and ``sfml.FloatRect(1,
+   1, 1, 1)`` don't intersect.
+
+   See :class:`IntRect` for an example.
+
+   .. note::
+
+      You don't have to use this class; everywhere you can pass a
+      :class:`FloatRect`, you should be able to pass a tuple as
+      well. However, it can be more practical to use it, as it
+      provides useful methods and is mutable.
+
+   This class provides the following special methods:
+
+   * Comparison operators: ``==`` and ``!=``.
+
+   .. attribute:: left
+
+      The left coordinate of the rectangle.
+
+   .. attribute:: top
+
+      The top coordinate of the rectangle.
+
+   .. attribute:: width
+
+      The width of the rectangle.
+
+   .. attribute:: height
+
+      The height of the rectangle.
+
+   .. method:: contains(int x, int y)
+
+      Return whether or not the rectangle contains the point *(x, y)*.
+
+   .. method:: copy
+
+      Return a new FloatRect object with the same value as self.
+
+   .. method:: intersects(FloatRect rect[, FloatRect intersection])
+
+      Return whether or not the two rectangles intersect. If
+      *intersection* is provided, it will be set to the intersection
+      area.
+
+
 .. class:: Transformable
 
    Decomposed transform defined by a position, a rotation and a scale.
@@ -216,31 +355,32 @@ Classes
    rotation. This is a tedious operation, and it requires to store all
    the individual components of the final transform.
 
-   That's exactly what Transformable was written for: it hides these
-   variables and the composed transform behind an easy to use
-   interface. You can set or get any of the individual components
+   That's exactly what :class:`Transformable` was written for: it
+   hides these variables and the composed transform behind an easy to
+   use interface. You can set or get any of the individual components
    without worrying about the others. It also provides the composed
    transform (as a :class:`Transform` object), and keeps it
    up-to-date.
 
-   In addition to the position, rotation and scale, Transformable
-   provides an "origin" component, which represents the local origin
-   of the three other components. Let's take an example with a 10x10
-   pixels sprite. By default, the sprite is positionned/rotated/scaled
-   relatively to its top-left corner, because it is the local point
-   (0, 0). But if we change the origin to be (5, 5), the sprite will
-   be positionned/rotated/scaled around its center instead. And if we
-   set the origin to (10, 10), it will be transformed around its
-   bottom-right corner.
+   In addition to the position, rotation and scale,
+   :class:`Transformable` provides an "origin" component, which
+   represents the local origin of the three other components. Let's
+   take an example with a 10x10 pixels sprite. By default, the sprite
+   is positionned/rotated/scaled relatively to its top-left corner,
+   because it is the local point (0, 0). But if we change the origin
+   to be (5, 5), the sprite will be positionned/rotated/scaled around
+   its center instead. And if we set the origin to (10, 10), it will
+   be transformed around its bottom-right corner.
 
-   To keep the Transformable class simple, there's only one origin for
-   all the components. You cannot position the sprite relatively to
-   its top-left corner while rotating it around its center, for
-   example. To do this kind of thing, use :class:`Transform` directly.
+   To keep the :class:`Transformable` class simple, there's only one
+   origin for all the components. You cannot position the sprite
+   relatively to its top-left corner while rotating it around its
+   center, for example. To do this kind of thing, use
+   :class:`Transform` directly.
 
-   Transformable can be used as a base class. It is often combined
-   with :ref:`draw() method <graphicsref_custom_drawables>` --- that's
-   what SFML's sprites, texts and shapes do::
+   :class:`Transformable` can be used as a base class. It is often
+   combined with a :ref:`draw() method <graphicsref_custom_drawables>`
+   --- that's what SFML's sprites, texts and shapes do::
 
       // TODO: port to Python
       class MyEntity : public sf::Transformable, public sf::Drawable
@@ -371,6 +511,21 @@ Classes
    is abstract; the constructor will raise ``NotImplementedError`` if
    you call it.
 
+   :class:`RenderTarget` defines the common behaviour of all the 2D
+   render targets. It makes it possible to draw 2D entities like
+   sprites, shapes, text without using any OpenGL command directly.
+
+   A :class:`RenderTarget` is also able to use views (:class:`View`),
+   which are some kind of 2D cameras. With views you can globally
+   scroll, rotate or zoom everything that is drawn, without having to
+   transform every single entity.
+
+   On top of that, render targets are still able to render direct
+   OpenGL stuff. It is even possible to mix together OpenGL calls and
+   regular SFML drawing commands. When doing so, make sure that OpenGL
+   states are not messed up by calling the
+   :meth:`push_gl_states`/:meth:`pop_gl_states` methods.
+
    .. attribute:: default_view
    .. attribute:: height
    .. attribute:: size
@@ -404,59 +559,6 @@ Classes
    .. method:: pop_gl_states
    .. method:: push_gl_states
    .. method:: reset_gl_states
-
-
-
-.. class:: IntRect(int left=0, int top=0, int width=0, int height=0)
-
-   You don't have to use this class; everywhere you can pass a
-   :class:`IntRect`, you should be able to pass a tuple as
-   well. However, it can be more practical to use it, as it provides
-   useful methods and is mutable.
-
-   This class provides the following special methods:
-
-   * Comparison operators: ``==`` and ``!=``.
-
-   .. attribute:: left
-   .. attribute:: top
-   .. attribute:: width
-   .. attribute:: height
-
-   .. method:: contains(int x, int y)
-
-   .. method:: copy
-
-      Return a new IntRect object with the same value as self.
-
-   .. method:: intersects(IntRect rect[, IntRect intersection])
-
-
-
-.. class:: FloatRect(float left=0, float top=0, float width=0, float height=0)
-
-   You don't have to use this class; everywhere you can pass a
-   :class:`FloatRect`, you should be able to pass a tuple as
-   well. However, it can be more practical to use it, as it provides
-   useful methods and is mutable.
-
-   This class provides the following special methods:
-
-   * Comparison operators: ``==`` and ``!=``.
-
-   .. attribute:: left
-   .. attribute:: top
-   .. attribute:: width
-   .. attribute:: height
-
-   .. method:: contains(int x, int y)
-
-   .. method:: copy
-
-      Return a new FloatRect object with the same value as self.
-
-   .. method:: intersects(FloatRect rect[, FloatRect intersection])
-
 
 
 .. class:: Transform([float a00, float a01, float a02,\
@@ -606,11 +708,9 @@ Image display and effects
    C++ SFML. It raises :exc:`PySFMLException` if texture creation fails.
 
    :class:`Image` living on the graphics card that can be used for
-   drawing.
-
-   A texture lives in the graphics card memory, therefore it is very
-   fast to draw a texture to a render target, or copy a render target
-   to a texture (the graphics card can access both directly).
+   drawing. A texture lives in the graphics card memory, therefore it
+   is very fast to draw a texture to a render target, or copy a render
+   target to a texture (the graphics card can access both directly).
 
    Being stored in the graphics card memory has some drawbacks. A
    texture cannot be manipulated as freely as a :class:`Image`, you
@@ -1342,14 +1442,80 @@ Windowing
 
 .. class:: RenderStates(shader=None, texture=None, transform=None)
 
+   The constructor first creates a default RenderStates object, then
+   sets its attributes with respect to the provided
+   arguments. Constructing a default set of render states is
+   equivalent to using :attr:`RenderStates.DEFAULT`. The default set
+   defines
+
+   * the :attr:`BLEND_ALPHA` blend mode,
+   * the :attr:`Transform.IDENTITY` transform,
+   * no texture (``None``),
+   * no shader (``None``).
+
+   Contains the states used for drawing to a
+   :class:`RenderTarget`. There are four global states that can be
+   applied to the drawn objects:
+
+   * The blend mode: how pixels of the object are blended with the
+     background.
+   * The transform: how the object is positioned/rotated/scaled.
+   * The texture: which image is mapped to the object.
+   * The shader: which custom effect is applied to the object.
+
+   High-level objects such as sprites or text force some of these
+   states when they are drawn. For example, a sprite will set its own
+   texture, so that you don't have to care about it when drawing the
+   sprite.
+
+   The transform is a special case: sprites, texts and shapes (and
+   it's a good idea to do it with your own drawable classes too)
+   combine their transform with the one that is passed in the
+   RenderStates structure. So that you can use a "global" transform on
+   top of each object's transform.
+
+   Most objects, especially high-level drawables, can be drawn
+   directly without defining render states explicitely --- the default
+   set of states is ok in most cases::
+
+      window.draw(sprite)
+
+   If you just want to specify a shader, you can pass it directly to
+   the :meth:`RenderTarget.draw` method::
+
+      window.draw(sprite, shader)
+
+   Note that unlike in C++ SFML, this only works for shaders and not
+   for other render states. This is because adding other possibilities
+   means writing a lot of boilerplate code in the binding, and shader
+   seemed to be most used state when writing this method.
+
+   When you're inside the draw method of a drawable object, you can
+   either pass the render states unmodified, or change some of
+   them. For example, a transformable object will combine the current
+   transform with its own transform. A sprite will set its
+   texture. Etc.
+
+   .. attribute:: DEFAULT
+
+      A RenderStates object with the default values, as a class
+      attribute.
+
    .. attribute:: blend_mode
 
-      See :ref:`blend_modes`.
+      See :ref:`blend_modes` for a list of the valid values.
 
    .. attribute:: shader
+
+      A :class:`Shader` object.
+
    .. attribute:: texture
+
+      A :class:`Texture` object.
+
    .. attribute:: transform
 
+      A :class:`Transform` object.
 
 
 .. class:: ContextSettings(int depth=24, int stencil=8, int antialiasing=0,\
@@ -1403,9 +1569,9 @@ Windowing
 
    * Comparison operators (``==``, ``!=``, ``<``, ``>``, ``<=`` and
      ``>=``).
-   * ``__str__()`` returns a description of the mode in a
+   * ``str(mode)`` returns a description of the mode in a
      ``widthxheightxbpp`` format.
-   * ``__repr__()`` returns a string in a ``VideoMode(width, height,
+   * ``repr(mode)`` returns a string in a ``VideoMode(width, height,
      bpp)`` format.
 
    .. attribute:: width
