@@ -296,6 +296,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         bint create(unsigned int, unsigned int, Uint8*)
         void createMaskFromColor(Color&)
         void createMaskFromColor(Color&, unsigned char)
+        void flipHorizontally()
+        void flipVertically()
         Color& getPixel(unsigned int, unsigned int)
         unsigned char* getPixelsPtr()
         Vector2u getSize()
