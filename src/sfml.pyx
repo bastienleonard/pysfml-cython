@@ -1854,6 +1854,9 @@ cdef class Image:
         self.p_this.flipVertically()
 
     def get_pixel(self, int x, int y):
+        if x < 0 or x > self.width -1 or y < 0 or y > self.height - 1:
+            raise IndexError
+
         cdef decl.Color *p_color = new decl.Color()
         cdef decl.Color temp = self.p_this.getPixel(x, y)
 

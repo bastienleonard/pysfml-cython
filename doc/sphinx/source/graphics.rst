@@ -888,9 +888,9 @@ Image display and effects
 
    .. method:: get_pixel(int x, int y)
 
-      Return the color of the pixel at *(x, y)*. This method doesn't
-      check the validity of the pixel coordinates, using out-of-range
-      values will result in an undefined behaviour.
+      Return the color of the pixel at *(x, y)*.
+
+      ``IndexError`` is raised if the pixel is out of range.
 
    .. method:: get_pixels()
 
