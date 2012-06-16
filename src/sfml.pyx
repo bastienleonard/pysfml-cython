@@ -1885,7 +1885,8 @@ cdef class Image:
         else:
             c_filename = <bytes?>filename
 
-        self.p_this.saveToFile(c_filename)
+        if not self.p_this.saveToFile(c_filename):
+            raise PySFMLException()
 
     def set_pixel(self, int x, int y, Color color):
         self.p_this.setPixel(x, y, color.p_this[0])
