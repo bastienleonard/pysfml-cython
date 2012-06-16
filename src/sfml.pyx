@@ -1867,7 +1867,12 @@ cdef class Image:
     def get_pixels(self):
         cdef char* p = <char*>self.p_this.getPixelsPtr()
         cdef int length = self.width * self.height * 4
-        cdef bytes ret = p[:length]
+        cdef bytes ret
+
+        if p == NULL:
+            return None
+
+        ret = p[:length]
 
         return ret
 
