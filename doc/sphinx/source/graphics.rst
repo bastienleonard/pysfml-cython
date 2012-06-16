@@ -916,6 +916,8 @@ Image display and effects
       doesn't check the validity of the pixel coordinates, using
       out-of-range values will result in an undefined behaviour.
 
+      ``IndexError`` is raised if the pixel is out of range.
+
 
 .. class:: Texture([int width[, int height]])
 

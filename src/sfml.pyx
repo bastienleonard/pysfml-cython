@@ -1889,6 +1889,9 @@ cdef class Image:
             raise PySFMLException()
 
     def set_pixel(self, int x, int y, Color color):
+        if x < 0 or x > self.width -1 or y < 0 or y > self.height - 1:
+            raise IndexError
+
         self.p_this.setPixel(x, y, color.p_this[0])
 
 
