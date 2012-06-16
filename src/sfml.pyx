@@ -1847,6 +1847,12 @@ cdef class Image:
     def create_mask_from_color(self, Color color, int alpha=0):
         self.p_this.createMaskFromColor(color.p_this[0], alpha)
 
+    def flip_horizontally(self):
+        self.p_this.flipHorizontally()
+
+    def flip_vertically(self):
+        self.p_this.flipVertically()
+
     def get_pixel(self, int x, int y):
         cdef decl.Color *p_color = new decl.Color()
         cdef decl.Color temp = self.p_this.getPixel(x, y)

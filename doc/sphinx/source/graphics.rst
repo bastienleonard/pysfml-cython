@@ -878,6 +878,14 @@ Image display and effects
       color to *alpha* (0 by default), so that they become
       transparent.
 
+   .. method:: flip_horizontally
+
+      Flip the image horizontally (left <-> right).
+
+   .. method:: flip_vertically
+
+      Flip the image vertically (top <-> bottom).
+
    .. method:: get_pixel(int x, int y)
 
       Return the color of the pixel at *(x, y)*. This method doesn't
