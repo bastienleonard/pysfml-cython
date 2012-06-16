@@ -527,13 +527,55 @@ Classes
    :meth:`push_gl_states`/:meth:`pop_gl_states` methods.
 
    .. attribute:: default_view
+
+      Read-only. The default view has the initial size of the render
+      target, and never changes after the target has been created.
+
    .. attribute:: height
+
+      Read-only. The height of the rendering region of the target.
+
    .. attribute:: size
+
+      Read-only. The size of the rendering region of the target, as a
+      tuple.
+
    .. attribute:: view
+
+      The view is like a 2D camera, it controls which part of the 2D
+      scene is visible, and how it is viewed in the render-target. The
+      new view will affect everything that is drawn, until another
+      view is set. The render target keeps its own copy of the view
+      object, so it is not necessary to keep the original one alive
+      after calling this function. To restore the original view of the
+      target, you can pass the result of :attr:`default_view` to this
+      function.
+
    .. attribute:: width
 
-   .. method:: clear
-   .. method:: convert_coords
+      Read-only. The width of the rendering region of the target.
+
+   .. method:: clear([color])
+
+      Clear the entire target with a single color. This function is
+      usually called once every frame, to clear the previous contents
+      of the target. The default is black.
+
+   .. method:: convert_coords(int x, int y[, view=None])
+
+      Convert a point from target coordinates to view
+      coordinates. Initially, a unit of the 2D world matches a pixel
+      of the render target. But if you define a custom view, this
+      assertion is not true anymore, e.g. a point located at (10, 50)
+      in your render target (for example a window) may map to the
+      point (150, 75) in your 2D world --- for example if the view is
+      translated by (140, 25). For render windows, this method is
+      typically used to find which point (or object) is located below
+      the mouse cursor.
+
+      When the *view* argument isn't provided, the current view of the
+      render target is used.
+
    .. method:: draw(drawable, ...)
 
       *drawable* may be:
@@ -555,10 +597,65 @@ Classes
 
         See ``examples/vertices.py`` for a working example.
 
-   .. method:: get_viewport
+   .. method:: get_viewport(view)
+
+      Return the viewport of a view applied to this render target, as
+      an :class:`IntRect`. The viewport is defined in the view as a
+      ratio, this method simply applies this ratio to the current
+      dimensions of the render target to calculate the pixels
+      rectangle that the viewport actually covers in the target.
+
    .. method:: pop_gl_states
+
+      Restore the previously saved OpenGL render states and matrices.
+      See :meth:`push_gl_states`.
+
    .. method:: push_gl_states
+
+      Save the current OpenGL render states and matrices. This method
+      can be used when you mix SFML drawing and direct OpenGL
+      rendering. Combined with :meth:`pop_gl_states`, it ensures that:
+
+      * SFML's internal states are not messed up by your OpenGL code.
+      * Your OpenGL states are not modified by a call to a SFML
+        method.
+
+      More specifically, it must be used around code that calls
+      ``draw()`` methods. Example::
+
+         # OpenGL code here...
+         window.push_gl_states()
+         window.draw(...)
+         window.draw(...)
+         window.pop_gl_states()
+         # OpenGL code here...
+
+   Note that this method is quite expensive: it saves all the possible
+   OpenGL states and matrices, even the ones you don't care
+   about. Therefore it should be used wisely. It is provided for
+   convenience, but the best results will be achieved if you handle
+   OpenGL states yourself (because you know which states have really
+   changed, and need to be saved and restored). Take a look at the
+   :meth:`reset_gl_states` method if you do so.
+
    .. method:: reset_gl_states
+
+      Reset the internal OpenGL states so that the target is ready for
+      drawing. This function can be used when you mix SFML drawing and
+      direct OpenGL rendering, if you choose not to use
+      :meth:`push_gl_states`/:meth:`pop_gl_states`. It ensures that
+      all OpenGL states needed by SFML are set, so that subsequent
+      draw() calls will work as expected.
+
+      Example::
+
+         # OpenGL code here...
+         glPushAttrib(...)
+         window.reset_gl_states()
+         window.draw(...)
+         window.draw(...)
+         glPopAttrib(...)
+         # OpenGL code here...
 
 
 .. class:: Transform([float a00, float a01, float a02,\
@@ -669,37 +766,147 @@ Image display and effects
 
 .. class:: Image(int width, int height[, color])
 
-   .. attribute:: height
-   .. attribute:: size
-   .. attribute:: width
+   :class:`Image` is an abstraction to manipulate images as
+   bidimensional arrays of pixels. It allows you to load, manipulate
+   and save images.
 
-   .. classmethod:: load_from_file(filename)
-   .. classmethod:: load_from_memory(str mem)
-   .. classmethod:: load_from_pixels(int width, int height, str pixels)
+   The constructor create images of the specified size, filled with a
+   color. For loading images, you should use one of the class
+   methods. :meth:`load_from_file` is the most common one.
 
-   .. method:: __getitem__()
+   :class:`Image` can handle a unique internal representation of
+   pixels, which is RGBA 32 bits. This means that a pixel must be
+   composed of 8 bits red, green, blue and alpha channels --- just
+   like a :class:`Color`. All the functions that return an array of
+   pixels follow this rule, and all parameters that you pass to
+   :class:`Image` methods (such as :meth:`load_from_pixels`) must use
+   this representation as well.
 
-      Get a pixel from the image. Equivalent to :meth:`get_pixel()`. Example::
+   An image can be copied, but you should note that it's a heavy
+   resource.
+
+   Usage example::
+
+      # Load an image file from a file
+      background = sfml.Image.load_from_file('background.jpg')
+
+      # Create a 20x20 image filled with black color
+      image = sfml.Image(20, 20, sfml.Color.BLACK)
+
+      # Copy image1 on image2 at position (10, 10)
+      image.copy(background, 10, 10)
+
+      # Make the top-left pixel transparent
+      color = image[0,0]
+      color.a = 0
+      image[0,0] = color
+
+      # Save the image to a file
+      image.save_to_file('result.png')
+
+   This class provides the following special method:
+
+   * ``image[tuple]`` returns a pixel from the image, as a
+     :class:`Color` object. Equivalent to
+     :meth:`get_pixel()`. Example::
 
          print image[0,0]  # Create tuple implicitly
          print image[(0,0)]  # Create tuple explicitly
-
-   .. method:: __setitem__()
-
-      Set a pixel of the image. Equivalent to :meth:`set_pixel()`. Example::
+   * ``image[tuple] = color`` sets a pixel of the image to a
+     :class:`Color` object value. Equivalent to
+     :meth:`set_pixel()`. Example::
 
          image[0,0] = sfml.Color(10, 20, 30)  # Create tuple implicitly
          image[(0,0)] = sfml.Color(10, 20, 30)  # Create tuple explicitly
 
+   .. attribute:: height
+
+      Read-only. The height of the image.
+
+   .. attribute:: size
+
+      Read-only. The size of the image, as a tuple.
+
+   .. attribute:: width
+
+      Read-only. The width of the image.
+
+   .. classmethod:: load_from_file(filename)
+
+      Load the image from *filename* on disk and return a new
+      :class:`Image` object. The supported image formats are bmp, png,
+      tga, jpg, gif, psd, hdr and pic. Some format options are not
+      supported, like progressive jpeg.
+
+      :exc:`PySFMLException` is raised if loading fails.
+
+   .. classmethod:: load_from_memory(bytes mem)
+
+      Load the image from a file in memory. The supported image
+      formats are bmp, png, tga, jpg, gif, psd, hdr and pic. Some
+      format options are not supported, like progressive jpeg.
+
+      :exc:`PySFMLException` is raised if loading fails.
+
+   .. classmethod:: load_from_pixels(int width, int height, bytes pixels)
+
+      Return a new image, created from a str/bytes object of
+      pixels. *pixels* is assumed to contain 32-bits RGBA pixels, and
+      have the given *width* and *height*. If not, the behavior is
+      undefined. If *pixels* is ``None``, an empty image is created.
+
    .. method:: copy(Image source, int dest_x, int dest_y\
                     [, source_rect, apply_alpha])
-   .. method:: create_mask_from_color(color, int alpha)
-   .. method:: get_pixel(int x, int y)
-   .. method:: get_pixels()
-   .. method:: save_to_file(filename)
-   .. method:: set_pixel(int x, int y, color)
-   .. method:: update_pixels(str pixels[, rect])
 
+      Copy pixels from another image onto this one. This method does a
+      slow pixel copy and should not be used intensively. It can be
+      used to prepare a complex static image from several others, but
+      if you need this kind of feature in real-time you'd better use
+      :class:`RenderTexture`.
+
+      Without *source_rect*, the whole image is copied. *source_rect*
+      can be either an :class:`IntRect` or a tuple.
+
+      If *apply_alpha* is provided, the transparency of *source*'s
+      pixels is applied. If it isn't, the pixels are copied unchanged
+      with their alpha value.
+
+   .. method:: create_mask_from_color(color, int alpha)
+
+      Create a transparency mask from a specified color-key. This
+      method sets the alpha value of every pixel matching the given
+      color to *alpha* (0 by default), so that they become
+      transparent.
+
+   .. method:: get_pixel(int x, int y)
+
+      Return the color of the pixel at *(x, y)*. This method doesn't
+      check the validity of the pixel coordinates, using out-of-range
+      values will result in an undefined behaviour.
+
+   .. method:: get_pixels()
+
+      Return a str (in Python 2) or a bytes (Python 3) object to the
+      pixels. The returned value points to an array of RGBA pixels
+      made of 8 bits integers components. The size of the object is
+      :attr:`width` * :attr:`height` * 4. If the image is empty,
+      ``None`` is returned.
+
+   .. method:: save_to_file(filename)
+
+      Save the image to a file on disk. The format of the image is
+      automatically deduced from the extension. The supported image
+      formats are bmp, png, tga and jpg. The destination file is
+      overwritten if it already exists. This method fails if the image
+      is empty.
+
+      :exc:`PySFMLException` is raised if saving fails.
+
+   .. method:: set_pixel(int x, int y, color)
+
+      Set the color of the pixel at *(x, y)* to *color*. This method
+      doesn't check the validity of the pixel coordinates, using
+      out-of-range values will result in an undefined behaviour.
 
 
 .. class:: Texture([int width[, int height]])
@@ -841,7 +1048,7 @@ Image display and effects
       The maximum size for a texture depends on the graphics driver
       and can be retrieved with the getMaximumSize function.
 
-      :exc:`PySFMLException` is raised if the loading fails.
+      :exc:`PySFMLException` is raised if loading fails.
 
    .. classmethod:: load_from_image(image[, area])
 
@@ -855,7 +1062,7 @@ Image display and effects
       The maximum size for a texture depends on the graphics driver
       and is accessible with the :attr:`MAXIMUM_SIZE` class attribute.
 
-      :exc:`PySFMLException` is raised if the loading fails.
+      :exc:`PySFMLException` is raised if loading fails.
 
    .. classmethod:: load_from_memory(bytes data[, area])
 
@@ -1521,12 +1728,46 @@ Windowing
 .. class:: ContextSettings(int depth=24, int stencil=8, int antialiasing=0,\
                            int major=2, int minor=0)
 
+   Class defining the settings of the OpenGL context attached to a
+   window. :class:`ContextSettings` allows to define several advanced
+   settings of the OpenGL context attached to a window.
+
+   All these settings have no impact on the regular SFML rendering
+   (graphics module), except the anti-aliasing level, so you may need
+   to use this structure only if you're using SFML as a windowing
+   system for custom OpenGL rendering.
+
+   Please note that these values are only a hint. No failure will be
+   reported if one or more of these values are not supported by the
+   system; instead, SFML will try to find the closest valid match. You
+   can then retrieve the settings that the window actually used to
+   create its context, with :attr:`RenderWindow.settings`.
+
    .. attribute:: antialiasing_level
+
+      Number of multisampling levels for antialiasing.
+
    .. attribute:: depth_bits
+
+      Bits of the depth buffer.
+
    .. attribute:: major_version
+
+      Major number of the context version to create. Only versions
+      greater or equal to 3.0 are relevant; versions less than 3.0 are
+      all handled the same way (i.e. you can use any version < 3.0 if
+      you don't want an OpenGL 3 context).
+
    .. attribute:: minor_version
+
+      Minor number of the context version to create. Only versions
+      greater or equal to 3.0 are relevant; versions less than 3.0 are
+      all handled the same way (i.e. you can use any version < 3.0 if
+      you don't want an OpenGL 3 context).
+
    .. attribute:: stencil_bits
 
+      Bits of the stencil buffer.
 
 
 .. class:: VideoMode([width, height, bits_per_pixel=32])
@@ -1748,22 +1989,109 @@ Text
       consecutive lines of text.
 
 
+.. class:: Glyph
+
+   A glyph is the visual representation of a character. :class:`Glyph`
+   structure provides the information needed to handle the glyph:
+
+   * its coordinates in the font's texture,
+   * its bounding rectangle,
+   * the offset to apply to get the starting position of the next
+     glyph.
+
+   .. attribute:: advance
+
+      Offset to move horizontically to the next character.
+
+   .. attribute:: bounds
+
+      Bounding rectangle of the glyph as an :class:`IntRect`, in
+      coordinates relative to the baseline.
+
+   .. attribute:: texture_rect
+
+      Texture coordinates of the glyph inside the font's texture, as
+      an :class:`IntRect`.
+
 
 .. class:: Text([string, font, character_size=0])
 
    This class inherits :class:`Transformable`.
 
-   *string* can be either a regular string or Unicode. SFML will
-   internally store characters as 32-bit integers. A ``str`` object
-   will end up being interpreted by SFML as an "ANSI string" (cp1252
-   encoding). A ``unicode`` object will be interpreted as 32-bit code
-   points, as you would expect.
+   *string* can be a bytes/str/unicode object. SFML will internally
+   store characters as 32-bit integers. A bytes object (str in Python
+   2) will end up being interpreted by SFML as an "ANSI string"
+   (cp1252 encoding). A unicode object (str in Python 3) will be
+   interpreted as 32-bit code points.
+
+   :class:`Text` is a drawable class that allows to easily display
+   some text with custom style and color on a render target.
+
+   It inherits all the functions from :class:`Transformable`:
+   position, rotation, scale, origin. It also adds text-specific
+   properties such as the font to use, the character size, the font
+   style (bold, italic, underlined), the global color and the text to
+   display of course. It also provides convenience functions to
+   calculate the graphical size of the text, or to get the global
+   position of a given character.
+
+   :class:`Text` works in combination with the :class:`Font` class,
+   which loads and provides the glyphs (visual characters) of a given
+   font. The separation of :class:`Font` and :class:`Text` allows more
+   flexibility and better performances: a :class:`Font` is a heavy
+   resource, and any operation on it is slow (often too slow for
+   real-time applications). On the other hand, a :class:`Text` is a
+   lightweight object which can combine the glyphs data and metrics of
+   a :class:`Font` to display any text on a render target.
+
+   Usage example::
+
+      # Declare and load a font
+      font = sfml.Font.loadFromFile('arial.ttf')
+ 
+      # Create a text
+      text = sfml.Text('hello')
+      text.font = font
+      text.character_size = 30
+      text.style = sfml.Text.BOLD
+      text.color = sfml.Color.RED
+
+      # Draw it
+      window.draw(text)
+
+   Note that you don't need to load a font to draw text, SFML comes
+   with a built-in font that is implicitely used by default.
 
    .. attribute:: character_size
+
+      The size of the characters, pixels. The default size is 30.
+
    .. attribute:: color
+
+      The global color of the text. The default color is opaque white.
+
    .. attribute:: font
+
+      The text's font. The default font is :attr:`Font.DEFAULT_FONT`.
+
    .. attribute:: global_bounds
+
+      Read-only. The global bounding rectangle of the entity, as a
+      :class:`FloatRect`. The returned rectangle is in global
+      coordinates, which means that it takes in account the
+      transformations (translation, rotation, scale, ...) that are
+      applied to the entity. In other words, this function returns the
+      bounds of the sprite in the global 2D world's coordinate system.
+
    .. attribute:: local_bounds
+
+      Read-only. The local bounding rectangle of the entity, as a
+      :class:`FloatRect`. The returned rectangle is in local
+      coordinates, which means that it ignores the transformations
+      (translation, rotation, scale, ...) that are applied to the
+      entity. In other words, this function returns the bounds of the
+      entity in the entity's coordinate system.
+
    .. attribute:: string
 
       This attribute can be set as either a ``str`` or ``unicode``
@@ -1786,10 +2114,9 @@ Text
 
    .. method:: find_character_pos(int index)
 
-
-
-.. class:: Glyph
-
-   .. attribute:: advance
-   .. attribute:: bounds
-   .. attribute:: texture_rect
+      Return the position of the *index*-th character. This method
+      computes the visual position of a character from its index in
+      the string. The returned position is in global coordinates
+      (translation, rotation, scale and origin are applied). If
+      *index* is out of range, the position of the end of the string
+      is returned.
