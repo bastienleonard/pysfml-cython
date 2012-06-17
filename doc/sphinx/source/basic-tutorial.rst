@@ -87,11 +87,16 @@ psd.
 .. note::
 
    If you're new to Python, you may find the last two lines
-   confusing. The ``main()`` function that we defined isn't a standard
-   function like in C or C++. So we call the function ourself if
-   ``__name__ == __main__``, i.e. if our file has been launched by the
-   user, rather than imported by some code. You can find more
-   information here:
+   confusing. They're not necessary to make the script run: if you
+   remove them as well as the ``def main():`` line and adjust the
+   indentation accordingly, the program will still run fine. But it's
+   a good practice to use this pattern in your scripts.
+
+   The ``main()`` function that we defined isn't a "standard" function
+   that gets automatically called, like in C or C++. So we call the
+   function ourself if ``__name__ == __main__``, i.e. if our file has
+   been launched by the user, rather than imported by some code. You
+   can find more information here:
    http://stackoverflow.com/questions/419163/what-does-if-name-main-do
 
 
