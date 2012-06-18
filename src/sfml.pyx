@@ -3058,11 +3058,14 @@ cdef class RenderStates:
     DEFAULT = wrap_render_states_instance(
         new decl.RenderStates(decl.RenderStates_Default))
 
-    def __init__(self, Shader shader=None, Texture texture=None,
-                  Transform transform=None):
+    def __init__(self, int blend_mode=-1, Shader shader=None,
+                 Texture texture=None, Transform transform=None):
         self.p_this = new decl.RenderStates()
         self.shader = shader
         self.texture = texture
+
+        if blend_mode != -1:
+            self.p_this.blendMode = <decl.BlendMode>blend_mode
 
         if transform is None:
             self.transform = Transform()

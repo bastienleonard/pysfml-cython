@@ -1657,7 +1657,8 @@ Windowing
       Title bar + fixed border.
 
 
-.. class:: RenderStates(shader=None, texture=None, transform=None)
+.. class:: RenderStates(blend_mode=-1, shader=None, texture=None,\
+                        transform=None)
 
    The constructor first creates a default RenderStates object, then
    sets its attributes with respect to the provided
