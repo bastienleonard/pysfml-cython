@@ -1650,6 +1650,9 @@ cdef class Glyph:
         def __get__(self):
             return self.p_this.advance
 
+        def __set__(self, int value):
+            self.p_this.advance = value
+
     property bounds:
         def __get__(self):
             cdef decl.IntRect *p = new decl.IntRect()
@@ -1658,6 +1661,11 @@ cdef class Glyph:
 
             return wrap_int_rect_instance(p)
 
+        def __set__(self, value):
+            cdef decl.IntRect rect = convert_to_int_rect(value)
+
+            self.p_this.bounds = rect
+
     property texture_rect:
         def __get__(self):
             cdef decl.IntRect *p = new decl.IntRect()
@@ -1665,6 +1673,11 @@ cdef class Glyph:
             p[0] = self.p_this.textureRect
 
             return wrap_int_rect_instance(p)
+
+        def __set__(self, value):
+            cdef decl.IntRect rect = convert_to_int_rect(value)
+
+            self.p_this.textureRect = rect
 
 
 cdef Glyph wrap_glyph_instance(decl.Glyph *p_cpp_instance):
