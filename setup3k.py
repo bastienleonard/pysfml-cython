@@ -71,7 +71,7 @@ with open('README.md', 'r') as f:
 
 kwargs = dict(name='pySFML',
               ext_modules=ext_modules,
-              version='0.1.2',
+              version='0.1.3',
               description='A Python binding for SFML 2',
               long_description=long_description,
               author='Bastien Léonard',
