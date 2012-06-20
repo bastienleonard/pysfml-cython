@@ -499,9 +499,9 @@ Type                                                                          At
 
    .. attribute:: SPACE
    .. attribute:: RETURN
-   .. attribute:: BACK
+   .. attribute:: BACK_SPACE
 
-      The backspace key.
+      The back space key.
 
    .. attribute:: TAB
 
