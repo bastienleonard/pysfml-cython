@@ -34,5 +34,97 @@ Changelog
 .. currentmodule:: sfml
 
 
+0.1.3 (06/19/2012):
 
-.. include:: ../../../CHANGELOG.txt
+- Replaced Sprite.text_rect with two get/set methods.
+- RenderStates' constructor now takes a blend mode as its first
+  parameter.
+- Added missing methods in ConvexShape (get_point(),
+  get_point_count(), set_point(), set_point_count()). The point_count
+  attribute has been removed.
+- Added :attr:`RenderWindow.height`, :attr:`RenderWindow.width`,
+  :meth:`Texture.bind`, :attr:`Texture.NORMALIZED`,
+  :attr:`Texture.PIXELS`, :attr:`Color.TRANSPARENT`,
+  :meth:`Image.flip_horizontally`, :meth:`Image.flip_vertically` and
+  :attr:`RenderWindow.active`.
+- :class:`Glyph`'s attributes are now modifiable.
+- :meth:`RenderWindow.wait_event` now raises :exc:`PySFMLException`
+  when the underlying C++ method fails. (In the past, the error would
+  be ignored.)
+- :meth:`Image.get_pixels` now returns None when the image is empty.
+- :meth:`Image.get_pixel` and :meth:`Image.set_pixel` now raise
+  ``IndexError`` if the pixel coordinates are out of range.
+- :meth:`Image.save_to_file` now raises :exc:`PySFMLException` when an
+  error occurs.
+- The constructors of :class:`Keyboard`, :class:`Mouse` and
+  :class:`Style` now raise ``NotImplementedError``.
+- Fixed a bug where SFML would raise to fail an exception. This
+  typically happened when a tuple, a :class:`FloatRect` or an
+  :class:`IntRect` was expected, but another type was passed.
+- Added the tests in the source release.
+- Completed the documentation of many graphics classes.
+
+0.1.2:
+
+- Added copy() methods in :class:`Transform`, :class:`IntRect`,
+  :class:`FloatRect`, :class:`Time` and :class:`Sprite`.
+- :meth:`RenderTarget.draw` now also accepts a tuple of vertices. Also
+  fixed error handling when the objects contained in the list/tuple
+  have the wrong type.
+- Added ``==`` and ``!=`` operators in :class:`IntRect` and
+  :class:`FloatRect`.
+- :class:`Transform`'s constructor now creates an identity transform
+  when called with no arguments.
+- Transform now supports the ``*=`` operator. (It already worked in
+  the past, because Python will automatically use the ``*`` operator
+  if ``*=`` isn't provided, but it's slower.)
+- :meth:`SoundBuffer.save_to_file` now raises an exception in case of
+  failure. (In the past, it didn't report errors in any way.)
+- Removed ``Chunk.sample_count`` and
+  ``SoundBuffer.sample_count``. Instead, use ``len(Chunk.samples)``and
+  ``len(SoundBuffer.samples)``, respectively.
+- :meth:`SoundBuffer.load_from_samples` now uses strings/bytes (for
+  Python 2/3, respectively) instead of list.
+- Fixed bugs in :class:`Font`, :class:`Image` and :class:`Shader`
+  classmethods that load from strings/bytes objects.
+- Added :meth:`Joystick.update`.
+- :class:`Transformable` isn't abstract anymore, and can be inherited
+  safely.
+- Completed the events and audio documentation, added documentation
+  for some graphics classes.
+- Expanded the tutorial for C++ developers.
+
+0.1.1:
+
+- The ``seconds()``, ``milliseconds()`` and ``microseconds()``
+  functions are removed. Use the :class:`Time` constructor with
+  keyword arguments instead, e.g. ``milliseconds(200)`` becomes
+  ``Time(milliseconds=200)``.
+- Made Sprite more straightforward to inherit, ``__cinit__()`` won't
+  raise errors because it automatically gets passed the constructor
+  arguments anymore.
+- Fixed a bug in Time where some arithemtic operators would always
+  raise an exception.
+- Fixed a bug in RenderStates where internal attributes and properties
+  got mismatched because they had the same name.
+- Added a ``__repr__()`` method in :class:`Time` (mostly to have more
+  readable unit test errors, ``__str__()`` already existed in the
+  past).
+- Documentation: added a "caveats" page, and a new tutorial for people
+  who are coming from a C++ SFML background.
+- Added some unit tests.
+
+0.1:
+
+- The module is now called sfml. To keep using the sf prefix, import the module
+  with ``import sfml as sf``.
+- Python 3 users don't need to use bytes instead of strings
+  anymore. When a C++ method expects a byte string and the user passes
+  a Unicode object, it is encoded to a byte string with
+  :attr:`sfml.default_encoding` (UTF-8 by default, you can change it
+  as needed).
+- Added the :class:`Listener` class.
+- Added audio streaming (still lacking performance-wise).
+- Added :meth:`Texture.copy_to_image`.
+- Improved examples.
+- Fixed various bugs and memory leaks.

@@ -1,8 +1,3 @@
-.. This file is included in the documentation, so make sure it follows
-.. the reStructuredText syntax, e.g. by escaping characters when
-.. necessary.
-
-
 0.1.3 (06/19/2012):
 
 - Replaced Sprite.text_rect with two get/set methods.
@@ -41,8 +36,8 @@
 - Added == and != operators in IntRect and FloatRect.
 - Transform's constructor now creates an identity transform when
   called with no arguments.
-- Transform now supports the \*= operator. (It already worked in the
-  past, because Python will automatically use the * operator if \*=
+- Transform now supports the *= operator. (It already worked in the
+  past, because Python will automatically use the * operator if *=
   isn't provided, but it's slower.)
 - SoundBuffer.save_to_file() now raises an exception in case of
   failure. (In the past, it didn't report errors in any way.)
