@@ -36,12 +36,13 @@ Changelog
 
 0.1.3 (06/19/2012):
 
-- Replaced Sprite.text_rect with two get/set methods.
-- RenderStates' constructor now takes a blend mode as its first
-  parameter.
-- Added missing methods in ConvexShape (get_point(),
-  get_point_count(), set_point(), set_point_count()). The point_count
-  attribute has been removed.
+- Replaced ``Sprite.text_rect`` with two
+  :meth:`Sprite.get_texture_rect` and :meth:`Sprite.set_texture_rect`.
+- :class:`RenderStates`' constructor now takes a :ref:`blend
+  mode<blend_modes>` as its first parameter.
+- Added missing methods in :class:`ConvexShape` (``get_point()``,
+  ``get_point_count()``, ``set_point()``, ``set_point_count()``). The
+  ``point_count`` attribute has been removed.
 - Added :attr:`RenderWindow.height`, :attr:`RenderWindow.width`,
   :meth:`Texture.bind`, :attr:`Texture.NORMALIZED`,
   :attr:`Texture.PIXELS`, :attr:`Color.TRANSPARENT`,
