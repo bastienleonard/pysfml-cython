@@ -1004,6 +1004,16 @@ Image display and effects
       driver. You can expect a value of 512 pixels for low-end
       graphics card, and up to 8192 pixels or more for newer hardware.
 
+   .. attribute:: NORMALIZED
+
+      Constant for the type of texture coordinates where the range is
+      [0 .. 1], as a class attribute.
+
+   .. attribute:: PIXELS
+
+      Constant for the type of texture coordinates where the range is
+      [0 .. size], as a class attribute.
+
    .. attribute:: height   
 
       Read-only. The height of the texture.
@@ -1091,6 +1101,22 @@ Image display and effects
       and is accessible with the :attr:`MAXIMUM_SIZE` class attribute.
 
       :exc:`PySFMLException` is raised if the loading fails.
+
+   .. method:: bind([int coordinate_type])
+
+      Activate the texture for rendering. This method is mainly used
+      internally by the SFML rendering system. However it can be
+      useful when using :class:`Texture` with OpenGL code (this method
+      is equivalent to ``glBindTexture()``).
+
+      *coordinate_type* controls how texture coordinates will be
+      interpreted. If :attr:`NORMALIZED` (the default), they must be
+      in range [0 .. 1], which is the default way of handling texture
+      coordinates with OpenGL. If :attr:`PIXELS`, they must be given
+      in pixels (range [0 .. size]). This mode is used internally by
+      the graphics classes of SFML, it makes the definition of texture
+      coordinates more intuitive for the high-level API, users don't
+      need to compute normalized values.
 
    .. method:: copy_to_image()
 
