@@ -1512,6 +1512,11 @@ Image display and effects
    tiled maps or particle systems, using vertices will allow you to
    get maximum performances.
 
+   This class provides the following special methods:
+
+   * ``repr(vertex)`` returns a description in format
+     ``Vertex(position, color, tex_coords``.
+
    Example::
 
       # define a 100x100 square, red, with a 10x10 texture mapped on it
@@ -1542,6 +1547,10 @@ Image display and effects
       Coordinates of the texture's pixel map to the vertex. The value
       is always retrieved as a tuple. It can be set as a tuple or a
       :class:`Vector2f`.
+
+   .. method:: copy
+
+      Return a new vertex with the same value as self.
 
 
 Windowing

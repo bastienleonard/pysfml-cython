@@ -2592,6 +2592,9 @@ cdef class Vertex:
     def __dealloc__(self):
         del self.p_this
 
+    def __repr__(self):
+        return 'Vertex({0.position}, {0.color}, {0.tex_coords}'.format(self)
+
     property color:
         def __get__(self):
             return self.color
@@ -2617,6 +2620,9 @@ cdef class Vertex:
 
         def __set__(self, object value):
             self.p_this.texCoords = convert_to_vector2f(value)
+
+    def copy(self):
+        return Vertex(self.position, self.color, self.tex_coords)
 
 
 cdef Vertex wrap_vertex_instance(decl.Vertex *p):
