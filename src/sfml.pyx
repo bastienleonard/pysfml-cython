@@ -3522,8 +3522,5 @@ cdef class RenderTexture(RenderTarget):
         def __set__(self, bint smooth):
             (<decl.RenderTexture*>self.p_this).setSmooth(smooth)
 
-    def create(self, unsigned int width, unsigned int height, bint depth=False):
-        (<decl.RenderTexture*>self.p_this).create(width, height, depth)
-
     def display(self):
         (<decl.RenderTexture*>self.p_this).display()
