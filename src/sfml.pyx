@@ -3507,7 +3507,8 @@ cdef class RenderTexture(RenderTarget):
     
     property active:
         def __set__(self, bint active):
-            (<decl.RenderTexture*>self.p_this).setActive(active)
+            if not (<decl.RenderTexture*>self.p_this).setActive(active):
+                raise PySFMLException()
 
     property texture:
         def __get__(self):

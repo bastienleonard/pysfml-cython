@@ -1462,7 +1462,8 @@ Image display and effects
       care about it if you're not doing direct OpenGL stuff). Only one
       context can be current in a thread, so if you want to draw
       OpenGL geometry to another render target (like a
-      :class:`RenderWindow`), don't forget to activate it again.
+      :class:`RenderWindow`), don't forget to activate it again. If an
+      error occurs, :exc:`PySFMLException` is raised.
 
    .. attribute:: texture
 
