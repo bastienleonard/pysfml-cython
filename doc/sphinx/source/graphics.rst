@@ -1402,23 +1402,95 @@ Image display and effects
 
 .. class:: RenderTexture(int width, int height[, bool depth=False])
 
-   .. attribute:: active
-   .. attribute:: default_view
-   .. attribute:: height
-   .. attribute:: texture
-   .. attribute:: smooth
-   .. attribute:: view
-   .. attribute:: width
-    
-   .. method:: clear([color])
-   .. method:: convert_coords(int x, int y[, view])
-   .. method:: create(int width, int height[, bool depth=False])
-   .. method:: display()
-   .. method:: draw(drawable[, shader])
-   .. method:: get_viewport(view)
-   .. method:: restore_gl_states()
-   .. method:: save_gl_states()
+   This class inherits :class:`RenderTarget`.
 
+   Target for off-screen 2D rendering into an
+   texture. :class:`RenderTexture` is the little brother of
+   :class:`RenderWindow`.
+
+   It implements the same 2D drawing and OpenGL-related functions (see
+   their base class :class:`RenderTarget` for more details), the
+   difference is that the result is stored in an off-screen texture
+   rather than being show in a window.
+
+   Rendering to a texture can be useful in a variety of situations:
+
+   * Precomputing a complex static texture (like a level's background
+     from multiple tiles).
+   * Applying post-effects to the whole scene with shaders.
+   * Creating a sprite from a 3D object rendered with OpenGL.
+   * Etc.
+
+   Usage example::
+
+      # Create a new render-window
+      window = sfml.RenderWindow(sf.VideoMode(800, 600), 'pySFML window')
+
+      # Create a new render texture
+      render_texture = sfml.RenderTexture(500, 500)
+
+      # The main loop
+      while window.open:
+         # Event processing
+         # ...
+
+         # Clear the whole texture with red color
+         render_texture.clear(sfml.Color.RED)
+
+         # Draw stuff to the texture
+         render_texture.draw(sprite)  # sprite is a Sprite
+         render_texture.draw(shape)   # shape is a Shape
+         render_texture.draw(text)    # text is a Text
+
+         # We're done drawing to the texture
+         render_texture.display()
+
+         # Now we start rendering to the window, clear it first
+         window.clear()
+
+         # Draw the texture
+         sprite = sfml.Sprite(render_texture.texture)
+         window.draw(sprite);
+
+         # End the current frame and display its contents on screen
+         window.display()
+
+   .. attribute:: active
+
+      Write-only. If true, the render texture's context becomes
+      current for future OpenGL rendering operations (so you shouldn't
+      care about it if you're not doing direct OpenGL stuff). Only one
+      context can be current in a thread, so if you want to draw
+      OpenGL geometry to another render target (like a
+      :class:`RenderWindow`), don't forget to activate it again.
+
+   .. attribute:: texture
+
+      Read-only.The target texture, as a :class:`Texture`. After
+      drawing to the render-texture and calling :meth:`display`, you
+      can retrieve the updated texture using this function, and draw
+      it using a sprite (for example).
+
+      .. warning::
+
+         Textures obtained with this property should never be
+         modified. The object itself is a normal :class:`Texture`
+         object, but the underlying C++ object is specified as
+         ``const`` and a C++ compiler wouldn't let you attempt to
+         modify it.
+
+   .. attribute:: smooth
+
+      Whether the smooth filtering is enabled or not. Default value:
+      ``False``.
+
+   .. method:: display()
+
+      Update the contents of the target texture. This method updates
+      the target texture with what has been drawn so far. Like for
+      windows, calling this function is mandatory at the end of
+      rendering. Not calling it may leave the texture in an undefined
+      state.
 
 
 .. class:: Vertex([position[, color[, tex_coords]]])
