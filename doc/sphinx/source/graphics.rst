@@ -1496,9 +1496,52 @@ Image display and effects
 
 .. class:: Vertex([position[, color[, tex_coords]]])
 
+   A vertex is an improved point. It has a position and other extra
+   attributes that will be used for drawing: a color and a pair of
+   texture coordinates.
+
+   The vertex is the building block of drawing. Everything which is
+   visible on screen is made of vertices. They are grouped as 2D
+   primitives (triangles, quads, ... see :ref:`blend_modes`), and
+   these primitives are grouped to create even more complex 2D
+   entities such as sprites, texts, etc.
+
+   If you use the graphical entities of SFML (:class:`Sprite`,
+   :class:`Text`, :class:`Shape`) you won't have to deal with vertices
+   directly. But if you want to define your own 2D entities, such as
+   tiled maps or particle systems, using vertices will allow you to
+   get maximum performances.
+
+   Example::
+
+      # define a 100x100 square, red, with a 10x10 texture mapped on it
+      vertices = [sfml.Vertex((0, 0), sfml.Color.RED, (0, 0)),
+                  sfml.Vertex((0, 100), sfml.Color.RED, (0, 10)),
+                  sfml.Vertex((100, 100), sfml.Color.RED, (10, 10)),
+                  sfml.Vertex((100, 0), sfml.Color.RED, (10, 0))]
+
+      # draw it
+      window.draw(vertices, sfml.QUADS)
+
+   Note: although texture coordinates are supposed to be an integer
+   amount of pixels, their type is float because of some buggy
+   graphics drivers that are not able to process integer coordinates
+   correctly.
+
    .. attribute:: color
+
+      :class:`Color` of the vertex.
+
    .. attribute:: position
+
+      2D position of the vertex. The value is always retrieved as a
+      tuple. It can be set as a tuple or a :class:`Vector2f`.
+
    .. attribute:: tex_coords
+
+      Coordinates of the texture's pixel map to the vertex. The value
+      is always retrieved as a tuple. It can be set as a tuple or a
+      :class:`Vector2f`.
 
 
 Windowing
