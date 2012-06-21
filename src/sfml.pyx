@@ -2499,8 +2499,6 @@ cdef class RectangleShape(Shape):
         def __get__(self):
             cdef decl.Vector2f s = (<decl.RectangleShape*>self.p_this).getSize()
 
-            convert_to_vector2f(1)
-
             return (s.x, s.y)
 
         def __set__(self, object size):
