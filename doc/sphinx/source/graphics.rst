@@ -662,8 +662,40 @@ Classes
                      float a10, float a11, float a12,\
                      float a20, float a21, float a22])
 
-   If called with no arguments, the value is set to the identity
-   transform.
+   If called with no arguments, the value is set to the
+   :attr:`IDENTITY` transform.
+
+   A :class:`Transform` is a 3x3 transform matrix that specifies how
+   to translate, rotate, scale, shear, project, etc. In mathematical
+   terms, it defines how to transform a coordinate system into
+   another.
+
+   For example, if you apply a rotation transform to a sprite, the
+   result will be a rotated sprite. And anything that is transformed
+   by this rotation transform will be rotated the same way, according
+   to its initial position.
+
+   Transforms are typically used for drawing. But they can also be
+   used for any computation that requires to transform points between
+   the local and global coordinate systems of an entity (like
+   collision detection).
+
+   Example::
+
+      # Define a translation transform
+      translation = sfml.Transform()
+      translation.translate(20, 50)
+
+      # Define a rotation transform
+      rotation = sf.Transform()
+      rotation.rotate(45)
+
+      # Combine them
+      transform = translation * rotation
+
+      # Use the result to transform stuff...
+      point = transform.transform_point(10, 20)
+      rect = transform.transform_rect(sfml.FloatRect(0, 0, 10, 100))
 
    This class provides the following special methods:
 
@@ -676,19 +708,74 @@ Classes
 
    .. attribute:: matrix
 
+      Read-only. a list of 16 floats containing the transform elements
+      as a 4x4 matrix, which is directly compatible with OpenGL
+      functions.
+
    .. method:: combine(transform)
+
+      Combine the current transform with *transform*. The result is a
+      transform that is equivalent to applying this followed by
+      transform. Mathematically, it is equivalent to a matrix
+      multiplication.
+
    .. method:: copy()
 
       Return a new transform object with the same content as self.
 
    .. method:: get_inverse()
+
+      Return the inverse of the transform. If the inverse cannot be
+      computed, an :attr:`IDENTITY` transform is returned.
+
    .. method:: rotate(float angle[, float center_x, float center_y])
-   .. method:: scale(float scale_x, float scale_y[, float, center_y,\
+
+      Combine the current transform with a rotation. This method
+      returns self, so calls can be chained::
+
+         transform = sfml.Transform()
+         transform.rotate(90).translate(50, 20)
+
+      The center of rotation can be provided with *center_x* and
+      *center_y*, so that you can build rotations around arbitrary
+      points more easily (and efficiently) than the usual
+      ``translate(-center).rotate(angle).translate(center)``.
+
+   .. method:: scale(float scale_x, float scale_y[, float, center_x,\
                      float center_y])
+
+      Combine the current transform with a scaling. The center of
+      scaling can be provided with *center_x* and *center_y*, so that
+      you can build scaling around arbitrary points more easily (and
+      efficiently) than the usual
+      ``translate(-center).scale(factors).translate(center)``.
+
+      This method returns self, so calls can be chained::
+
+         transform = sfml.Transform()
+         transform.scale(2, 1, 8, 3).rotate(45)
+
+
    .. method:: transform_point(float x, float y)
+
+      Transform the point and return it as a tuple.
+
    .. method:: transform_rect(FloatRect rectangle)
+
+      Transform a rectangle and return it as a
+      :class:`FloatRect`. Since SFML doesn't provide support for
+      oriented rectangles, the result of this function is always an
+      axis-aligned rectangle. Which means that if the transform
+      contains a rotation, the bounding rectangle of the transformed
+      rectangle is returned.
+
    .. method:: translate(float x, float y)
 
+      Combine the current transform with a translation. This method
+      returns self, so calls can be chained::
+
+         transform = sfml.Transform()
+         transform.translate(100, 200).rotate(45)
 
 
 
