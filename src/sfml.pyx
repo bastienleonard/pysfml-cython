@@ -3501,12 +3501,17 @@ cdef RenderWindow wrap_render_window_instance(
 
 
 cdef class RenderTexture(RenderTarget):
+    cdef Texture texture
+
     def __cinit__(self):
         self.p_this = <decl.RenderTarget*>new decl.RenderTexture()
     
     def __init__(self, unsigned int width, unsigned int height,
                  bint depth=False):
-        self.create(width, height, depth)
+        (<decl.RenderTexture*>self.p_this).create(width, height, depth)
+        self.texture = Texture.__new__(Texture)
+        self.texture.p_this = NULL
+        self.texture.delete_this = False
     
     def __dealloc__(self):
         del self.p_this
@@ -3518,9 +3523,10 @@ cdef class RenderTexture(RenderTarget):
 
     property texture:
         def __get__(self):
-            return wrap_texture_instance(
-                <decl.Texture*>&(<decl.RenderTexture*>self.p_this).getTexture(),
-                False)
+            self.texture.p_this = (
+                <decl.Texture*>&(<decl.RenderTexture*>self.p_this).getTexture())
+
+            return self.texture
 
     property smooth:
         def __get__(self):
