@@ -787,25 +787,92 @@ Image display and effects
 
 .. class:: Shape
 
-   This abstract class inherits :class:`Transformable`. To create your
-   own shapes, you should override :meth:`get_point` and
-   :meth:`get_point_count`. A few built-in shapes are provided:
-   :class:`RectangleShape`, :class:`CircleShape` and \
-   :class:`ConvexShape`.
+   This abstract class inherits :class:`Transformable`.
+
+   :class:`Shape` is a drawable class that allows to define and
+   display a custom convex shape on a render target.
+
+   Every shape has the following attributes:
+
+   * a texture,
+   * a texture rectangle,
+   * a fill color,
+   * an outline color,
+   * an outline thickness.
+
+   Each feature is optional, and can be disabled easily:
+
+   * the texture can be ``None``,
+   * the fill/outline colors can be :attr:`Color.TRANSPARENT`,
+   * the outline thickness can be zero.
+
+   You can write your own derived shape class, there are only two
+   methods to override:
+
+   * :meth:`get_point_count` must return the number of points of the
+     shape,
+   * :meth:`get_point` must return the points of the shape.
+
+   A few concrete shapes are provided: :class:`RectangleShape`,
+   :class:`CircleShape` and \ :class:`ConvexShape`.
 
    .. attribute:: fill_color
+
+      The fill color of the shape. This color is modulated
+      (multiplied) with the shape's texture if any. It can be used to
+      colorize the shape, or change its global opacity. You can use
+      :attr:`Color.TRANSPARENT` to make the inside of the shape
+      transparent, and have the outline alone. By default, the shape's
+      fill color is opaque white.
+
    .. attribute:: global_bounds
+
+      Read-only. The global bounding rectangle of the entity, as a
+      :class:`FloatRect`. The returned rectangle is in global
+      coordinates, which means that it takes in account the
+      transformations (translation, rotation, scale, ...) that are
+      applied to the entity. In other words, this function returns the
+      bounds of the sprite in the global 2D world's coordinate system.
+
    .. attribute:: local_bounds
+
+      Read-only. The local bounding rectangle of the entity, as a
+      :class:`FloatRect`. The returned rectangle is in local
+      coordinates, which means that it ignores the transformations
+      (translation, rotation, scale, ...) that are applied to the
+      entity. In other words, this function returns the bounds of the
+      entity in the entity's coordinate system.
+
    .. attribute:: texture
+
+      The source texture of the shape. Can be ``None`` to disable
+      texturing. Also see :meth:`set_texture`, which allows you to
+      update :attr:`texture_rect` automatically.
+
    .. attribute:: texture_rect
+
+      The sub-rectangle of the texture that the shape will
+      display. The texture rect is useful when you only want to
+      display a part of the texture. By default, the texture rect
+      covers the entire texture.
+
    .. attribute:: outline_color
+
+      The outline color of the shape. You can use
+      :attr:`Color.TRANSPARENT` to disable the outline. By default,
+      the shape's outline color is opaque white.
+
    .. attribute:: outline_thickness
+
+      The thickness of the shape's outline, as a float. This number
+      cannot be negative. Using zero disables the outline. By default,
+      the outline thickness is 0.0.
 
    .. method:: get_point(int index)
 
       This method should be overriden to return a tuple or a
       :class:`Vector2f` containing the coordinates at the position
-      ``index``.
+      *index*.
 
    .. method:: get_point_count()
 
@@ -813,12 +880,27 @@ Image display and effects
       as an integer.
 
    .. method:: set_texture(texture[, reset_rect=False])
+
+      Set the source texture of the shape. *texture* can be ``None``
+      to disable texturing. If *reset_rect* is true, the
+      :attr:`texture_rect` property of the shape is automatically
+      adjusted to the size of the new texture. If it is false, the
+      texture rect is left unchanged.
+
+      Calling this method does the same thing as modifiying the
+      :attr:`texture` attribute, except when the *reset_rect*
+      parameter is used.
+
    .. method:: update()
 
-      This method is not available in built-in SFML shapes (it would
-      require extra work for each class, and doesn't seem useful for
-      any use case).
+      Recompute the internal geometry of the shape. This method must
+      be called by the derived class everytime the shape's points
+      change (i.e. the result of either :meth:`get_point_count` or
+      :meth:`get_point` is different). This includes when the shape
+      object is created.
 
+      If you call this method from a built-in shape, it will raise
+      ``NotImplementedError``.
 
 
 .. class:: RectangleShape([size])
@@ -826,29 +908,98 @@ Image display and effects
    This class inherits :class:`Shape`. *size* can be either a tuple or
    a :class:`Vector2f`.
 
+   Usage example::
+
+      rectangle = sfml.RectangleShape((100, 50))
+      rectangle.outline_color = sfml.Color.RED
+      rectangle.outline_thickness = 5
+      rectangle.position = (10, 20)
+      # ...
+      window.draw(rectangle)
+
    .. attribute:: size
 
+      The size of the rectangle, as a tuple. The value can also be set
+      from a :class:`Vector2f`.
 
 
 .. class:: CircleShape([float radius[, int point_count]])
 
    This class inherits :class:`Shape`.
 
+   Usage example::
+
+      circle = sfml.CircleShape(150)
+      circle.outline_color = sfml.Color.Red
+      circle.outline_thickness = 5
+      circle.position = (10, 20)
+      # ...
+      window.draw(circle)
+
+   Since the graphics card can't draw perfect circles, we have to fake
+   them with multiple triangles connected to each other. The
+   :attr:`point_count` property defines how many of these triangles to
+   use, and therefore defines the quality of the circle.
+
+   The number of points can also be used for another purpose; with
+   small numbers you can create any regular polygon shape: equilateral
+   triangle, square, pentagon, hexagon, ...
+
    .. attribute:: point_count
+
+      The number of points in the circle.
+
    .. attribute:: radius
+
+      The radius of the circle, as a float.
 
 
 .. class:: ConvexShape([int point_count])
 
    This class inherits :class:`Shape`.
 
+   Specialized shape representing a convex polygon.
+
+   It is important to keep in mind that a convex shape must always
+   be... convex, otherwise it may not be drawn correctly. Moreover,
+   the points must be defined in order; using a random order would
+   result in an incorrect shape.
+
+   Usage example::
+
+      polygon = sfml.ConvexShape(3)
+      polygon.set_point(0, (0, 0))
+      polygon.set_point(1, (0, 10))
+      polygon.set_point(2, (25, 5))
+      polygon.outline_color = sfml.Color.RED
+      polygon.outline_thickness = 5
+      polygon.position = (10, 20)
+      # ...
+      window.draw(polygon)
+
    .. method:: get_point(int index)
+
+      Return the position of a point. The result is undefined if
+      *index* is out of the valid range.
+
    .. method:: get_point_count
+
+      Return the number of points of the polygon.
+
    .. method:: set_point(int index, point)
+
+      Set the position of a point. Don't forget that the polygon must
+      remain convex, and the points need to stay ordered!
+      :meth:`set_point_count` must be called first in order to set the
+      total number of points. The result is undefined if index is out
+      of the valid range.
 
       *point* may be either a tuple or a :class:`Vector2f`.
 
    .. method:: set_point_count(int count)
+
+      Set the number of points of the polygon. *count* must be greater
+      than 2 to define a valid shape.
 
 
 .. class:: Image(int width, int height[, color])
