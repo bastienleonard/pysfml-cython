@@ -2096,28 +2096,119 @@ Windowing
 
 .. class:: View
 
+   The constructor creates a default view of (0, 0, 1000, 1000).
 
+   2D camera that defines what region is shown on screen. This is a
+   very powerful concept: you can scroll, rotate or zoom the entire
+   scene without altering the way that your drawable objects are
+   drawn.
+
+   A view is composed of a source rectangle, which defines what part
+   of the 2D scene is shown, and a target viewport, which defines
+   where the contents of the source rectangle will be displayed on the
+   render target (window or texture).
+
+   The viewport allows to map the scene to a custom part of the render
+   target, and can be used for split-screen or for displaying a
+   minimap, for example. If the source rectangle has not the same size
+   as the viewport, its contents will be stretched to fit in.
+
+   To apply a view, you have to assign it to the render target. Then,
+   every objects drawn in this render target will be affected by the
+   view until you use another view.
+
+   Usage example::
+
+      window = sfml.RenderWindow(sfml.VideoMode(640, 480), 'Title')
+ 
+      # Initialize the view with a rectangle located at (100, 100) and
+      # a size of 400x200
+      view = sfml.View.from_rect(sfml.FloatRect(100, 100, 400, 200))
+
+      # Rotate it by 45 degrees
+      view.rotate(45)
+
+      # Set its target viewport to be half of the window
+      view.view_port = sfml.FloatRect(0.0, 0.0, 0.5, 1.0)
+
+      # Apply it
+      window.view = view
+
+      # Render stuff
+      window.draw(some_sprite)
+
+      # Set the default view back
+      window.view = window.default_view
+
+      # Render stuff not affected by the view
+      window.draw(some_text)
 
    .. attribute:: center
+
+      The center of the view, as a tuple. The value can also be set
+      from a :class:`Vector2f` object.
+
    .. attribute:: height
+
+      Shortcut for ``self.size[1]``.
+
    .. attribute:: rotation
+
+      The orientation of the view, as a float. Default value: 0.0 degree.
+
    .. attribute:: size
+
+      The size of the view, as a tuple. The value can also be set from
+      a :class:`Vector2f` object.
+
    .. attribute:: viewport
+
+      The target viewport. The viewport is the rectangle into which
+      the contents of the view are displayed, expressed as a factor
+      (between 0 and 1) of the size of the :class:`RenderTarget` to
+      which the view is applied. For example, a view which takes the
+      left side of the target would be defined with ``View.viewport =
+      sfml.FloatRect(0, 0, 0.5, 1)``. By default, a view has a
+      viewport which covers the entire target.
+
    .. attribute:: width
+
+      Shortcut for ``self.size[0]``.
 
    .. classmethod:: from_center_and_size(center, size)
 
-      *center* and *size* can be either tuples or :class:`Vector2f`.
+      Return a new view created from a center and a size.  *center*
+      and *size* can be either tuples or :class:`Vector2f`.
 
    .. classmethod:: from_rect(rect)
 
+      Return a new view created from a rectangle. *rect* should be
+      :class:`FloatRect` object.
+
    .. method:: get_inverse_transform()
    .. method:: get_transform()
-   .. method:: move()
-   .. method:: reset()
-   .. method:: rotate()
-   .. method:: zoom()
+   .. method:: move(float x, float y)
 
+      Move the view relatively to its current position.
+
+   .. method:: reset(FloatRect rect)
+
+      Reset the view to the given rectangle. Note that this function
+      resets the rotation angle to 0.
+
+   .. method:: rotate(float angle)
+
+      Rotate the view relatively to its current orientation.
+
+   .. method:: zoom(float factor)
+
+      Resize the view rectangle relatively to its current
+      size. Resizing the view simulates a zoom, as the zone displayed
+      on screen grows or shrinks. *factor* is a multiplier:
+
+      * 1 keeps the size unchanged.
+      * > 1 makes the view bigger (objects appear smaller).
+      * < 1 makes the view smaller (objects appear bigger).
 
 
 
