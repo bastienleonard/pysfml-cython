@@ -1610,32 +1610,107 @@ Image display and effects
 
 
    .. attribute:: IS_AVAILABLE
+
+      True if the system supports shaders. You shoul always test this
+      class attribute before using the shader features. If it is
+      false, then any attempt to use :class:`Shader` will fail.
+
    .. attribute:: CURRENT_TEXTURE
+
+      Special type/value that can be passed to :meth:`set_parameter`,
+      and that represents the texture of the object being drawn.
+
    .. attribute:: FRAGMENT
+
+      Fragment (pixel) shader type, as an int class attribute.
+
    .. attribute:: VERTEX
+
+      Vertex shader type, as an int class attribute.
 
    .. classmethod:: load_both_types_from_file(str vertex_shader_filename,\
                                               str fragment_shader_filename)
+
+      Load both the vertex and the fragment shaders. If one of them
+      fails to load, the shader is left empty (the valid shader is
+      unloaded). The sources must be text files containing valid
+      shaders in GLSL language. GLSL is a C-like language dedicated to
+      OpenGL shaders; you'll probably need to read a good
+      documentation for it before writing your own shaders.
+
+      If an error occurs, :exc:`PySFMLException` is raised.
+
    .. classmethod:: load_both_types_from_memory(str vertex_shader,\
                                                 str fragment_shader)
+
+      Load both the vertex and the fragment shaders. If one of them
+      fails to load, the shader is left empty (the valid shader is
+      unloaded). The sources must be valid shaders in GLSL
+      language. GLSL is a C-like language dedicated to OpenGL shaders;
+      you'll probably need to read a good documentation for it before
+      writing your own shaders.
+
+      If an error occurs, :exc:`PySFMLException` is raised.
+
    .. classmethod:: load_from_file(filename, int type)
 
-      *type* must be :attr:`Shader.FRAGMENT` or :attr:`Shader.VERTEX`.
+      Load a single shader, either vertex or fragment, identified by
+      the *type* parameter, which must be :attr:`Shader.FRAGMENT` or
+      :attr:`Shader.VERTEX`. The source must be a text file containing
+      a valid shader in GLSL language. GLSL is a C-like language
+      dedicated to OpenGL shaders; you'll probably need to read a good
+      documentation for it before writing your own shaders.
+
+      If an error occurs, :exc:`PySFMLException` is raised.
 
    .. classmethod:: load_from_memory(str shader, int type)
 
-      *type* must be :attr:`Shader.FRAGMENT` or :attr:`Shader.VERTEX`.
+      Load a single shader, either vertex or fragment, identified by
+      the *type* argument, which must be :attr:`Shader.FRAGMENT` or
+      :attr:`Shader.VERTEX`. The source code must be a valid shader in
+      GLSL language. GLSL is a C-like language dedicated to OpenGL
+      shaders; you'll probably need to read a good documentation for
+      it before writing your own shaders.
 
    .. method:: bind()
 
-   .. method:: set_parameter(str name, float x[, float y, float z, float w])
+      Bind the shader for rendering (activate it). This method is
+      normally for internal use only, unless you want to use the
+      shader with a custom OpenGL rendering instead of a SFML
+      drawable::
 
-      After *name*, you can pass as many parameters as four, depending
-      on your need.
+         window.active = True
+         shader.bind()
+         # ... render OpenGL geometry ...
+         shader.unbind()
+
+   .. method:: set_parameter(str name, ...)
+
+      Set a shader parameter.
+
+      The first parameter, *name*, is the name of the variable to
+      change in the shader. After *name*, you can pass an argument or
+      several floats, depending on your need:
+
+      * 1 float,
+      * 2 floats,
+      * 3 floats,
+      * 4 floats,
+      * a color,
+      * a transform,
+      * a texture.
+
+      If you want to pass the texture of the object being drawn, which
+      cannot be known in advance, you can pass the special value
+      :attr:`CURRENT_TEXTURE`::
+
+         shader.set_parameter('the_texture', sfml.Shader.CURRENT_TEXTURE)
 
    .. method:: unbind()
 
-
+      Unbind the shader (deactivate it). This method is normally for
+      internal use only, unless you want to use the shader with a
+      custom OpenGL rendering instead of a SFML drawable.
 
 
 .. class:: RenderTexture(int width, int height[, bool depth=False])
