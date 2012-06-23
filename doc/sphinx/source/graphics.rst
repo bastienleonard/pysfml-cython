@@ -2182,17 +2182,18 @@ Windowing
 
    .. classmethod:: from_rect(rect)
 
-      Return a new view created from a rectangle. *rect* should be
-      :class:`FloatRect` object.
+      Return a new view created from a rectangle. *rect* can be a
+      tuple or a :class:`FloatRect`.
 
    .. method:: move(float x, float y)
 
       Move the view relatively to its current position.
 
-   .. method:: reset(FloatRect rect)
+   .. method:: reset(rect)
 
-      Reset the view to the given rectangle. Note that this function
-      resets the rotation angle to 0.
+      Reset the view to the given rectangle. *rect* can be a tuple or
+      a :class:`FloatRect`. Note that this function resets the
+      rotation angle to 0.
 
    .. method:: rotate(float angle)
 

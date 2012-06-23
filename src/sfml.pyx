@@ -524,6 +524,17 @@ cdef FloatRect wrap_float_rect_instance(decl.FloatRect *p_cpp_instance):
     return ret
 
 
+cdef decl.FloatRect convert_to_float_rect(value) except *:
+    if isinstance(value, FloatRect):
+        return (<FloatRect>value).p_this[0]
+
+    if isinstance(value, tuple):
+        return decl.FloatRect(value[0], value[1], value[2], value[3])
+    
+    raise TypeError("Expected FloatRect or tuple, found {0}"
+                    .format(type(value)))
+
+
 
 
 cdef class Vector2f:
@@ -2839,8 +2850,9 @@ cdef class View:
         return wrap_view_instance(p, None)
         
     @classmethod
-    def from_rect(cls, FloatRect rect):
-        cdef decl.View *p = new decl.View(rect.p_this[0])
+    def from_rect(cls, object rect):
+        cdef decl.FloatRect cpp_rect = convert_to_float_rect(rect)
+        cdef decl.View *p = new decl.View(cpp_rect)
 
         return wrap_view_instance(p, None)
 
@@ -2848,8 +2860,10 @@ cdef class View:
         self.p_this.move(x, y)
         self._update_target()
 
-    def reset(self, FloatRect rect):
-        self.p_this.reset(rect.p_this[0])
+    def reset(self, object rect):
+        cdef decl.FloatRect cpp_rect = convert_to_float_rect(rect)
+
+        self.p_this.reset(cpp_rect)
         self._update_target()
 
     def rotate(self, float angle):
