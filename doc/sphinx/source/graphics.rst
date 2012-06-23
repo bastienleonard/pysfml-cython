@@ -278,7 +278,7 @@ Classes
 
    A rectangle is defined by its top-left corner and its size.
 
-   To keep things simple, :class`FloatRect` doesn't define functions
+   To keep things simple, :class:`FloatRect` doesn't define functions
    to emulate the properties that are not directly members (such as
    right, bottom, center, etc.), instead it only provides intersection
    functions.
@@ -1865,7 +1865,7 @@ Windowing
 .. class:: Style
 
    This window contains the available window styles, as class
-   attributes.
+   attributes. See :class:`RenderWindow`.
 
    Calling the constructor will raise ``NotImplementedError``.
 
