@@ -2844,20 +2844,6 @@ cdef class View:
 
         return wrap_view_instance(p, None)
 
-    def get_inverse_transform(self):
-        cdef decl.Transform *p = new decl.Transform()
-
-        p[0] = self.p_this.getInverseTransform()
-
-        return wrap_transform_instance(p)
-
-    def get_transform(self):
-        cdef decl.Transform *p = new decl.Transform()
-
-        p[0] = self.p_this.getTransform()
-
-        return wrap_transform_instance(p)
-
     def move(self, float x, float y):
         self.p_this.move(x, y)
         self._update_target()

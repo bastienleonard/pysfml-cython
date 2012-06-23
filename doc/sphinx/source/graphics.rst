@@ -2185,8 +2185,6 @@ Windowing
       Return a new view created from a rectangle. *rect* should be
       :class:`FloatRect` object.
 
-   .. method:: get_inverse_transform()
-   .. method:: get_transform()
    .. method:: move(float x, float y)
 
       Move the view relatively to its current position.
