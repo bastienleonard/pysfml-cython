@@ -2452,7 +2452,11 @@ cdef class Shape(Transformable):
 
         def __set__(self, Texture value):
             self.texture = value
-            (<decl.Shape*>self.p_this).setTexture(value.p_this)
+
+            if value is None:
+                (<decl.Shape*>self.p_this).setTexture(NULL)
+            else:
+                (<decl.Shape*>self.p_this).setTexture(value.p_this)
 
     property texture_rect:
         def __get__(self):
