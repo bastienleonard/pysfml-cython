@@ -42,6 +42,6 @@ Every class is available in the same ``sfml`` namespace.
 
    exceptions
    system
-   graphics
+   graphics/graphics
    events
    audio

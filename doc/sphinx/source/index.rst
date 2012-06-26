@@ -76,7 +76,7 @@ Contents:
    changelog
    building
    tutorials
-   reference
+   reference/reference
    licenses
 
 
@@ -86,4 +86,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

@@ -117,30 +117,3 @@ System
 
       Restart the clock, and return a :class:`Time` object containing
       the elapsed time since the clock started.
-
-
-
-.. class:: Vector2f(float x=0.0; float y=0.0)
-
-   You don't have to use this class; everywhere you can pass a
-   :class:`Vector2f`, you should be able to pass a tuple as
-   well. However, it can be more practical to use it, as it overrides
-   arithmetic and comparison operators, is mutable and requires that
-   you use the :attr:`x` and :attr:`y` members instead of indexing.
-
-   This class provides the following special methods:
-
-   * Comparison operators: ``==`` and ``!=``.
-
-   .. attribute:: x
-
-      *x* coordinate for this vector.
-
-   .. attribute:: y
-
-      *y* coordinate for this vector.
-
-   .. method:: copy()
-
-      Return a new :class:`Vector2f` with ``x`` and ``y`` set to the
-      value of ``self``.
