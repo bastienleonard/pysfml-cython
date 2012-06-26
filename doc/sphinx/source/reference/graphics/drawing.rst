@@ -505,6 +505,85 @@ Drawing
          transform.translate(100, 200).rotate(45)
 
 
+.. class:: RenderStates(blend_mode=-1, shader=None, texture=None,\
+                        transform=None)
+
+   The constructor first creates a default RenderStates object, then
+   sets its attributes with respect to the provided
+   arguments. Constructing a default set of render states is
+   equivalent to using :attr:`RenderStates.DEFAULT`. The default set
+   defines
+
+   * the :attr:`BLEND_ALPHA` blend mode,
+   * the :attr:`Transform.IDENTITY` transform,
+   * no texture (``None``),
+   * no shader (``None``).
+
+   Contains the states used for drawing to a
+   :class:`RenderTarget`. There are four global states that can be
+   applied to the drawn objects:
+
+   * The blend mode: how pixels of the object are blended with the
+     background.
+   * The transform: how the object is positioned/rotated/scaled.
+   * The texture: which image is mapped to the object.
+   * The shader: which custom effect is applied to the object.
+
+   High-level objects such as sprites or text force some of these
+   states when they are drawn. For example, a sprite will set its own
+   texture, so that you don't have to care about it when drawing the
+   sprite.
+
+   The transform is a special case: sprites, texts and shapes (and
+   it's a good idea to do it with your own drawable classes too)
+   combine their transform with the one that is passed in the
+   RenderStates structure. So that you can use a "global" transform on
+   top of each object's transform.
+
+   Most objects, especially high-level drawables, can be drawn
+   directly without defining render states explicitely --- the default
+   set of states is ok in most cases::
+
+      window.draw(sprite)
+
+   If you just want to specify a shader, you can pass it directly to
+   the :meth:`RenderTarget.draw` method::
+
+      window.draw(sprite, shader)
+
+   Note that unlike in C++ SFML, this only works for shaders and not
+   for other render states. This is because adding other possibilities
+   means writing a lot of boilerplate code in the binding, and shader
+   seemed to be most used state when writing this method.
+
+   When you're inside the draw method of a drawable object, you can
+   either pass the render states unmodified, or change some of
+   them. For example, a transformable object will combine the current
+   transform with its own transform. A sprite will set its
+   texture. Etc.
+
+   .. attribute:: DEFAULT
+
+      A RenderStates object with the default values, as a class
+      attribute.
+
+   .. attribute:: blend_mode
+
+      See :ref:`blend_modes` for a list of the valid values.
+
+   .. attribute:: shader
+
+      A :class:`Shader` object.
+
+   .. attribute:: texture
+
+      A :class:`Texture` object.
+
+   .. attribute:: transform
+
+      A :class:`Transform` object.
+
+
 .. class:: Shape
 
    This abstract class inherits :class:`Transformable`.
