@@ -63,6 +63,647 @@ Drawing
    * http://www.sfml-dev.org/documentation/2.0/classsf_1_1Transformable.php
 
 
+.. class:: RenderStates(blend_mode=-1, shader=None, texture=None,\
+                        transform=None)
+
+   The constructor first creates a default RenderStates object, then
+   sets its attributes with respect to the provided
+   arguments. Constructing a default set of render states is
+   equivalent to using :attr:`RenderStates.DEFAULT`. The default set
+   defines
+
+   * the :attr:`BLEND_ALPHA` blend mode,
+   * the :attr:`Transform.IDENTITY` transform,
+   * no texture (``None``),
+   * no shader (``None``).
+
+   Contains the states used for drawing to a
+   :class:`RenderTarget`. There are four global states that can be
+   applied to the drawn objects:
+
+   * The blend mode: how pixels of the object are blended with the
+     background.
+   * The transform: how the object is positioned/rotated/scaled.
+   * The texture: which image is mapped to the object.
+   * The shader: which custom effect is applied to the object.
+
+   High-level objects such as sprites or text force some of these
+   states when they are drawn. For example, a sprite will set its own
+   texture, so that you don't have to care about it when drawing the
+   sprite.
+
+   The transform is a special case: sprites, texts and shapes (and
+   it's a good idea to do it with your own drawable classes too)
+   combine their transform with the one that is passed in the
+   RenderStates structure. So that you can use a "global" transform on
+   top of each object's transform.
+
+   Most objects, especially high-level drawables, can be drawn
+   directly without defining render states explicitely --- the default
+   set of states is ok in most cases::
+
+      window.draw(sprite)
+
+   If you just want to specify a shader, you can pass it directly to
+   the :meth:`RenderTarget.draw` method::
+
+      window.draw(sprite, shader)
+
+   Note that unlike in C++ SFML, this only works for shaders and not
+   for other render states. This is because adding other possibilities
+   means writing a lot of boilerplate code in the binding, and shader
+   seemed to be most used state when writing this method.
+
+   When you're inside the draw method of a drawable object, you can
+   either pass the render states unmodified, or change some of
+   them. For example, a transformable object will combine the current
+   transform with its own transform. A sprite will set its
+   texture. Etc.
+
+   .. attribute:: DEFAULT
+
+      A RenderStates object with the default values, as a class
+      attribute.
+
+   .. attribute:: blend_mode
+
+      See :ref:`blend_modes` for a list of the valid values.
+
+   .. attribute:: shader
+
+      A :class:`Shader` object.
+
+   .. attribute:: texture
+
+      A :class:`Texture` object.
+
+   .. attribute:: transform
+
+      A :class:`Transform` object.
+
+
+.. class:: RenderTarget
+
+   Base class for :class:`RenderWindow` and :class:`RenderTexture`. It
+   is abstract; the constructor will raise ``NotImplementedError`` if
+   you call it.
+
+   :class:`RenderTarget` defines the common behaviour of all the 2D
+   render targets. It makes it possible to draw 2D entities like
+   sprites, shapes, text without using any OpenGL command directly.
+
+   A :class:`RenderTarget` is also able to use views (:class:`View`),
+   which are some kind of 2D cameras. With views you can globally
+   scroll, rotate or zoom everything that is drawn, without having to
+   transform every single entity.
+
+   On top of that, render targets are still able to render direct
+   OpenGL stuff. It is even possible to mix together OpenGL calls and
+   regular SFML drawing commands. When doing so, make sure that OpenGL
+   states are not messed up by calling the
+   :meth:`push_gl_states`/:meth:`pop_gl_states` methods.
+
+   .. attribute:: default_view
+
+      Read-only. The default view has the initial size of the render
+      target, and never changes after the target has been created.
+
+   .. attribute:: height
+
+      Read-only. The height of the rendering region of the target.
+
+   .. attribute:: size
+
+      Read-only. The size of the rendering region of the target, as a
+      tuple.
+
+   .. attribute:: view
+
+      The view is like a 2D camera, it controls which part of the 2D
+      scene is visible, and how it is viewed in the render-target. The
+      new view will affect everything that is drawn, until another
+      view is set. The render target keeps its own copy of the view
+      object, so it is not necessary to keep the original one alive
+      after calling this function. To restore the original view of the
+      target, you can pass the result of :attr:`default_view` to this
+      function.
+
+   .. attribute:: width
+
+      Read-only. The width of the rendering region of the target.
+
+   .. method:: clear([color])
+
+      Clear the entire target with a single color. This function is
+      usually called once every frame, to clear the previous contents
+      of the target. The default is black.
+
+   .. method:: convert_coords(int x, int y[, view=None])
+
+      Convert a point from target coordinates to view
+      coordinates. Initially, a unit of the 2D world matches a pixel
+      of the render target. But if you define a custom view, this
+      assertion is not true anymore, e.g. a point located at (10, 50)
+      in your render target (for example a window) may map to the
+      point (150, 75) in your 2D world --- for example if the view is
+      translated by (140, 25). For render windows, this method is
+      typically used to find which point (or object) is located below
+      the mouse cursor.
+
+      When the *view* argument isn't provided, the current view of the
+      render target is used.
+
+   .. method:: draw(drawable, ...)
+
+      *drawable* may be:
+
+      * A built-in drawable, such as :class:`Sprite` or :class:`Text`,
+        or a user-made drawable (see :ref:`Creating your own drawables
+        <graphicsref_custom_drawables>`). You can pass a second
+        argument of type :class:`Shader` or
+        :class:`RenderStates`. Example::
+
+            window.draw(sprite, shader)
+
+      * A list or a tuple of :class:`Vertex` objects. You must pass a
+        :ref:`primitive type <primitive_types>` as a second argument,
+        and can pass a :class:`Shader` or :class:`RenderStates` as a
+        third argument. Example::
+
+            window.draw(vertices, sfml.QUADS, shader)
+
+        See ``examples/vertices.py`` for a working example.
+
+   .. method:: get_viewport(view)
+
+      Return the viewport of a view applied to this render target, as
+      an :class:`IntRect`. The viewport is defined in the view as a
+      ratio, this method simply applies this ratio to the current
+      dimensions of the render target to calculate the pixels
+      rectangle that the viewport actually covers in the target.
+
+   .. method:: pop_gl_states
+
+      Restore the previously saved OpenGL render states and matrices.
+      See :meth:`push_gl_states`.
+
+   .. method:: push_gl_states
+
+      Save the current OpenGL render states and matrices. This method
+      can be used when you mix SFML drawing and direct OpenGL
+      rendering. Combined with :meth:`pop_gl_states`, it ensures that:
+
+      * SFML's internal states are not messed up by your OpenGL code.
+      * Your OpenGL states are not modified by a call to a SFML
+        method.
+
+      More specifically, it must be used around code that calls
+      ``draw()`` methods. Example::
+
+         # OpenGL code here...
+         window.push_gl_states()
+         window.draw(...)
+         window.draw(...)
+         window.pop_gl_states()
+         # OpenGL code here...
+
+   Note that this method is quite expensive: it saves all the possible
+   OpenGL states and matrices, even the ones you don't care
+   about. Therefore it should be used wisely. It is provided for
+   convenience, but the best results will be achieved if you handle
+   OpenGL states yourself (because you know which states have really
+   changed, and need to be saved and restored). Take a look at the
+   :meth:`reset_gl_states` method if you do so.
+
+   .. method:: reset_gl_states
+
+      Reset the internal OpenGL states so that the target is ready for
+      drawing. This function can be used when you mix SFML drawing and
+      direct OpenGL rendering, if you choose not to use
+      :meth:`push_gl_states`/:meth:`pop_gl_states`. It ensures that
+      all OpenGL states needed by SFML are set, so that subsequent
+      draw() calls will work as expected.
+
+      Example::
+
+         # OpenGL code here...
+         glPushAttrib(...)
+         window.reset_gl_states()
+         window.draw(...)
+         window.draw(...)
+         glPopAttrib(...)
+         # OpenGL code here...
+
+
+.. class:: RenderTexture(int width, int height[, bool depth=False])
+
+   This class inherits :class:`RenderTarget`.
+
+   Target for off-screen 2D rendering into an
+   texture. :class:`RenderTexture` is the little brother of
+   :class:`RenderWindow`.
+
+   It implements the same 2D drawing and OpenGL-related functions (see
+   their base class :class:`RenderTarget` for more details), the
+   difference is that the result is stored in an off-screen texture
+   rather than being show in a window.
+
+   Rendering to a texture can be useful in a variety of situations:
+
+   * Precomputing a complex static texture (like a level's background
+     from multiple tiles).
+   * Applying post-effects to the whole scene with shaders.
+   * Creating a sprite from a 3D object rendered with OpenGL.
+   * Etc.
+
+   Usage example::
+
+      # Create a new render-window
+      window = sfml.RenderWindow(sf.VideoMode(800, 600), 'pySFML window')
+
+      # Create a new render texture
+      render_texture = sfml.RenderTexture(500, 500)
+
+      # The main loop
+      while window.open:
+         # Event processing
+         # ...
+
+         # Clear the whole texture with red color
+         render_texture.clear(sfml.Color.RED)
+
+         # Draw stuff to the texture
+         render_texture.draw(sprite)  # sprite is a Sprite
+         render_texture.draw(shape)   # shape is a Shape
+         render_texture.draw(text)    # text is a Text
+
+         # We're done drawing to the texture
+         render_texture.display()
+
+         # Now we start rendering to the window, clear it first
+         window.clear()
+
+         # Draw the texture
+         sprite = sfml.Sprite(render_texture.texture)
+         window.draw(sprite);
+
+         # End the current frame and display its contents on screen
+         window.display()
+
+   .. attribute:: active
+
+      Write-only. If true, the render texture's context becomes
+      current for future OpenGL rendering operations (so you shouldn't
+      care about it if you're not doing direct OpenGL stuff). Only one
+      context can be current in a thread, so if you want to draw
+      OpenGL geometry to another render target (like a
+      :class:`RenderWindow`), don't forget to activate it again. If an
+      error occurs, :exc:`PySFMLException` is raised.
+
+   .. attribute:: texture
+
+      Read-only.The target texture, as a :class:`Texture`. After
+      drawing to the render-texture and calling :meth:`display`, you
+      can retrieve the updated texture using this function, and draw
+      it using a sprite (for example).
+
+      .. warning::
+
+         Textures obtained with this property should never be
+         modified. The object itself is a normal :class:`Texture`
+         object, but the underlying C++ object is specified as
+         ``const`` and a C++ compiler wouldn't let you attempt to
+         modify it.
+
+   .. attribute:: smooth
+
+      Whether the smooth filtering is enabled or not. Default value:
+      ``False``.
+
+   .. method:: display()
+
+      Update the contents of the target texture. This method updates
+      the target texture with what has been drawn so far. Like for
+      windows, calling this function is mandatory at the end of
+      rendering. Not calling it may leave the texture in an undefined
+      state.
+
+
+.. class:: Shader
+
+   The constructor will raise ``NotImplementedError`` if called.  Use
+   class methods like :meth:`load_from_file()` or :meth:`load_from_memory()`
+   instead.
+
+   Shaders are programs written using a specific language, executed
+   directly by the graphics card and allowing to apply real-time
+   operations to the rendered entities.
+
+   There are two kinds of shaders:
+
+   * Vertex shaders, that process vertices.
+   * Fragment (pixel) shaders, that process pixels.
+
+   A shader can be composed of either a vertex shader alone, a
+   fragment shader alone, or both combined (see the variants of the
+   load classmethods).
+
+   Shaders are written in GLSL, which is a C-like language dedicated
+   to OpenGL shaders. You'll probably need to learn its basics before
+   writing your own shaders for SFML.
+
+   Like any Python program, a shader has its own variables that you can
+   set from your Python. :class:`Shader` handles four different types
+   of variables:
+
+   * floats
+   * vectors (2, 3 or 4 components)
+   * textures
+   * transforms (matrices)
+
+   The value of the variables can be changed at any time with
+   :meth:`set_parameter`::
+
+       shader.set_parameter('offset', 2.0)
+       shader.set_parameter('color', 0.5, 0.8, 0.3)
+       shader.set_parameter('matrix', transform); # transform is a sfml.Transform
+       shader.set_parameter('overlay', texture) # texture is a sfml.Texture
+       shader.set_parameter('texture', sfml.Shader.CURRENT_TEXTURE)
+
+   The special :attr:`Shader.CURRENT_TEXTURE` argument maps the given
+   texture variable to the current texture of the object being drawn
+   (which cannot be known in advance).
+
+   To apply a shader to a drawable, you must pass it as an additional
+   parameter to :meth:`RenderTarget.draw`::
+
+       window.draw(sprite, shader)
+
+   Which is in fact just a shortcut for this::
+
+       states = sfml.RenderStates()
+       states.shader = shader
+       window.draw(sprite, states)
+
+   Shaders can be used on any drawable, but some combinations are not
+   interesting. For example, using a vertex shader on a
+   :class:`Sprite` is limited because there are only 4 vertices, the
+   sprite would have to be subdivided in order to apply wave
+   effects. Another bad example is a fragment shader with
+   :class:`Text`: the texture of the text is not the actual text that
+   you see on screen, it is a big texture containing all the
+   characters of the font in an arbitrary order; thus, texture lookups
+   on pixels other than the current one may not give you the expected
+   result.
+
+   Shaders can also be used to apply global post-effects to the
+   current contents of the target (like the old ``PostFx`` class in
+   SFML 1). This can be done in two different ways:
+
+   * Draw everything to a :class:`RenderTexture`, then draw it to the main
+     target using the shader.
+   * Draw everything directly to the main target, then use
+     :meth:`Texture.update` to copy its contents to a texture
+     and draw it to the main target using the shader.
+
+   The first technique is more optimized because it doesn't involve
+   retrieving the target's pixels to system memory, but the second one
+   doesn't impact the rendering process and can be easily inserted
+   anywhere without impacting all the code.
+
+   Like :class:`Texture` that can be used as a raw OpenGL texture,
+   :class:`Shader` can also be used directly as a raw shader for
+   custom OpenGL geometry::
+
+      window.active = True
+      shader.bind()
+      # render OpenGL geometry ...
+      shader.unbind()
+
+   .. attribute:: IS_AVAILABLE
+
+      True if the system supports shaders. You shoul always test this
+      class attribute before using the shader features. If it is
+      false, then any attempt to use :class:`Shader` will fail.
+
+   .. attribute:: CURRENT_TEXTURE
+
+      Special type/value that can be passed to :meth:`set_parameter`,
+      and that represents the texture of the object being drawn.
+
+   .. attribute:: FRAGMENT
+
+      Fragment (pixel) shader type, as an int class attribute.
+
+   .. attribute:: VERTEX
+
+      Vertex shader type, as an int class attribute.
+
+   .. classmethod:: load_both_types_from_file(str vertex_shader_filename,\
+                                              str fragment_shader_filename)
+
+      Load both the vertex and the fragment shaders. If one of them
+      fails to load, the shader is left empty (the valid shader is
+      unloaded). The sources must be text files containing valid
+      shaders in GLSL language. GLSL is a C-like language dedicated to
+      OpenGL shaders; you'll probably need to read a good
+      documentation for it before writing your own shaders.
+
+      If an error occurs, :exc:`PySFMLException` is raised.
+
+   .. classmethod:: load_both_types_from_memory(str vertex_shader,\
+                                                str fragment_shader)
+
+      Load both the vertex and the fragment shaders. If one of them
+      fails to load, the shader is left empty (the valid shader is
+      unloaded). The sources must be valid shaders in GLSL
+      language. GLSL is a C-like language dedicated to OpenGL shaders;
+      you'll probably need to read a good documentation for it before
+      writing your own shaders.
+
+      If an error occurs, :exc:`PySFMLException` is raised.
+
+   .. classmethod:: load_from_file(filename, int type)
+
+      Load a single shader, either vertex or fragment, identified by
+      the *type* parameter, which must be :attr:`Shader.FRAGMENT` or
+      :attr:`Shader.VERTEX`. The source must be a text file containing
+      a valid shader in GLSL language. GLSL is a C-like language
+      dedicated to OpenGL shaders; you'll probably need to read a good
+      documentation for it before writing your own shaders.
+
+      If an error occurs, :exc:`PySFMLException` is raised.
+
+   .. classmethod:: load_from_memory(str shader, int type)
+
+      Load a single shader, either vertex or fragment, identified by
+      the *type* argument, which must be :attr:`Shader.FRAGMENT` or
+      :attr:`Shader.VERTEX`. The source code must be a valid shader in
+      GLSL language. GLSL is a C-like language dedicated to OpenGL
+      shaders; you'll probably need to read a good documentation for
+      it before writing your own shaders.
+
+   .. method:: bind()
+
+      Bind the shader for rendering (activate it). This method is
+      normally for internal use only, unless you want to use the
+      shader with a custom OpenGL rendering instead of a SFML
+      drawable::
+
+         window.active = True
+         shader.bind()
+         # ... render OpenGL geometry ...
+         shader.unbind()
+
+   .. method:: set_parameter(str name, ...)
+
+      Set a shader parameter.
+
+      The first parameter, *name*, is the name of the variable to
+      change in the shader. After *name*, you can pass an argument or
+      several floats, depending on your need:
+
+      * 1 float,
+      * 2 floats,
+      * 3 floats,
+      * 4 floats,
+      * a color,
+      * a transform,
+      * a texture.
+
+      If you want to pass the texture of the object being drawn, which
+      cannot be known in advance, you can pass the special value
+      :attr:`CURRENT_TEXTURE`::
+
+         shader.set_parameter('the_texture', sfml.Shader.CURRENT_TEXTURE)
+
+   .. method:: unbind()
+
+      Unbind the shader (deactivate it). This method is normally for
+      internal use only, unless you want to use the shader with a
+      custom OpenGL rendering instead of a SFML drawable.
+
+
+.. class:: Transform([float a00, float a01, float a02,\
+                     float a10, float a11, float a12,\
+                     float a20, float a21, float a22])
+
+   If called with no arguments, the value is set to the
+   :attr:`IDENTITY` transform.
+
+   A :class:`Transform` is a 3x3 transform matrix that specifies how
+   to translate, rotate, scale, shear, project, etc. In mathematical
+   terms, it defines how to transform a coordinate system into
+   another.
+
+   For example, if you apply a rotation transform to a sprite, the
+   result will be a rotated sprite. And anything that is transformed
+   by this rotation transform will be rotated the same way, according
+   to its initial position.
+
+   Transforms are typically used for drawing. But they can also be
+   used for any computation that requires to transform points between
+   the local and global coordinate systems of an entity (like
+   collision detection).
+
+   Example::
+
+      # Define a translation transform
+      translation = sfml.Transform()
+      translation.translate(20, 50)
+
+      # Define a rotation transform
+      rotation = sf.Transform()
+      rotation.rotate(45)
+
+      # Combine them
+      transform = translation * rotation
+
+      # Use the result to transform stuff...
+      point = transform.transform_point(10, 20)
+      rect = transform.transform_rect(sfml.FloatRect(0, 0, 10, 100))
+
+   This class provides the following special methods:
+
+   * ``*`` and ``*=`` operators.
+   * ``str()`` returns the content of the matrix in a human-readable format.
+
+   .. attribute:: IDENTITY
+
+      Class attribute containing the identity matrix.
+
+   .. attribute:: matrix
+
+      Read-only. a list of 16 floats containing the transform elements
+      as a 4x4 matrix, which is directly compatible with OpenGL
+      functions.
+
+   .. method:: combine(transform)
+
+      Combine the current transform with *transform*. The result is a
+      transform that is equivalent to applying this followed by
+      transform. Mathematically, it is equivalent to a matrix
+      multiplication.
+
+   .. method:: copy()
+
+      Return a new transform object with the same content as self.
+
+   .. method:: get_inverse()
+
+      Return the inverse of the transform. If the inverse cannot be
+      computed, an :attr:`IDENTITY` transform is returned.
+
+   .. method:: rotate(float angle[, float center_x, float center_y])
+
+      Combine the current transform with a rotation. This method
+      returns self, so calls can be chained::
+
+         transform = sfml.Transform()
+         transform.rotate(90).translate(50, 20)
+
+      The center of rotation can be provided with *center_x* and
+      *center_y*, so that you can build rotations around arbitrary
+      points more easily (and efficiently) than the usual
+      ``translate(-center).rotate(angle).translate(center)``.
+
+   .. method:: scale(float scale_x, float scale_y[, float, center_x,\
+                     float center_y])
+
+      Combine the current transform with a scaling. The center of
+      scaling can be provided with *center_x* and *center_y*, so that
+      you can build scaling around arbitrary points more easily (and
+      efficiently) than the usual
+      ``translate(-center).scale(factors).translate(center)``.
+
+      This method returns self, so calls can be chained::
+
+         transform = sfml.Transform()
+         transform.scale(2, 1, 8, 3).rotate(45)
+
+
+   .. method:: transform_point(float x, float y)
+
+      Transform the point and return it as a tuple.
+
+   .. method:: transform_rect(FloatRect rectangle)
+
+      Transform a rectangle and return it as a
+      :class:`FloatRect`. Since SFML doesn't provide support for
+      oriented rectangles, the result of this function is always an
+      axis-aligned rectangle. Which means that if the transform
+      contains a rotation, the bounding rectangle of the transformed
+      rectangle is returned.
+
+   .. method:: translate(float x, float y)
+
+      Combine the current transform with a translation. This method
+      returns self, so calls can be chained::
+
+         transform = sfml.Transform()
+         transform.translate(100, 200).rotate(45)
+
+
 .. class:: Transformable
 
    Decomposed transform defined by a position, a rotation and a scale.
@@ -230,359 +871,67 @@ Drawing
 
          scale = object.scale
          object.scale(scale[0] * factor_x, scale[1] * factor_y)
+.. class:: Vertex([position[, color[, tex_coords]]])
 
+   A vertex is an improved point. It has a position and other extra
+   attributes that will be used for drawing: a color and a pair of
+   texture coordinates.
 
-.. class:: RenderTarget
+   The vertex is the building block of drawing. Everything which is
+   visible on screen is made of vertices. They are grouped as 2D
+   primitives (triangles, quads, ... see :ref:`blend_modes`), and
+   these primitives are grouped to create even more complex 2D
+   entities such as sprites, texts, etc.
 
-   Base class for :class:`RenderWindow` and :class:`RenderTexture`. It
-   is abstract; the constructor will raise ``NotImplementedError`` if
-   you call it.
-
-   :class:`RenderTarget` defines the common behaviour of all the 2D
-   render targets. It makes it possible to draw 2D entities like
-   sprites, shapes, text without using any OpenGL command directly.
-
-   A :class:`RenderTarget` is also able to use views (:class:`View`),
-   which are some kind of 2D cameras. With views you can globally
-   scroll, rotate or zoom everything that is drawn, without having to
-   transform every single entity.
-
-   On top of that, render targets are still able to render direct
-   OpenGL stuff. It is even possible to mix together OpenGL calls and
-   regular SFML drawing commands. When doing so, make sure that OpenGL
-   states are not messed up by calling the
-   :meth:`push_gl_states`/:meth:`pop_gl_states` methods.
-
-   .. attribute:: default_view
-
-      Read-only. The default view has the initial size of the render
-      target, and never changes after the target has been created.
-
-   .. attribute:: height
-
-      Read-only. The height of the rendering region of the target.
-
-   .. attribute:: size
-
-      Read-only. The size of the rendering region of the target, as a
-      tuple.
-
-   .. attribute:: view
-
-      The view is like a 2D camera, it controls which part of the 2D
-      scene is visible, and how it is viewed in the render-target. The
-      new view will affect everything that is drawn, until another
-      view is set. The render target keeps its own copy of the view
-      object, so it is not necessary to keep the original one alive
-      after calling this function. To restore the original view of the
-      target, you can pass the result of :attr:`default_view` to this
-      function.
-
-   .. attribute:: width
-
-      Read-only. The width of the rendering region of the target.
-
-   .. method:: clear([color])
-
-      Clear the entire target with a single color. This function is
-      usually called once every frame, to clear the previous contents
-      of the target. The default is black.
-
-   .. method:: convert_coords(int x, int y[, view=None])
-
-      Convert a point from target coordinates to view
-      coordinates. Initially, a unit of the 2D world matches a pixel
-      of the render target. But if you define a custom view, this
-      assertion is not true anymore, e.g. a point located at (10, 50)
-      in your render target (for example a window) may map to the
-      point (150, 75) in your 2D world --- for example if the view is
-      translated by (140, 25). For render windows, this method is
-      typically used to find which point (or object) is located below
-      the mouse cursor.
-
-      When the *view* argument isn't provided, the current view of the
-      render target is used.
-
-   .. method:: draw(drawable, ...)
-
-      *drawable* may be:
-
-      * A built-in drawable, such as :class:`Sprite` or :class:`Text`,
-        or a user-made drawable (see :ref:`Creating your own drawables
-        <graphicsref_custom_drawables>`). You can pass a second
-        argument of type :class:`Shader` or
-        :class:`RenderStates`. Example::
-
-            window.draw(sprite, shader)
-
-      * A list or a tuple of :class:`Vertex` objects. You must pass a
-        :ref:`primitive type <primitive_types>` as a second argument,
-        and can pass a :class:`Shader` or :class:`RenderStates` as a
-        third argument. Example::
-
-            window.draw(vertices, sfml.QUADS, shader)
-
-        See ``examples/vertices.py`` for a working example.
-
-   .. method:: get_viewport(view)
-
-      Return the viewport of a view applied to this render target, as
-      an :class:`IntRect`. The viewport is defined in the view as a
-      ratio, this method simply applies this ratio to the current
-      dimensions of the render target to calculate the pixels
-      rectangle that the viewport actually covers in the target.
-
-   .. method:: pop_gl_states
-
-      Restore the previously saved OpenGL render states and matrices.
-      See :meth:`push_gl_states`.
-
-   .. method:: push_gl_states
-
-      Save the current OpenGL render states and matrices. This method
-      can be used when you mix SFML drawing and direct OpenGL
-      rendering. Combined with :meth:`pop_gl_states`, it ensures that:
-
-      * SFML's internal states are not messed up by your OpenGL code.
-      * Your OpenGL states are not modified by a call to a SFML
-        method.
-
-      More specifically, it must be used around code that calls
-      ``draw()`` methods. Example::
-
-         # OpenGL code here...
-         window.push_gl_states()
-         window.draw(...)
-         window.draw(...)
-         window.pop_gl_states()
-         # OpenGL code here...
-
-   Note that this method is quite expensive: it saves all the possible
-   OpenGL states and matrices, even the ones you don't care
-   about. Therefore it should be used wisely. It is provided for
-   convenience, but the best results will be achieved if you handle
-   OpenGL states yourself (because you know which states have really
-   changed, and need to be saved and restored). Take a look at the
-   :meth:`reset_gl_states` method if you do so.
-
-   .. method:: reset_gl_states
-
-      Reset the internal OpenGL states so that the target is ready for
-      drawing. This function can be used when you mix SFML drawing and
-      direct OpenGL rendering, if you choose not to use
-      :meth:`push_gl_states`/:meth:`pop_gl_states`. It ensures that
-      all OpenGL states needed by SFML are set, so that subsequent
-      draw() calls will work as expected.
-
-      Example::
-
-         # OpenGL code here...
-         glPushAttrib(...)
-         window.reset_gl_states()
-         window.draw(...)
-         window.draw(...)
-         glPopAttrib(...)
-         # OpenGL code here...
-
-
-.. class:: Transform([float a00, float a01, float a02,\
-                     float a10, float a11, float a12,\
-                     float a20, float a21, float a22])
-
-   If called with no arguments, the value is set to the
-   :attr:`IDENTITY` transform.
-
-   A :class:`Transform` is a 3x3 transform matrix that specifies how
-   to translate, rotate, scale, shear, project, etc. In mathematical
-   terms, it defines how to transform a coordinate system into
-   another.
-
-   For example, if you apply a rotation transform to a sprite, the
-   result will be a rotated sprite. And anything that is transformed
-   by this rotation transform will be rotated the same way, according
-   to its initial position.
-
-   Transforms are typically used for drawing. But they can also be
-   used for any computation that requires to transform points between
-   the local and global coordinate systems of an entity (like
-   collision detection).
-
-   Example::
-
-      # Define a translation transform
-      translation = sfml.Transform()
-      translation.translate(20, 50)
-
-      # Define a rotation transform
-      rotation = sf.Transform()
-      rotation.rotate(45)
-
-      # Combine them
-      transform = translation * rotation
-
-      # Use the result to transform stuff...
-      point = transform.transform_point(10, 20)
-      rect = transform.transform_rect(sfml.FloatRect(0, 0, 10, 100))
+   If you use the graphical entities of SFML (:class:`Sprite`,
+   :class:`Text`, :class:`Shape`) you won't have to deal with vertices
+   directly. But if you want to define your own 2D entities, such as
+   tiled maps or particle systems, using vertices will allow you to
+   get maximum performances.
 
    This class provides the following special methods:
 
-   * ``*`` and ``*=`` operators.
-   * ``str()`` returns the content of the matrix in a human-readable format.
+   * ``repr(vertex)`` returns a description in format
+     ``Vertex(position, color, tex_coords``.
 
-   .. attribute:: IDENTITY
+   Example::
 
-      Class attribute containing the identity matrix.
+      # define a 100x100 square, red, with a 10x10 texture mapped on it
+      vertices = [sfml.Vertex((0, 0), sfml.Color.RED, (0, 0)),
+                  sfml.Vertex((0, 100), sfml.Color.RED, (0, 10)),
+                  sfml.Vertex((100, 100), sfml.Color.RED, (10, 10)),
+                  sfml.Vertex((100, 0), sfml.Color.RED, (10, 0))]
 
-   .. attribute:: matrix
+      # draw it
+      window.draw(vertices, sfml.QUADS)
 
-      Read-only. a list of 16 floats containing the transform elements
-      as a 4x4 matrix, which is directly compatible with OpenGL
-      functions.
+   Note: although texture coordinates are supposed to be an integer
+   amount of pixels, their type is float because of some buggy
+   graphics drivers that are not able to process integer coordinates
+   correctly.
 
-   .. method:: combine(transform)
+   .. attribute:: color
 
-      Combine the current transform with *transform*. The result is a
-      transform that is equivalent to applying this followed by
-      transform. Mathematically, it is equivalent to a matrix
-      multiplication.
+      :class:`Color` of the vertex.
 
-   .. method:: copy()
+   .. attribute:: position
 
-      Return a new transform object with the same content as self.
+      2D position of the vertex. The value is always retrieved as a
+      tuple. It can be set as a tuple or a :class:`Vector2f`.
 
-   .. method:: get_inverse()
+   .. attribute:: tex_coords
 
-      Return the inverse of the transform. If the inverse cannot be
-      computed, an :attr:`IDENTITY` transform is returned.
+      Coordinates of the texture's pixel map to the vertex. The value
+      is always retrieved as a tuple. It can be set as a tuple or a
+      :class:`Vector2f`.
 
-   .. method:: rotate(float angle[, float center_x, float center_y])
+   .. method:: copy
 
-      Combine the current transform with a rotation. This method
-      returns self, so calls can be chained::
-
-         transform = sfml.Transform()
-         transform.rotate(90).translate(50, 20)
-
-      The center of rotation can be provided with *center_x* and
-      *center_y*, so that you can build rotations around arbitrary
-      points more easily (and efficiently) than the usual
-      ``translate(-center).rotate(angle).translate(center)``.
-
-   .. method:: scale(float scale_x, float scale_y[, float, center_x,\
-                     float center_y])
-
-      Combine the current transform with a scaling. The center of
-      scaling can be provided with *center_x* and *center_y*, so that
-      you can build scaling around arbitrary points more easily (and
-      efficiently) than the usual
-      ``translate(-center).scale(factors).translate(center)``.
-
-      This method returns self, so calls can be chained::
-
-         transform = sfml.Transform()
-         transform.scale(2, 1, 8, 3).rotate(45)
+      Return a new vertex with the same value as self.
 
 
-   .. method:: transform_point(float x, float y)
-
-      Transform the point and return it as a tuple.
-
-   .. method:: transform_rect(FloatRect rectangle)
-
-      Transform a rectangle and return it as a
-      :class:`FloatRect`. Since SFML doesn't provide support for
-      oriented rectangles, the result of this function is always an
-      axis-aligned rectangle. Which means that if the transform
-      contains a rotation, the bounding rectangle of the transformed
-      rectangle is returned.
-
-   .. method:: translate(float x, float y)
-
-      Combine the current transform with a translation. This method
-      returns self, so calls can be chained::
-
-         transform = sfml.Transform()
-         transform.translate(100, 200).rotate(45)
-
-
-.. class:: RenderStates(blend_mode=-1, shader=None, texture=None,\
-                        transform=None)
-
-   The constructor first creates a default RenderStates object, then
-   sets its attributes with respect to the provided
-   arguments. Constructing a default set of render states is
-   equivalent to using :attr:`RenderStates.DEFAULT`. The default set
-   defines
-
-   * the :attr:`BLEND_ALPHA` blend mode,
-   * the :attr:`Transform.IDENTITY` transform,
-   * no texture (``None``),
-   * no shader (``None``).
-
-   Contains the states used for drawing to a
-   :class:`RenderTarget`. There are four global states that can be
-   applied to the drawn objects:
-
-   * The blend mode: how pixels of the object are blended with the
-     background.
-   * The transform: how the object is positioned/rotated/scaled.
-   * The texture: which image is mapped to the object.
-   * The shader: which custom effect is applied to the object.
-
-   High-level objects such as sprites or text force some of these
-   states when they are drawn. For example, a sprite will set its own
-   texture, so that you don't have to care about it when drawing the
-   sprite.
-
-   The transform is a special case: sprites, texts and shapes (and
-   it's a good idea to do it with your own drawable classes too)
-   combine their transform with the one that is passed in the
-   RenderStates structure. So that you can use a "global" transform on
-   top of each object's transform.
-
-   Most objects, especially high-level drawables, can be drawn
-   directly without defining render states explicitely --- the default
-   set of states is ok in most cases::
-
-      window.draw(sprite)
-
-   If you just want to specify a shader, you can pass it directly to
-   the :meth:`RenderTarget.draw` method::
-
-      window.draw(sprite, shader)
-
-   Note that unlike in C++ SFML, this only works for shaders and not
-   for other render states. This is because adding other possibilities
-   means writing a lot of boilerplate code in the binding, and shader
-   seemed to be most used state when writing this method.
-
-   When you're inside the draw method of a drawable object, you can
-   either pass the render states unmodified, or change some of
-   them. For example, a transformable object will combine the current
-   transform with its own transform. A sprite will set its
-   texture. Etc.
-
-   .. attribute:: DEFAULT
-
-      A RenderStates object with the default values, as a class
-      attribute.
-
-   .. attribute:: blend_mode
-
-      See :ref:`blend_modes` for a list of the valid values.
-
-   .. attribute:: shader
-
-      A :class:`Shader` object.
-
-   .. attribute:: texture
-
-      A :class:`Texture` object.
-
-   .. attribute:: transform
-
-      A :class:`Transform` object.
-
+Shapes
+------
 
 .. class:: Shape
 
@@ -800,6 +1149,9 @@ Drawing
       Set the number of points of the polygon. *count* must be greater
       than 2 to define a valid shape.
 
+
+Image dislay
+------------
 
 .. class:: Image(int width, int height[, color])
 
@@ -1315,351 +1667,3 @@ Drawing
       want to display a part of the texture. By default, the texture
       rect covers the entire texture. *rect* may be an
       :class:`IntRect` or a tuple.
-
-
-.. class:: Shader
-
-   The constructor will raise ``NotImplementedError`` if called.  Use
-   class methods like :meth:`load_from_file()` or :meth:`load_from_memory()`
-   instead.
-
-   Shaders are programs written using a specific language, executed
-   directly by the graphics card and allowing to apply real-time
-   operations to the rendered entities.
-
-   There are two kinds of shaders:
-
-   * Vertex shaders, that process vertices.
-   * Fragment (pixel) shaders, that process pixels.
-
-   A shader can be composed of either a vertex shader alone, a
-   fragment shader alone, or both combined (see the variants of the
-   load classmethods).
-
-   Shaders are written in GLSL, which is a C-like language dedicated
-   to OpenGL shaders. You'll probably need to learn its basics before
-   writing your own shaders for SFML.
-
-   Like any Python program, a shader has its own variables that you can
-   set from your Python. :class:`Shader` handles four different types
-   of variables:
-
-   * floats
-   * vectors (2, 3 or 4 components)
-   * textures
-   * transforms (matrices)
-
-   The value of the variables can be changed at any time with
-   :meth:`set_parameter`::
-
-       shader.set_parameter('offset', 2.0)
-       shader.set_parameter('color', 0.5, 0.8, 0.3)
-       shader.set_parameter('matrix', transform); # transform is a sfml.Transform
-       shader.set_parameter('overlay', texture) # texture is a sfml.Texture
-       shader.set_parameter('texture', sfml.Shader.CURRENT_TEXTURE)
-
-   The special :attr:`Shader.CURRENT_TEXTURE` argument maps the given
-   texture variable to the current texture of the object being drawn
-   (which cannot be known in advance).
-
-   To apply a shader to a drawable, you must pass it as an additional
-   parameter to :meth:`RenderTarget.draw`::
-
-       window.draw(sprite, shader)
-
-   Which is in fact just a shortcut for this::
-
-       states = sfml.RenderStates()
-       states.shader = shader
-       window.draw(sprite, states)
-
-   Shaders can be used on any drawable, but some combinations are not
-   interesting. For example, using a vertex shader on a
-   :class:`Sprite` is limited because there are only 4 vertices, the
-   sprite would have to be subdivided in order to apply wave
-   effects. Another bad example is a fragment shader with
-   :class:`Text`: the texture of the text is not the actual text that
-   you see on screen, it is a big texture containing all the
-   characters of the font in an arbitrary order; thus, texture lookups
-   on pixels other than the current one may not give you the expected
-   result.
-
-   Shaders can also be used to apply global post-effects to the
-   current contents of the target (like the old ``PostFx`` class in
-   SFML 1). This can be done in two different ways:
-
-   * Draw everything to a :class:`RenderTexture`, then draw it to the main
-     target using the shader.
-   * Draw everything directly to the main target, then use
-     :meth:`Texture.update` to copy its contents to a texture
-     and draw it to the main target using the shader.
-
-   The first technique is more optimized because it doesn't involve
-   retrieving the target's pixels to system memory, but the second one
-   doesn't impact the rendering process and can be easily inserted
-   anywhere without impacting all the code.
-
-   Like :class:`Texture` that can be used as a raw OpenGL texture,
-   :class:`Shader` can also be used directly as a raw shader for
-   custom OpenGL geometry::
-
-      window.active = True
-      shader.bind()
-      # render OpenGL geometry ...
-      shader.unbind()
-
-   .. attribute:: IS_AVAILABLE
-
-      True if the system supports shaders. You shoul always test this
-      class attribute before using the shader features. If it is
-      false, then any attempt to use :class:`Shader` will fail.
-
-   .. attribute:: CURRENT_TEXTURE
-
-      Special type/value that can be passed to :meth:`set_parameter`,
-      and that represents the texture of the object being drawn.
-
-   .. attribute:: FRAGMENT
-
-      Fragment (pixel) shader type, as an int class attribute.
-
-   .. attribute:: VERTEX
-
-      Vertex shader type, as an int class attribute.
-
-   .. classmethod:: load_both_types_from_file(str vertex_shader_filename,\
-                                              str fragment_shader_filename)
-
-      Load both the vertex and the fragment shaders. If one of them
-      fails to load, the shader is left empty (the valid shader is
-      unloaded). The sources must be text files containing valid
-      shaders in GLSL language. GLSL is a C-like language dedicated to
-      OpenGL shaders; you'll probably need to read a good
-      documentation for it before writing your own shaders.
-
-      If an error occurs, :exc:`PySFMLException` is raised.
-
-   .. classmethod:: load_both_types_from_memory(str vertex_shader,\
-                                                str fragment_shader)
-
-      Load both the vertex and the fragment shaders. If one of them
-      fails to load, the shader is left empty (the valid shader is
-      unloaded). The sources must be valid shaders in GLSL
-      language. GLSL is a C-like language dedicated to OpenGL shaders;
-      you'll probably need to read a good documentation for it before
-      writing your own shaders.
-
-      If an error occurs, :exc:`PySFMLException` is raised.
-
-   .. classmethod:: load_from_file(filename, int type)
-
-      Load a single shader, either vertex or fragment, identified by
-      the *type* parameter, which must be :attr:`Shader.FRAGMENT` or
-      :attr:`Shader.VERTEX`. The source must be a text file containing
-      a valid shader in GLSL language. GLSL is a C-like language
-      dedicated to OpenGL shaders; you'll probably need to read a good
-      documentation for it before writing your own shaders.
-
-      If an error occurs, :exc:`PySFMLException` is raised.
-
-   .. classmethod:: load_from_memory(str shader, int type)
-
-      Load a single shader, either vertex or fragment, identified by
-      the *type* argument, which must be :attr:`Shader.FRAGMENT` or
-      :attr:`Shader.VERTEX`. The source code must be a valid shader in
-      GLSL language. GLSL is a C-like language dedicated to OpenGL
-      shaders; you'll probably need to read a good documentation for
-      it before writing your own shaders.
-
-   .. method:: bind()
-
-      Bind the shader for rendering (activate it). This method is
-      normally for internal use only, unless you want to use the
-      shader with a custom OpenGL rendering instead of a SFML
-      drawable::
-
-         window.active = True
-         shader.bind()
-         # ... render OpenGL geometry ...
-         shader.unbind()
-
-   .. method:: set_parameter(str name, ...)
-
-      Set a shader parameter.
-
-      The first parameter, *name*, is the name of the variable to
-      change in the shader. After *name*, you can pass an argument or
-      several floats, depending on your need:
-
-      * 1 float,
-      * 2 floats,
-      * 3 floats,
-      * 4 floats,
-      * a color,
-      * a transform,
-      * a texture.
-
-      If you want to pass the texture of the object being drawn, which
-      cannot be known in advance, you can pass the special value
-      :attr:`CURRENT_TEXTURE`::
-
-         shader.set_parameter('the_texture', sfml.Shader.CURRENT_TEXTURE)
-
-   .. method:: unbind()
-
-      Unbind the shader (deactivate it). This method is normally for
-      internal use only, unless you want to use the shader with a
-      custom OpenGL rendering instead of a SFML drawable.
-
-
-.. class:: RenderTexture(int width, int height[, bool depth=False])
-
-   This class inherits :class:`RenderTarget`.
-
-   Target for off-screen 2D rendering into an
-   texture. :class:`RenderTexture` is the little brother of
-   :class:`RenderWindow`.
-
-   It implements the same 2D drawing and OpenGL-related functions (see
-   their base class :class:`RenderTarget` for more details), the
-   difference is that the result is stored in an off-screen texture
-   rather than being show in a window.
-
-   Rendering to a texture can be useful in a variety of situations:
-
-   * Precomputing a complex static texture (like a level's background
-     from multiple tiles).
-   * Applying post-effects to the whole scene with shaders.
-   * Creating a sprite from a 3D object rendered with OpenGL.
-   * Etc.
-
-   Usage example::
-
-      # Create a new render-window
-      window = sfml.RenderWindow(sf.VideoMode(800, 600), 'pySFML window')
-
-      # Create a new render texture
-      render_texture = sfml.RenderTexture(500, 500)
-
-      # The main loop
-      while window.open:
-         # Event processing
-         # ...
-
-         # Clear the whole texture with red color
-         render_texture.clear(sfml.Color.RED)
-
-         # Draw stuff to the texture
-         render_texture.draw(sprite)  # sprite is a Sprite
-         render_texture.draw(shape)   # shape is a Shape
-         render_texture.draw(text)    # text is a Text
-
-         # We're done drawing to the texture
-         render_texture.display()
-
-         # Now we start rendering to the window, clear it first
-         window.clear()
-
-         # Draw the texture
-         sprite = sfml.Sprite(render_texture.texture)
-         window.draw(sprite);
-
-         # End the current frame and display its contents on screen
-         window.display()
-
-   .. attribute:: active
-
-      Write-only. If true, the render texture's context becomes
-      current for future OpenGL rendering operations (so you shouldn't
-      care about it if you're not doing direct OpenGL stuff). Only one
-      context can be current in a thread, so if you want to draw
-      OpenGL geometry to another render target (like a
-      :class:`RenderWindow`), don't forget to activate it again. If an
-      error occurs, :exc:`PySFMLException` is raised.
-
-   .. attribute:: texture
-
-      Read-only.The target texture, as a :class:`Texture`. After
-      drawing to the render-texture and calling :meth:`display`, you
-      can retrieve the updated texture using this function, and draw
-      it using a sprite (for example).
-
-      .. warning::
-
-         Textures obtained with this property should never be
-         modified. The object itself is a normal :class:`Texture`
-         object, but the underlying C++ object is specified as
-         ``const`` and a C++ compiler wouldn't let you attempt to
-         modify it.
-
-   .. attribute:: smooth
-
-      Whether the smooth filtering is enabled or not. Default value:
-      ``False``.
-
-   .. method:: display()
-
-      Update the contents of the target texture. This method updates
-      the target texture with what has been drawn so far. Like for
-      windows, calling this function is mandatory at the end of
-      rendering. Not calling it may leave the texture in an undefined
-      state.
-
-
-.. class:: Vertex([position[, color[, tex_coords]]])
-
-   A vertex is an improved point. It has a position and other extra
-   attributes that will be used for drawing: a color and a pair of
-   texture coordinates.
-
-   The vertex is the building block of drawing. Everything which is
-   visible on screen is made of vertices. They are grouped as 2D
-   primitives (triangles, quads, ... see :ref:`blend_modes`), and
-   these primitives are grouped to create even more complex 2D
-   entities such as sprites, texts, etc.
-
-   If you use the graphical entities of SFML (:class:`Sprite`,
-   :class:`Text`, :class:`Shape`) you won't have to deal with vertices
-   directly. But if you want to define your own 2D entities, such as
-   tiled maps or particle systems, using vertices will allow you to
-   get maximum performances.
-
-   This class provides the following special methods:
-
-   * ``repr(vertex)`` returns a description in format
-     ``Vertex(position, color, tex_coords``.
-
-   Example::
-
-      # define a 100x100 square, red, with a 10x10 texture mapped on it
-      vertices = [sfml.Vertex((0, 0), sfml.Color.RED, (0, 0)),
-                  sfml.Vertex((0, 100), sfml.Color.RED, (0, 10)),
-                  sfml.Vertex((100, 100), sfml.Color.RED, (10, 10)),
-                  sfml.Vertex((100, 0), sfml.Color.RED, (10, 0))]
-
-      # draw it
-      window.draw(vertices, sfml.QUADS)
-
-   Note: although texture coordinates are supposed to be an integer
-   amount of pixels, their type is float because of some buggy
-   graphics drivers that are not able to process integer coordinates
-   correctly.
-
-   .. attribute:: color
-
-      :class:`Color` of the vertex.
-
-   .. attribute:: position
-
-      2D position of the vertex. The value is always retrieved as a
-      tuple. It can be set as a tuple or a :class:`Vector2f`.
-
-   .. attribute:: tex_coords
-
-      Coordinates of the texture's pixel map to the vertex. The value
-      is always retrieved as a tuple. It can be set as a tuple or a
-      :class:`Vector2f`.
-
-   .. method:: copy
-
-      Return a new vertex with the same value as self.
