@@ -73,7 +73,7 @@ works. Please refer to the official tutorial:
 http://sfml-dev.org/tutorials/2.0/compile-with-cmake.php
 
 Some platforms may make it easier to install it, for example Arch
-Linux users can get it from AUR.
+Linux users can get it from the AUR.
 
 If you are on Windows, you will probably want to copy SFML's headers
 and libraries directories to the corresponding directories of your
@@ -122,13 +122,15 @@ You can build the module with the ``setup.py`` script (or
 options that you may need or find useful.
 
 ``--inplace`` means that the module will be dropped in the current
-directory. I find this more practical, so it makes it easier to test
+directory. I find this more practical, as it makes it easier to test
 the module once built.
 
-``--compiler=mingw32`` obviously means that `MinGW`_
-will be invoked instead of the default compiler. This is needed when you want
-to use GCC on Windows. This command will show you the list of compiler you
-specify: ``python setup.py build_ext --help-compiler``.
+``--compiler=mingw32`` obviously means that `MinGW`_ will be invoked
+instead of the default compiler. This is needed when you want to use
+GCC on Windows. This command will show you the list of compilers you
+can specify: ``python setup.py build_ext --help-compiler``. Visual
+Studio is the default compiler and should work without using this
+option.
 
 In the end, the command will look something like this::
 
@@ -159,8 +161,8 @@ Building with Cython installed
 
    Currently, modules built straight from the repo probably won't work
    (this may depend on your Cython version). Consider using a source
-   release, or read this forum post if you still want to build from
-   Git:
+   release, or follow the indications from this forum post if you
+   still want to build from Git:
    http://en.sfml-dev.org/forums/index.php?topic=5311.msg52943#msg52943
 
 .. warning::
