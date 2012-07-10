@@ -59,7 +59,7 @@ Changelog
   error occurs.
 - The constructors of :class:`Keyboard`, :class:`Mouse` and
   :class:`Style` now raise ``NotImplementedError``.
-- Fixed a bug where SFML would raise to fail an exception. This
+- Fixed a bug where SFML would fail to raise an exception. This
   typically happened when a tuple, a :class:`FloatRect` or an
   :class:`IntRect` was expected, but another type was passed.
 - Added the tests in the source release.

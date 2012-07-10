@@ -53,10 +53,9 @@ announcements and answer questions, but if you want to report an
 issue, please consider using the Github tracker. I sometimes forget
 bugs and suggestions that I read on the forums.
 
-Currently, some classes' members are still undocumented in the
-graphics section. If you need more detailed information about them,
-please see the `SFML 2 documentation
-<http://sfml-dev.org/documentation/2.0/annotated>`_.
+The documentation should now be complete, but if you need more
+detailed information, the `SFML 2 documentation
+<http://sfml-dev.org/documentation/2.0/annotated>`_ may be useful.
 
 If you haved used SFML in the past, you will probably want to read
 :ref:`cpptut`.
