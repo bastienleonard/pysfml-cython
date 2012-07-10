@@ -357,8 +357,9 @@ Drawing
       care about it if you're not doing direct OpenGL stuff). Only one
       context can be current in a thread, so if you want to draw
       OpenGL geometry to another render target (like a
-      :class:`RenderWindow`), don't forget to activate it again. If an
-      error occurs, :exc:`PySFMLException` is raised.
+      :class:`RenderWindow`), don't forget to activate it again.
+
+      If an error occurs, :exc:`PySFMLException` is raised.
 
    .. attribute:: texture
 
@@ -509,7 +510,7 @@ Drawing
       OpenGL shaders; you'll probably need to read a good
       documentation for it before writing your own shaders.
 
-      If an error occurs, :exc:`PySFMLException` is raised.
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_both_types_from_memory(str vertex_shader,\
                                                 str fragment_shader)
@@ -521,7 +522,19 @@ Drawing
       you'll probably need to read a good documentation for it before
       writing your own shaders.
 
-      If an error occurs, :exc:`PySFMLException` is raised.
+      :exc:`PySFMLException` is raised if an error occurs.
+
+   .. classmethod:: load_both_types_from_stream(InputStream vertex_stream,\
+                                                InputStream fragment_stream)
+
+      Load both the vertex and fragment shaders from custom
+      streams. If one of them fails to load, the shader is left empty
+      (the valid shader is unloaded). The source codes must be valid
+      shaders in GLSL language. GLSL is a C-like language dedicated to
+      OpenGL shaders; you'll probably need to read a good
+      documentation for it before writing your own shaders.
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_from_file(filename, int type)
 
@@ -532,7 +545,7 @@ Drawing
       dedicated to OpenGL shaders; you'll probably need to read a good
       documentation for it before writing your own shaders.
 
-      If an error occurs, :exc:`PySFMLException` is raised.
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_from_memory(str shader, int type)
 
@@ -542,6 +555,18 @@ Drawing
       GLSL language. GLSL is a C-like language dedicated to OpenGL
       shaders; you'll probably need to read a good documentation for
       it before writing your own shaders.
+
+      :exc:`PySFMLException` is raised if an error occurs.
+
+   .. classmethod:: load_from_stream(InputStream stream, int type)
+
+      Load a single shader, either vertex or fragment, identified by
+      the *type* argument, which must be :attr:`Shader.FRAGMENT` or
+      :attr:`Shader.VERTEX`. GLSL is a C-like language dedicated to
+      OpenGL shaders; you'll probably need to read a good
+      documentation for it before writing your own shaders.
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. method:: bind()
 
@@ -1227,7 +1252,7 @@ Image dislay
       tga, jpg, gif, psd, hdr and pic. Some format options are not
       supported, like progressive jpeg.
 
-      :exc:`PySFMLException` is raised if loading fails.
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_from_memory(bytes mem)
 
@@ -1235,7 +1260,7 @@ Image dislay
       formats are bmp, png, tga, jpg, gif, psd, hdr and pic. Some
       format options are not supported, like progressive jpeg.
 
-      :exc:`PySFMLException` is raised if loading fails.
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_from_pixels(int width, int height, bytes pixels)
 
@@ -1243,6 +1268,14 @@ Image dislay
       pixels. *pixels* is assumed to contain 32-bits RGBA pixels, and
       have the given *width* and *height*. If not, the behavior is
       undefined. If *pixels* is ``None``, an empty image is created.
+
+   .. classmethod:: load_from_stream(InputStream stream)
+
+      Load the image from a custom stream. The supported image formats
+      are bmp, png, tga, jpg, gif, psd, hdr and pic. Some format
+      options are not supported, like progressive jpeg.
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. method:: copy(Image source, int dest_x, int dest_y\
                     [, source_rect, apply_alpha])
@@ -1457,7 +1490,7 @@ Image dislay
       The maximum size for a texture depends on the graphics driver
       and can be retrieved with the getMaximumSize function.
 
-      :exc:`PySFMLException` is raised if loading fails.
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_from_image(image[, area])
 
@@ -1471,7 +1504,7 @@ Image dislay
       The maximum size for a texture depends on the graphics driver
       and is accessible with the :attr:`MAXIMUM_SIZE` class attribute.
 
-      :exc:`PySFMLException` is raised if loading fails.
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_from_memory(bytes data[, area])
 
@@ -1489,7 +1522,27 @@ Image dislay
       The maximum size for a texture depends on the graphics driver
       and is accessible with the :attr:`MAXIMUM_SIZE` class attribute.
 
-      :exc:`PySFMLException` is raised if the loading fails.
+      :exc:`PySFMLException` is raised if an error occurs.
+
+   .. classmethod:: load_from_stream(InputStream stream[, area])
+
+      Load the texture from a custom stream. This class method is a
+      shortcut for the following code::
+
+         image = sfml.Image.load_from_stream(stream)
+         texture = sfml.Texture.load_from_image(image, area)
+
+      *area* can a tuple of an :class:`IntRect`, and is used to load
+      only a sub-rectangle of the whole image. If you want the entire
+      image then leave the default value (which is an empty
+      :class:`IntRect`). If the area rectangle crosses the bounds of
+      the image, it is adjusted to fit the image size.
+
+      The maximum size for a texture depends on the graphics driver
+      and can be retrieved with the :attr:`MAXIMUM_SIZE` class
+      attribute.
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. method:: bind([int coordinate_type])
 

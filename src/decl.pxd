@@ -51,6 +51,16 @@ cimport declshader
 cdef extern from "Python.h":
     void PyEval_InitThreads()
 
+
+cdef extern from "SFML/System.hpp" namespace "sf":
+    ctypedef short Int16
+    ctypedef unsigned char Uint8
+    ctypedef int Int32
+    ctypedef unsigned int Uint32
+    ctypedef long int Int64
+    ctypedef unsigned long int Uint64
+
+
 cdef extern from "hacks.hpp":
     void replace_error_handler()
     Drawable* transformable_to_drawable(Transformable*)
@@ -76,6 +86,14 @@ cdef extern from "hacks.hpp":
         void initialize(unsigned int, unsigned int)
         void play()
         void *sound_stream
+
+    cdef cppclass CppInputStream:
+        CppInputStream(void*)
+        Int64 getSize()
+        Int64 read(void*, Int64)
+        Int64 seek(Int64)
+        Int64 tell()
+        void *input_stream
 
 
 cdef extern from "SFML/Graphics.hpp" namespace "sf::Event":
@@ -118,17 +136,6 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Event":
 
     cdef struct JoystickConnectEvent:
         unsigned int joystickId
-
-
-
-cdef extern from "SFML/System.hpp" namespace "sf":
-    ctypedef short Int16
-    ctypedef unsigned char Uint8
-    ctypedef int Int32
-    ctypedef unsigned int Uint32
-    ctypedef long int Int64
-    ctypedef unsigned long int Uint64
-
 
 
 cdef extern from "SFML/Graphics.hpp" namespace "sf":
@@ -284,6 +291,11 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         unsigned int height
         unsigned int bitsPerPixel
 
+    cdef cppclass InputStream:
+        Int64 getSize()
+        Int64 read(void*, Int64)
+        Int64 seek(Int64)
+        Int64 tell()
 
     cdef cppclass Image:
         Image()
@@ -303,6 +315,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         Vector2u getSize()
         bint loadFromFile(char*)
         bint loadFromMemory(void*, size_t)
+        bint loadFromStream(InputStream&)
+        bint loadFromStream(CppInputStream&)
         bint saveToFile(string&)
         bint saveToFile(char*)
         void setPixel(unsigned int, unsigned int, Color&)
@@ -323,8 +337,10 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         bint loadFromImage(Image&, IntRect&)
         bint loadFromMemory(void*, size_t)
         bint loadFromMemory(void*, size_t, IntRect&)
-        # bint loadFromStream(InputStream&)
-        # bint loadFromStream(InputStream&, IntRect&)
+        bint loadFromStream(InputStream&)
+        bint loadFromStream(CppInputStream&)
+        bint loadFromStream(InputStream&, IntRect&)
+        bint loadFromStream(CppInputStream&, IntRect&)
         void setRepeated(bint)
         void setSmooth(bint)
         void update(Uint8*)
@@ -360,6 +376,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         int getLineSpacing(unsigned int)
         bint loadFromFile(char*)
         bint loadFromMemory(void*, size_t)
+        bint loadFromStream(InputStream&)
+        bint loadFromStream(CppInputStream&)
 
     cdef cppclass Drawable:
         pass
@@ -383,7 +401,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void setPosition(Vector2f&)
         void setRotation(float)
         void setScale(float, float)
-        void setScale(Vector2f&)        
+        void setScale(Vector2f&)
 
     cdef cppclass Text:
         Text()
@@ -454,8 +472,10 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         bint loadFromFile(char*, char*)
         bint loadFromMemory(char*, declshader.Type)
         bint loadFromMemory(char*, char*)
-        # bint loadFromStream(InputStream&, declshader.Type)
-        # bint loadFromStream(InputStream&, InputStream&)
+        bint loadFromStream(InputStream&, declshader.Type)
+        bint loadFromStream(CppInputStream&, declshader.Type)
+        bint loadFromStream(InputStream&, InputStream&)
+        bint loadFromStream(CppInputStream&, CppInputStream&)
         void setCurrentTexture(char*)
         void setParameter(char*, float)
         void setParameter(char*, float, float)
@@ -579,7 +599,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void display()
         Texture& getTexture()
         bint isAvailable()
-    
+
     cdef cppclass Shape:
         Shape()
         Color& getFillColor()

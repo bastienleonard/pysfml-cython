@@ -116,6 +116,10 @@ Text
          you should keep a reference to the *data* object as long as
          the font is used.
 
+   .. classmethod:: load_from_stream(InputStream stream)
+
+      Load the font from a custom stream.
+
    .. method:: get_glyph(int code_point, int character_size, bool bold)
 
       Return a glyph corresponding to *code_point* and *character_size*.

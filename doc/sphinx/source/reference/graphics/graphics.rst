@@ -35,8 +35,6 @@
 .. module:: sfml
 
 
-
-
 .. toctree::
    :maxdepth: 2
 

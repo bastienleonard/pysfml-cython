@@ -31,10 +31,12 @@
 #include "hacks.hpp"
 #include "sfml.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include <cassert>
 #include <cstdio>
+#include <cstring>
 
 // For some users, compilation seems to fail because the compiler
 // doesn't know about sf::Transformable. This might fix it.
@@ -291,4 +293,251 @@ void CppSoundStream::onSeek(sf::Time time_offset)
 
     Py_DECREF(py_time);
     PyGILState_Release(gstate);
+}
+
+
+CppInputStream::CppInputStream(void *input_stream) : input_stream(input_stream)
+{
+}
+
+sf::Int64 CppInputStream::getSize()
+{
+    char method_name[] = "get_size";
+    sf::Int64 size = -1;
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    PyObject* ret = PyObject_CallMethod(
+        static_cast<PyObject*>(input_stream), method_name, NULL);
+
+    if (ret == NULL)
+    {
+        PyErr_Print();
+    }
+    else
+    {
+#ifndef IS_PY3K
+        if (PyInt_Check(ret))
+        {
+            size = PyInt_AS_LONG(ret);
+        }
+        else if (PyLong_Check(ret))
+        {
+            size = PyLong_AsLongLong(ret);
+
+            if (size == -1 && PyErr_Occurred())
+            {
+                PyErr_Print();
+            }
+        }
+#else
+        if (PyLong_Check(ret))
+        {
+            size = PyLong_AsLongLong(ret);
+
+            if (size == -1 && PyErr_Occurred())
+            {
+                PyErr_Print();
+            }
+        }
+#endif
+        else
+        {
+            PyErr_SetString(PyExc_TypeError,
+#ifndef IS_PY3K
+                            "get_size() must return an int or a long");
+#else
+                            "get_size() must return an int");
+#endif
+            PyErr_Print();
+        }
+
+        Py_DECREF(ret);
+    }
+
+    PyGILState_Release(gstate);
+
+    return size;
+}
+
+sf::Int64 CppInputStream::read(void *data, sf::Int64 size)
+{
+    char method_name[] = "read";
+    char format[] = "O";
+    Py_ssize_t read = -1;
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+#ifndef IS_PY3K
+    PyObject* py_size = (PyObject*)PyInt_FromLong(size);
+#else
+    PyObject* py_size = (PyObject*)PyLong_FromLong(size);
+#endif
+    PyObject* ret = PyObject_CallMethod(
+        static_cast<PyObject*>(input_stream), method_name, format, py_size);
+
+    if (ret == NULL)
+    {
+        PyErr_Print();
+    }
+    else
+    {
+#ifndef IS_PY3K
+        if (!PyString_Check(ret))
+#else
+        if (!PyBytes_Check(ret))
+#endif
+        {
+            PyErr_SetString(PyExc_TypeError,
+#ifndef IS_PY3K
+                            "read() must return a string object");
+#else
+                            "read() must return a bytes object");
+#endif
+            PyErr_Print();
+        }
+
+#ifndef IS_PY3K
+        read = PyString_Size(ret);
+        char *buffer = PyString_AsString(ret);
+#else
+        read = PyBytes_Size(ret);
+        char *buffer = PyBytes_AsString(ret);
+#endif
+
+        if (buffer == NULL)
+        {
+            PyErr_Print();
+        }
+        else
+        {
+            std::memcpy(data, buffer,
+                        std::min(read, static_cast<Py_ssize_t>(size)));
+        }
+
+        Py_DECREF(ret);
+    }
+
+    Py_DECREF(py_size);
+    PyGILState_Release(gstate);
+
+    return read;
+}
+
+sf::Int64 CppInputStream::seek(sf::Int64 position)
+{
+    char method_name[] = "seek";
+    char format[] = "O";
+    sf::Int64 new_position = -1;
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+#ifndef IS_PY3K
+    PyObject* py_position = (PyObject*)PyInt_FromLong(position);
+#else
+    PyObject* py_position = (PyObject*)PyLong_FromLong(position);
+#endif
+    PyObject* ret = PyObject_CallMethod(
+        static_cast<PyObject*>(input_stream), method_name, format, py_position);
+
+    if (ret == NULL)
+    {
+        PyErr_Print();
+    }
+    else
+    {
+#ifndef IS_PY3K
+        if (PyInt_Check(ret))
+        {
+            new_position = PyInt_AS_LONG(ret);
+        }
+        else if (PyLong_Check(ret))
+        {
+            new_position = PyLong_AsLongLong(ret);
+
+            if (new_position == -1 && PyErr_Occurred())
+            {
+                PyErr_Print();
+            }
+        }
+#else
+        if (PyLong_Check(ret))
+        {
+            new_position = PyLong_AsLong(ret);
+        }
+#endif
+        else
+        {
+            PyErr_SetString(PyExc_TypeError,
+#ifndef IS_PY3K
+                            "seek() must return an int or a long");
+#else
+                            "seek() must return an int");
+#endif
+            PyErr_Print();
+        }
+
+        Py_DECREF(ret);
+    }
+
+    Py_DECREF(py_position);
+    PyGILState_Release(gstate);
+
+    return new_position;
+}
+
+sf::Int64 CppInputStream::tell()
+{
+    char method_name[] = "tell";
+    sf::Int64 position = -1;
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    PyObject* ret = PyObject_CallMethod(
+        static_cast<PyObject*>(input_stream), method_name, NULL);
+
+    if (ret == NULL)
+    {
+        PyErr_Print();
+    }
+    else
+    {
+#ifndef IS_PY3K
+        if (PyInt_Check(ret))
+        {
+            position = PyInt_AS_LONG(ret);
+        }
+        else if (PyLong_Check(ret))
+        {
+            position = PyLong_AsLongLong(ret);
+
+            if (position == -1 && PyErr_Occurred())
+            {
+                PyErr_Print();
+            }
+        }
+#else
+        if (PyLong_Check(ret))
+        {
+            position = PyLong_AsLongLong(ret);
+
+            if (position == -1 && PyErr_Occurred())
+            {
+                PyErr_Print();
+            }
+        }
+#endif
+        else
+        {
+            PyErr_SetString(PyExc_TypeError,
+#ifndef IS_PY3K
+                            "tell() must return an int or a long");
+#else
+                            "tell() must return an int");
+#endif
+            PyErr_Print();
+        }
+
+        Py_DECREF(ret);
+    }
+
+    PyGILState_Release(gstate);
+
+    return position;
 }

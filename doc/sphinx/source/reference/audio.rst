@@ -159,13 +159,24 @@ Audio
 
       Open a music from an audio file. This function doesn't start
       playing the music (call ``play()`` to do
-      so). :exc:`PySFMLException` is raised if opening the file fails.
+      so).
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: open_from_memory(str data)
 
       Open a music from an audio file in memory. This function doesn't
       start playing the music (call ``play()`` to do so).
-      :exc:`PySFMLException` is raised if opening the file fails.
+
+      :exc:`PySFMLException` is raised if an error occurs.
+
+   .. classmethod:: open_from_stream(InputStream stream)
+
+      Open a music from an audio file in a custom stream. This class
+      method doesn't start playing the music (call play() to do
+      so).
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
 
 .. class:: Sound([SoundBuffer buffer])
@@ -341,15 +352,16 @@ Audio
 
    .. classmethod:: load_from_file(filename)
 
-      Load the sound buffer from a file. :exc:`PySFMLException` is
-      raised if loading fails.
+      Load the sound buffer from a file.
+
+      :exc:`PySFMLException` is an error occurs.
 
    .. classmethod:: load_from_memory(bytes data)
 
-      Load the sound buffer from a file in
-      memory. :exc:`PySFMLException` is raised if loading
-      fails. *data* should be ``str`` object in Python 2, and a
-      ``bytes`` object in Python 3.
+      Load the sound buffer from a file in memory. *data* should be
+      ``str`` object in Python 2, and a ``bytes`` object in Python 3.
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. classmethod:: load_from_samples(list samples, int channel_count,\
                                       int sample_rate)
@@ -357,12 +369,15 @@ Audio
       Load the sound buffer from a list of audio samples. *samples*
       should be a ``bytes`` object in Python 3, and a string in
       Python 2. Each sample must be stored on two bytes (``Int16`` in
-      C++ SFML). :exc:`PySFMLException` is raised if loading fails.
+      C++ SFML).
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
    .. method:: save_to_file(filename)
 
-      Save the sound buffer to an audio file. :exc:`PySFMLException`
-      is raised if saving fails.
+      Save the sound buffer to an audio file.
+
+      :exc:`PySFMLException` is raised if an error occurs.
 
 
 .. class:: SoundStream

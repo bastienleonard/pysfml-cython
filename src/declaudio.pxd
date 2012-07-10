@@ -51,6 +51,8 @@ cdef extern from "SFML/Audio.hpp" namespace "sf":
         bint loadFromFile(char*)
         bint loadFromMemory(void*, size_t)
         bint loadFromSamples(decl.Int16*, size_t, unsigned int, unsigned int)
+        bint loadFromStream(decl.InputStream&)
+        bint loadFromStream(decl.CppInputStream&)
         bint saveToFile(char*)
 
     cdef cppclass Sound:
@@ -96,6 +98,8 @@ cdef extern from "SFML/Audio.hpp" namespace "sf":
         bint isRelativeToListener()
         bint openFromFile(char*)
         bint openFromMemory(void*, size_t)
+        bint openFromStream(decl.InputStream&)
+        bint openFromStream(decl.CppInputStream&)
         void pause()
         void play()
         void setAttenuation(float)

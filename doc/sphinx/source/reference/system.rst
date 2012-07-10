@@ -45,6 +45,129 @@ System
    http://docs.python.org/py3k/library/codecs.html#standard-encodings
 
 
+.. class:: Clock
+
+   Utility class that measures the elapsed time.
+
+   Its provides the most precise time that the underlying OS can
+   achieve (generally microseconds or nanoseconds). It also ensures
+   monotonicity, which means that the returned time can never go
+   backward, even if the system time is changed.
+
+   Usage example::
+
+      clock = sfml.Clock()
+      ...
+      time1 = clock.elapsed_time
+      ...
+      time2 = clock.restart()
+
+   The :class:`Time` object returned by the clock can then be
+   converted to a number of seconds, milliseconds or even
+   microseconds.
+
+   .. attribute:: elapsed_time
+
+      A :class:`Time` object containing the time elapsed since the
+      last call to :meth:`restart`, or the construction of the
+      instance if :meth:`restart` has not been called yet.
+
+   .. method:: restart()
+
+      Restart the clock, and return a :class:`Time` object containing
+      the elapsed time since the clock started.
+
+
+.. class:: InputStream
+
+   This abstract class allows users to define their own file-like
+   input sources from which SFML can load resources.
+
+   SFML resource classes like :class:`Texture` and
+   :class:`SoundBuffer` provide loadFromFile and loadFromMemory class
+   methods which read data from conventional sources. However, if you
+   have data coming from a different source (over a network, embedded,
+   encrypted, compressed, etc) you can derive your own class from
+   :class:`InputStream` and load SFML resources with their
+   loadFromStream function.
+
+   .. warning::
+
+      Exceptions that occur in the implemented methods won't be
+      propagated, but printed on ``sys.stderr`` (the console, by
+      default). This is because of concerns regarding multithreading
+      and exception propagation. Please keep your methods as simple as
+      possible, and if they don't work, make sure you read the
+      console.
+
+   Usage example::
+
+       class ExampleStream(sfml.InputStream):
+           def __init__(self, filename):
+               sfml.InputStream.__init__(self)
+               self.filename = filename
+               self.file = open(filename, 'rb')
+               self.file.seek(0, 2)
+               self.size = self.file.tell()
+               self.file.seek(0)
+
+           def get_size(self):
+               print('{0}: get_size()'.format(self.filename))
+               return self.size
+
+           def read(self, size):
+               print('{0}: read({1})'.format(self.filename, size))
+
+               return self.file.read(size)
+
+           def seek(self, position):
+               print('{0}: seek({1})'.format(self.filename, position))
+               self.file.seek(position)
+
+               return self.tell()
+
+           def tell(self):
+               print('{0}: tell()'.format(self.filename))
+
+               return self.file.tell()
+
+           def close(self):
+               self.file.close()
+
+       # Now you can load textures...
+       texture_stream = ExampleStream(some_path)
+       texture = sfml.Texture.load_from_stream(texture_stream)
+
+       # Music...
+       music_stream = ExampleStream('music.ogg')
+       music = sfml.Music.open_from_stream(music_stream)
+       music.play()
+
+       # Etc.
+
+   .. method:: get_size
+
+      Return the number of bytes available in the stream, or -1 on
+      error.
+
+   .. method:: read(int size)
+
+      *size* is the desired number of bytes to read. The method should
+       return a string in Python 2, or a bytes object in Python 3. If
+       needed, its length can be smaller than *size*.
+
+   .. method:: seek(int position)
+
+      Change the current position to *position*, from the beginning of
+      the streal. This method has to return the actual position sought
+      to, or -1 on error.
+
+   .. method:: tell
+
+      Return the current reading position on the stream, or -1 on
+      error.
+
+
 .. class:: Time(seconds=-1.0, milliseconds=-1, microseconds=-1)
 
    Instead of forcing the user to use a specific time units, SFML uses
@@ -85,35 +208,3 @@ System
    .. method:: copy()
 
       Return a new Time object with the same value as self.
-
-.. class:: Clock
-
-   Utility class that measures the elapsed time.
-
-   Its provides the most precise time that the underlying OS can
-   achieve (generally microseconds or nanoseconds). It also ensures
-   monotonicity, which means that the returned time can never go
-   backward, even if the system time is changed.
-
-   Usage example::
-
-      clock = sfml.Clock()
-      ...
-      time1 = clock.elapsed_time
-      ...
-      time2 = clock.restart()
-
-   The :class:`Time` object returned by the clock can then be
-   converted to a number of seconds, milliseconds or even
-   microseconds.
-
-   .. attribute:: elapsed_time
-
-      A :class:`Time` object containing the time elapsed since the
-      last call to :meth:`restart`, or the construction of the
-      instance if :meth:`restart` has not been called yet.
-
-   .. method:: restart()
-
-      Restart the clock, and return a :class:`Time` object containing
-      the elapsed time since the clock started.

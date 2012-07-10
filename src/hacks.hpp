@@ -72,7 +72,7 @@ public:
     CppDrawable(void* drawable);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-    void* drawable; // this is a PyObject pointer
+    void *drawable; // this is a PyObject pointer
 };
 
 
@@ -84,7 +84,7 @@ public:
     virtual unsigned int getPointCount() const;
     virtual sf::Vector2f getPoint(unsigned int index) const;
     void update();
-    void* shape;
+    void *shape;
 };
 
 
@@ -96,7 +96,18 @@ public:
     void initialize(unsigned int, unsigned int);
     virtual bool onGetData(sf::SoundStream::Chunk& data);
     virtual void onSeek(sf::Time time_offset);
-    void* sound_stream;
+    void *sound_stream;
 };
 
+
+class CppInputStream : public sf::InputStream
+{
+public:
+    CppInputStream(void*);
+    virtual sf::Int64 getSize();
+    virtual sf::Int64 read(void *data, sf::Int64 size);
+    virtual sf::Int64 seek(sf::Int64 position);
+    virtual sf::Int64 tell();
+    void *input_stream;
+};
 #endif

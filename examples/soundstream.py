@@ -40,7 +40,7 @@ class CustomStream(sf.SoundStream):
 
 
 
-def main(argv):
+def main(args):
     window = sf.RenderWindow(sf.VideoMode(640, 480),
                              'SFML sound streaming example')
     window.framerate_limit = 60
@@ -49,13 +49,13 @@ def main(argv):
     stream = None
     error_message = None
 
-    if len(argv) > 1:
-        stream = CustomStream(argv[1])
+    if len(args) > 1:
+        stream = CustomStream(args[1])
         stream.play()
     else:
         error_message = sf.Text(
-            "Error: please give an audio file as a command-line argument\n"
-            "e.g. ./soundstream.py sound.wav")
+            "Error: please provide an audio file as a command-line argument\n"
+            "Example: ./soundstream.py sound.wav")
         error_message.color = sf.Color.BLACK
         error_message.character_size = 17
 

@@ -441,7 +441,7 @@ cdef decl.IntRect convert_to_int_rect(value) except *:
 
     if isinstance(value, tuple):
         return decl.IntRect(value[0], value[1], value[2], value[3])
-    
+
     raise TypeError("Expected IntRect or tuple, found {0}".format(type(value)))
 
 
@@ -530,7 +530,7 @@ cdef decl.FloatRect convert_to_float_rect(value) except *:
 
     if isinstance(value, tuple):
         return decl.FloatRect(value[0], value[1], value[2], value[3])
-    
+
     raise TypeError("Expected FloatRect or tuple, found {0}"
                     .format(type(value)))
 
@@ -655,7 +655,7 @@ cdef public decl.Vector2f convert_to_vector2f(value) except *:
 
     if isinstance(value, tuple):
         return decl.Vector2f(value[0], value[1])
-    
+
     raise TypeError("Expected Vector2f or tuple, found {0}".format(type(value)))
 
 
@@ -1158,6 +1158,15 @@ cdef class SoundBuffer:
         else:
             raise PySFMLException()
 
+    @classmethod
+    def load_from_stream(cls, InputStream stream):
+        cdef declaudio.SoundBuffer *p = new declaudio.SoundBuffer()
+
+        if p.loadFromStream(stream.p_this[0]):
+            return wrap_sound_buffer_instance(p, True)
+
+        raise PySFMLException()
+
     def save_to_file(self, filename):
         cdef char *c_filename
 
@@ -1313,7 +1322,7 @@ cdef class Chunk:
             self.py_string = value
             self.p_this.samples = <decl.Int16*>c_string
             self.p_this.sampleCount = len(value)
-                
+
 
 cdef public object wrap_chunk_instance(declaudio.Chunk *p, bint delete_this):
     cdef Chunk ret = Chunk.__new__(Chunk)
@@ -1434,7 +1443,10 @@ cdef class SoundStream:
 
 
 cdef class Music(SoundStream):
+    cdef InputStream stream
+
     def __init__(self):
+        self.stream = None
         raise NotImplementedError(
             "Use class methods like open_from_file() or open_from_memory() "
             "to create Music objects")
@@ -1459,7 +1471,7 @@ cdef class Music(SoundStream):
             c_filename = <bytes?>filename
 
         if p.openFromFile(c_filename):
-            return wrap_music_instance(p)
+            return wrap_music_instance(p, None)
 
         raise PySFMLException()
 
@@ -1468,7 +1480,16 @@ cdef class Music(SoundStream):
         cdef declaudio.Music *p = new declaudio.Music()
 
         if p.openFromMemory(<char*>data, len(data)):
-            return wrap_music_instance(p)
+            return wrap_music_instance(p, None)
+
+        raise PySFMLException()
+
+    @classmethod
+    def open_from_stream(cls, InputStream stream):
+        cdef declaudio.Music *music = new declaudio.Music()
+
+        if music.openFromStream(stream.p_this[0]):
+            return wrap_music_instance(music, stream)
 
         raise PySFMLException()
 
@@ -1478,9 +1499,11 @@ cdef class Music(SoundStream):
             "from SoundStream")
 
 
-cdef Music wrap_music_instance(declaudio.Music *p_cpp_instance):
+cdef Music wrap_music_instance(declaudio.Music *p_cpp_instance,
+                               InputStream stream):
     cdef Music ret = Music.__new__(Music)
 
+    ret.stream = stream
     ret.p_this = <declaudio.SoundStream*>p_cpp_instance
 
     return ret
@@ -1704,12 +1727,14 @@ cdef Glyph wrap_glyph_instance(decl.Glyph *p_cpp_instance):
 
 cdef class Font:
     cdef decl.Font *p_this
+    cdef InputStream stream
     cdef bint delete_this
 
     DEFAULT_FONT = wrap_font_instance(
-        <decl.Font*>&decl.Font_getDefaultFont(), False)
+        <decl.Font*>&decl.Font_getDefaultFont(), None, False)
 
     def __init__(self):
+        self.stream = None
         self.delete_this = False
         raise NotImplementedError(
             "Use class methods like load_from_file() to load your fonts")
@@ -1730,7 +1755,7 @@ cdef class Font:
             c_filename = <bytes?>filename
 
         if p.loadFromFile(c_filename):
-            return wrap_font_instance(p, True)
+            return wrap_font_instance(p, None, True)
 
         raise PySFMLException()
 
@@ -1739,7 +1764,16 @@ cdef class Font:
         cdef decl.Font *p = new decl.Font()
 
         if p.loadFromMemory(<char*>data, len(data)):
-            return wrap_font_instance(p, True)
+            return wrap_font_instance(p, None, True)
+
+        raise PySFMLException()
+
+    @classmethod
+    def load_from_stream(cls, InputStream stream):
+        cdef decl.Font *p = new decl.Font()
+
+        if p.loadFromStream(stream.p_this[0]):
+            return wrap_font_instance(p, stream, True)
 
         raise PySFMLException()
 
@@ -1755,7 +1789,7 @@ cdef class Font:
         cdef decl.Texture *p = <decl.Texture*>&self.p_this.getTexture(
             character_size)
 
-        return wrap_texture_instance(p, False)
+        return wrap_texture_instance(p, None, False)
 
     def get_kerning(self, unsigned int first, unsigned int second,
                     unsigned int character_size):
@@ -1765,9 +1799,11 @@ cdef class Font:
         return self.p_this.getLineSpacing(character_size)
 
 
-cdef Font wrap_font_instance(decl.Font *p_cpp_instance, bint delete_this):
+cdef Font wrap_font_instance(decl.Font *p_cpp_instance, InputStream stream,
+                             bint delete_this):
     cdef Font ret = Font.__new__(Font)
 
+    ret.stream = stream
     ret.p_this = p_cpp_instance
     ret.delete_this = delete_this
 
@@ -1783,6 +1819,7 @@ cdef class Image:
 
     def __init__(self, int width, int height, Color color=None):
         self.p_this = new decl.Image()
+        self.stream = None
         self.delete_this = True
 
         if color is None:
@@ -1843,6 +1880,15 @@ cdef class Image:
         p_cpp_instance.create(width, height, <unsigned char*>pixels)
 
         return wrap_image_instance(p_cpp_instance, True)
+
+    @classmethod
+    def load_from_stream(cls, InputStream stream):
+        cdef decl.Image *p = new decl.Image()
+
+        if p.loadFromStream(stream.p_this[0]):
+            return wrap_image_instance(p, True)
+
+        raise PySFMLException()
 
     def copy(self, Image source, int dest_x, int dest_y,
              source_rect=None, bint apply_alpha=None):
@@ -1932,6 +1978,7 @@ cdef Image wrap_image_instance(decl.Image *p_cpp_instance, bint delete_this):
 
 cdef class Texture:
     cdef decl.Texture *p_this
+    cdef InputStream stream
     cdef bint delete_this
 
     MAXIMUM_SIZE = decl.Texture_getMaximumSize()
@@ -1940,6 +1987,7 @@ cdef class Texture:
 
     def __init__(self, unsigned int width=0, unsigned int height=0):
         self.p_this = new decl.Texture()
+        self.stream = None
         self.delete_this = True
 
         if width > 0 and height > 0:
@@ -1992,12 +2040,12 @@ cdef class Texture:
 
         if area is None:
             if p_cpp_instance.loadFromFile(c_filename):
-                return wrap_texture_instance(p_cpp_instance, True)
+                return wrap_texture_instance(p_cpp_instance, None, True)
         else:
             cpp_rect = convert_to_int_rect(area)
 
             if p_cpp_instance.loadFromFile(c_filename, cpp_rect):
-                return wrap_texture_instance(p_cpp_instance, True)
+                return wrap_texture_instance(p_cpp_instance, None, True)
 
         raise PySFMLException()
 
@@ -2008,12 +2056,12 @@ cdef class Texture:
 
         if area is None:
             if p_cpp_instance.loadFromImage(image.p_this[0]):
-                return wrap_texture_instance(p_cpp_instance, True)
+                return wrap_texture_instance(p_cpp_instance, None, True)
         else:
             cpp_rect = convert_to_int_rect(area)
 
             if p_cpp_instance.loadFromImage(image.p_this[0], cpp_rect):
-                return wrap_texture_instance(p_cpp_instance, True)
+                return wrap_texture_instance(p_cpp_instance, None, True)
 
         raise PySFMLException()
 
@@ -2024,12 +2072,28 @@ cdef class Texture:
 
         if area is None:
             if p_cpp_instance.loadFromMemory(<char*>data, len(data)):
-                return wrap_texture_instance(p_cpp_instance, True)
+                return wrap_texture_instance(p_cpp_instance, None, True)
         else:
             cpp_rect = convert_to_int_rect(area)
 
             if p_cpp_instance.loadFromMemory(<char*>data, len(data), cpp_rect):
-                return wrap_texture_instance(p_cpp_instance, True)
+                return wrap_texture_instance(p_cpp_instance, None, True)
+
+        raise PySFMLException()
+
+    @classmethod
+    def load_from_stream(cls, InputStream stream, area=None):
+        cdef decl.IntRect cpp_rect
+        cdef decl.Texture *texture = new decl.Texture()
+
+        if area is None:
+            if texture.loadFromStream(stream.p_this[0]):
+                return wrap_texture_instance(texture, stream, True)
+        else:
+            cpp_rect = convert_to_int_rect(area)
+
+            if texture.loadFromStream(stream.p_this[0], cpp_rect):
+                return wrap_texture_instance(texture, stream, True)
 
         raise PySFMLException()
 
@@ -2067,9 +2131,10 @@ cdef class Texture:
 
 
 cdef Texture wrap_texture_instance(decl.Texture *p_cpp_instance,
-                                   bint delete_this):
+                                   InputStream stream, bint delete_this):
     cdef Texture ret = Texture.__new__(Texture)
     ret.p_this = p_cpp_instance
+    ret.stream = stream
     ret.delete_this = delete_this
 
     return ret
@@ -2086,7 +2151,7 @@ cdef class Transformable:
     # Transformables (Sprite, Text, ...).
     def __init__(self, *args, **kwargs):
         self.p_this = new decl.Transformable()
-    
+
     def __dealloc__(self):
         del self.p_this
 
@@ -2210,7 +2275,8 @@ cdef class Text(Transformable):
             if font is None:
                 self.p_this = <decl.Transformable*>new decl.Text(<char*>string)
                 self.font = wrap_font_instance(
-                    <decl.Font*>&(<decl.Text*>self.p_this).getFont(), False)
+                    <decl.Font*>&(<decl.Text*>self.p_this).getFont(), None,
+                    False)
             elif character_size == 0:
                 self.p_this = <decl.Transformable*>new decl.Text(
                     <char*>string, font.p_this[0])
@@ -2229,7 +2295,8 @@ cdef class Text(Transformable):
             if font is None:
                 self.p_this = <decl.Transformable*>new decl.Text(cpp_string)
                 self.font = wrap_font_instance(
-                    <decl.Font*>&(<decl.Text*>self.p_this).getFont(), False)
+                    <decl.Font*>&(<decl.Text*>self.p_this).getFont(), None,
+                    False)
             elif character_size == 0:
                 self.p_this = <decl.Transformable*>new decl.Text(
                     cpp_string, font.p_this[0])
@@ -2381,14 +2448,14 @@ cdef class Sprite(Transformable):
         def __set__(self, Texture value):
             self.texture = value
             (<decl.Sprite*>self.p_this).setTexture(value.p_this[0])
-           
+
     def copy(self):
         cdef decl.Sprite *p = new decl.Sprite((<decl.Sprite*>self.p_this)[0])
         cdef Sprite sprite = wrap_sprite_instance(p, self.texture)
 
         return sprite
 
-    def get_texture_rect(self): 
+    def get_texture_rect(self):
         cdef decl.IntRect r = (<decl.Sprite*>self.p_this).getTextureRect()
 
         return IntRect(r.left, r.top, r.width, r.height)
@@ -2852,7 +2919,7 @@ cdef class View:
         p = new decl.View(cpp_center, cpp_size)
 
         return wrap_view_instance(p, None)
-        
+
     @classmethod
     def from_rect(cls, object rect):
         cdef decl.FloatRect cpp_rect = convert_to_float_rect(rect)
@@ -2935,6 +3002,16 @@ cdef class Shader:
         raise PySFMLException()
 
     @classmethod
+    def load_both_types_from_stream(cls, InputStream vertex_stream,
+                                    InputStream fragment_stream):
+        cdef decl.Shader *p = new decl.Shader()
+
+        if p.loadFromStream(vertex_stream.p_this[0], fragment_stream.p_this[0]):
+            return wrap_shader_instance(p, True)
+
+        raise PySFMLException()
+
+    @classmethod
     def load_from_file(cls, char *filename, int type):
         cdef decl.Shader *p = new decl.Shader()
 
@@ -2948,6 +3025,15 @@ cdef class Shader:
         cdef decl.Shader *p = new decl.Shader()
 
         if p.loadFromMemory(<char*>shader, <declshader.Type>type):
+            return wrap_shader_instance(p, True)
+
+        raise PySFMLException()
+
+    @classmethod
+    def load_from_stream(cls, InputStream stream, int type):
+        cdef decl.Shader *p = new decl.Shader()
+
+        if p.loadFromStream(stream.p_this[0], <declshader.Type>type):
             return wrap_shader_instance(p, True)
 
         raise PySFMLException()
@@ -3128,7 +3214,8 @@ cdef public object wrap_render_states_instance(decl.RenderStates *p):
     if p.texture == NULL:
         ret.texture = None
     else:
-        ret.texture = wrap_texture_instance(<decl.Texture*>p.texture, False)
+        ret.texture = wrap_texture_instance(<decl.Texture*>p.texture, None,
+                                            False)
 
     ret.transform = wrap_transform_instance(new decl.Transform(p.transform))
 
@@ -3301,8 +3388,8 @@ cdef public object wrap_render_target_instance(decl.RenderTarget
     return ret
 
 
-    
-    
+
+
 cdef class RenderWindow(RenderTarget):
     def __init__(self, VideoMode mode=None, title=None, int style=Style.DEFAULT,
                   ContextSettings settings=None):
@@ -3509,17 +3596,17 @@ cdef class RenderTexture(RenderTarget):
 
     def __cinit__(self):
         self.p_this = <decl.RenderTarget*>new decl.RenderTexture()
-    
+
     def __init__(self, unsigned int width, unsigned int height,
                  bint depth=False):
         (<decl.RenderTexture*>self.p_this).create(width, height, depth)
         self.texture = Texture.__new__(Texture)
         self.texture.p_this = NULL
         self.texture.delete_this = False
-    
+
     def __dealloc__(self):
         del self.p_this
-    
+
     property active:
         def __set__(self, bint active):
             if not (<decl.RenderTexture*>self.p_this).setActive(active):
@@ -3535,9 +3622,30 @@ cdef class RenderTexture(RenderTarget):
     property smooth:
         def __get__(self):
             return (<decl.RenderTexture*>self.p_this).isSmooth()
-        
+
         def __set__(self, bint smooth):
             (<decl.RenderTexture*>self.p_this).setSmooth(smooth)
 
     def display(self):
         (<decl.RenderTexture*>self.p_this).display()
+
+
+
+
+cdef class InputStream:
+    cdef decl.CppInputStream *p_this
+
+    def __init__(self):
+        self.p_this = new decl.CppInputStream(<void*>self)
+
+    def get_size(self):
+        raise NotImplementedError("get_size() is abstract")
+
+    def read(self, int size):
+        raise NotImplementedError("read() is abstract")
+
+    def seek(self, int position):
+        raise NotImplementedError("seek() is abstract")
+
+    def tell(self):
+        raise NotImplementedError("tell() is abstract")
