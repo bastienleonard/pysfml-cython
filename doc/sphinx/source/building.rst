@@ -51,7 +51,7 @@ folder has been added to the ``PATH`` environment variable.
 Christoph Gohlke also provides installers which are currently more
 up-to-date, with support for Python 2.6 as well as native 64 bits
 installers on his website:
-http://www.lfd.uci.edu/~gohlke/pythonlibs/#pysfml2
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#pysfml
 
 You should be able to use pySFML 2 without installing anything
 else. Feedback is welcome.
