@@ -72,6 +72,7 @@ Contents:
 
    introduction
    caveats
+   faq
    changelog
    building
    tutorials/tutorials
