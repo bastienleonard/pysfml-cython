@@ -373,6 +373,12 @@ Audio
 
       :exc:`PySFMLException` is raised if an error occurs.
 
+   .. method:: load_from_stream(InputStream stream)
+
+      Load the sound buffer from a custom stream.
+
+      :exc:`PySFMLException` is an error occurs.
+
    .. method:: save_to_file(filename)
 
       Save the sound buffer to an audio file.
