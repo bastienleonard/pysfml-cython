@@ -34,6 +34,29 @@ Changelog
 .. currentmodule:: sfml
 
 
+0.2 (07/20/2012):
+
+- ``Keyboard.BACK`` has been renamed to :attr:`Keyboard.BACK_SPACE`, to fit with
+  the C++ SFML change.
+- Added support for file streaming: see :class:`SoundStream`,
+  :meth:`SoundBuffer.load_from_stream()`, :meth:`Music.open_from_stream()`,
+  :meth:`Font.load_from_stream()`, :meth:`Image.load_from_stream()`,
+  :meth:`Texture.load_from_stream()`,
+  :meth:`Shader.load_both_types_from_stream()` and
+  :meth:`Shader.load_from_stream()`.
+- :attr:`RectangleShape.size` doesn't raise exceptions for no reason anymore.
+- Removed ``RenderTexture.create()``, the constructor should be used instead.
+- :attr:`RenderTexture.active` now raises an exception when setting it causes an
+  error.
+- Added :meth:`copy()` and ``__repr__()`` methods in :class:`Vertex`.
+- Removed ``View.get_transform()`` and ``View.get_inverse_transform()``; SFML's
+  documentation says they are meant for internal use only.
+- :meth:`View.from_rect()` and :meth:`View.reset()` now accept tuples.
+- Setting :attr:`Shape.texture` to ``None`` now does the right thing at the C++
+  level (it sets the underlying texture pointer to ``NULL``).
+- The API reference should now be complete, and it has been reorganized to avoid
+  huge pages. A FAQ page has been started.
+
 0.1.3 (06/19/2012):
 
 - Replaced ``Sprite.text_rect`` with two
