@@ -347,7 +347,6 @@ cdef class Keyboard:
 
 
 cdef class Style:
-
     def __init__(self):
         raise NotImplementedError("This class is abstract")
 
@@ -3556,9 +3555,7 @@ cdef class RenderWindow(RenderTarget):
 
     def display(self):
         cdef decl.RenderWindow *w = <decl.RenderWindow*>self.p_this
-
-        with nogil:
-            w.display()
+        w.display()
 
     def iter_events(self):
         return self
