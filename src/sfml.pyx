@@ -373,6 +373,9 @@ cdef class IntRect:
                 'width={0.width!r}, height={0.height!r})'.format(self))
 
     def __richcmp__(IntRect x, IntRect y, int op):
+        if x is None or y is None:
+            return NotImplemented
+
         # ==
         if op == 2:
             return (x.left == y.left and
@@ -462,6 +465,9 @@ cdef class FloatRect:
                 'width={0.width!r}, height={0.height!r})'.format(self))
 
     def __richcmp__(FloatRect x, FloatRect y, int op):
+        if x is None or y is None:
+            return NotImplemented
+
         # ==
         if op == 2:
             return (x.left == y.left and
@@ -549,6 +555,9 @@ cdef class Vector2f:
         return 'Vector2f({0}, {1})'.format(self.x, self.y)
 
     def __richcmp__(Vector2f a, Vector2f b, int op):
+        if a is None or b is None:
+            return NotImplemented
+
         # ==
         if op == 2:
             return a.x == b.x and a.y == b.y
@@ -983,6 +992,9 @@ cdef class Color:
         return 'Color({0.r}, {0.g}, {0.b}, {0.a})'.format(self)
 
     def __richcmp__(Color x, Color y, int op):
+        if x is None or y is None:
+            return NotImplemented
+
         # ==
         if op == 2:
             return (x.r == y.r and
@@ -2743,6 +2755,9 @@ cdef class VideoMode:
                 .format(self))
 
     def __richcmp__(VideoMode x, VideoMode y, int op):
+        if x is None or y is None:
+            return NotImplemented
+
         # ==
         if op == 2:
             return (x.width == y.width and
