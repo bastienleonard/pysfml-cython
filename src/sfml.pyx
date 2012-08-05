@@ -837,6 +837,9 @@ cdef class Time:
         return 'Time(microseconds={0})'.format(self.as_microseconds())
 
     def __richcmp__(Time x, Time y, int op):
+        if x is None or y is None:
+            return NotImplemented
+
         # ==
         if op == 2:
             return x.p_this[0] == y.p_this[0]
