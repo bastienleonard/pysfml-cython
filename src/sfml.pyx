@@ -1744,9 +1744,6 @@ cdef class Font:
     cdef InputStream stream
     cdef bint delete_this
 
-    DEFAULT_FONT = wrap_font_instance(
-        <decl.Font*>&decl.Font_getDefaultFont(), None, False)
-
     def __init__(self):
         self.stream = None
         self.delete_this = False
@@ -2282,15 +2279,14 @@ cdef class Text(Transformable):
         cdef char* c_string = NULL
 
         self.is_unicode = False
+        self.font = None
 
         if string is None:
             self.p_this = <decl.Transformable*>new decl.Text()
         elif isinstance(string, bytes):
             if font is None:
-                self.p_this = <decl.Transformable*>new decl.Text(<char*>string)
-                self.font = wrap_font_instance(
-                    <decl.Font*>&(<decl.Text*>self.p_this).getFont(), None,
-                    False)
+                self.p_this = <decl.Transformable*>new decl.Text()
+                self.string = string
             elif character_size == 0:
                 self.p_this = <decl.Transformable*>new decl.Text(
                     <char*>string, font.p_this[0])
@@ -2307,10 +2303,8 @@ cdef class Text(Transformable):
             cpp_string = decl.String(<decl.Uint32*>c_string)
 
             if font is None:
-                self.p_this = <decl.Transformable*>new decl.Text(cpp_string)
-                self.font = wrap_font_instance(
-                    <decl.Font*>&(<decl.Text*>self.p_this).getFont(), None,
-                    False)
+                self.p_this = <decl.Transformable*>new decl.Text()
+                self.string = string
             elif character_size == 0:
                 self.p_this = <decl.Transformable*>new decl.Text(
                     cpp_string, font.p_this[0])
@@ -2346,7 +2340,8 @@ cdef class Text(Transformable):
             return self.font
 
         def __set__(self, Font value):
-            (<decl.Text*>self.p_this).setFont(value.p_this[0])
+            if value is not None:
+                (<decl.Text*>self.p_this).setFont(value.p_this[0])
             self.font = value
 
     property global_bounds:

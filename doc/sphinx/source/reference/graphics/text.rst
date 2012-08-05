@@ -84,17 +84,6 @@ Text
    this class. However, it may be useful to access the font metrics or
    rasterized glyphs for advanced usage.
 
-   .. attribute:: DEFAULT_FONT
-
-      The default font (Arial), as a class attribute::
-
-         print sfml.Font.DEFAULT_FONT
-
-      This font is provided for convenience, it is used by text
-      instances by default. It is provided so that users don't have to
-      provide and load a font file in order to display text on
-      screen.
-
    .. classmethod:: load_from_file(filename)
 
       Load the font from *filename*, and return a new font object.
@@ -175,7 +164,7 @@ Text
       an :class:`IntRect`.
 
 
-.. class:: Text([string, font, character_size=0])
+.. class:: Text(string, font, [character_size=0])
 
    This class inherits :class:`Transformable`.
 
@@ -208,7 +197,7 @@ Text
    Usage example::
 
       # Declare and load a font
-      font = sfml.Font.loadFromFile('arial.ttf')
+      font = sfml.Font.loadFromFile('font.ttf')
  
       # Create a text
       text = sfml.Text('hello')
@@ -220,9 +209,6 @@ Text
       # Draw it
       window.draw(text)
 
-   Note that you don't need to load a font to draw text, SFML comes
-   with a built-in font that is implicitely used by default.
-
    .. attribute:: character_size
 
       The size of the characters, pixels. The default size is 30.
@@ -233,7 +219,7 @@ Text
 
    .. attribute:: font
 
-      The text's font. The default font is :attr:`Font.DEFAULT_FONT`.
+      The text's font.
 
    .. attribute:: global_bounds
 

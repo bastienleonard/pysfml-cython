@@ -5,8 +5,9 @@ import sfml as sf
 
 
 class EventQueue(object):
-    def __init__(self, max_events):
+    def __init__(self, max_events, font):
         self.max_events = max_events
+        self.font = font
         self.events = []
 
     def add(self, event):
@@ -18,8 +19,7 @@ class EventQueue(object):
     # We could make it a custom drawable, but I personally don't like it
     def draw(self, window):
         y = 0
-        text = sf.Text('Last events, with event attributes:')
-        text.character_size = 12
+        text = sf.Text('Last events, with event attributes:', self.font, 14)
         text.color = sf.Color.BLACK
         window.draw(text)
 
@@ -35,10 +35,11 @@ def main():
     window = sf.RenderWindow(sf.VideoMode(800, 600), 'SFML Events example')
     window.framerate_limit = 60
     running = True
-    events = EventQueue(50)
+    font = sf.Font.load_from_file('LinBiolinum_Re.ttf')
+    events = EventQueue(50, font)
 
     while running:
-        for event in window.iter_events(): 
+        for event in window.iter_events():
             # Stop running if the application is closed
             # or if the user presses Escape
             if (event.type == sf.Event.CLOSED or

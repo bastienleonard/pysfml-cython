@@ -7,7 +7,8 @@ import sfml as sf
 def main():
     window = sf.RenderWindow(sf.VideoMode(640, 480), 'Title')
     window.framerate_limit = 60
-    text = sf.Text(u'éèà', sf.Font.DEFAULT_FONT, 100)
+    font = sf.Font.load_from_file('LinBiolinum_Bd.ttf')
+    text = sf.Text(u'éèàtest', font, 100)
     text.color = sf.Color.BLACK
     text.style = sf.Text.UNDERLINED | sf.Text.BOLD | sf.Text.ITALIC
     text.x = window.width / 2.0 - text.global_bounds.width / 2.0
