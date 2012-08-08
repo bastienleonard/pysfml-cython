@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2010, 2011 Bastien Léonard. All rights reserved.
+# Copyright 2010, 2011, 2012 Bastien Léonard. All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -78,7 +78,6 @@ kwargs = dict(name='pySFML',
               author_email='bastien.leonard@gmail.com',
               url='https://github.com/bastienleonard/pysfml2-cython',
               license='BSD',
-              scripts=glob.glob(os.path.join('examples', '*.py')),
               data_files=[
                   ('', glob.glob('*.dll')),
                   (os.path.join('lib', 'site-packages', 'pysfml2-cython'),
