@@ -34,6 +34,14 @@ Changelog
 .. currentmodule:: sfml
 
 
+0.2.1 (12/08/2012):
+
+- :meth:`RenderWindow.display()` doesn't release the GIL anymore, as it would
+  cause segmentation faults when integrating with PyQt.
+- Fixed crashes when comparing :class:`Time` objects with ``None``.
+- Removed the default font, since it was removed in C++ SFML. If you still
+  encounter crashes at the end of the program on Windows, this should fix it.
+
 0.2 (07/20/2012):
 
 - ``Keyboard.BACK`` has been renamed to :attr:`Keyboard.BACK_SPACE`, to fit with
