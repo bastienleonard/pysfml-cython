@@ -154,16 +154,33 @@ module by typing this command::
     python setup.py build_ext
 
 
+.. _building_with_cython:
+
 Building with Cython installed
 ------------------------------
 
 .. warning::
 
-   Currently, modules built straight from the repo probably won't work
-   (this may depend on your Cython version). Consider using a source
-   release, or follow the indications from this forum post if you
-   still want to build from Git:
-   http://en.sfml-dev.org/forums/index.php?topic=5311.msg52943#msg52943
+   Currently, the binding doesn't work correctly when built straight
+   from the Git repo. I explained the problem here:
+   https://groups.google.com/forum/?fromgroups#!topic/cython-users/W8hMcjsFfDU
+   If you want to build from the source, you're encouraged to use the
+   latest source release. See :ref:`building_without_cython`.  If you
+   really want to build from Git, you need to modify the generated
+   sfml.cpp file.  You need all these declarations::
+
+    __PYX_EXTERN_C DL_EXPORT(PyObject) *wrap_time_instance(sf::Time *);
+    __PYX_EXTERN_C DL_EXPORT(PyObject) *wrap_render_target_instance(sf::RenderTarget *);
+    __PYX_EXTERN_C void set_error_message(char*);
+    __PYX_EXTERN_C DL_EXPORT(PyObject) *wrap_chunk_instance(sf::SoundStream::Chunk*, int);
+
+
+   I don't know if it's the same exact problem everywhere, but on my
+   system I get the first declaration and not the others. So you can
+   look for the ``wrap_time_instance()`` declaration, and copy-paste
+   the others after it.
+
+   This bug should be fixed in the next Cython release.
 
 .. warning::
 

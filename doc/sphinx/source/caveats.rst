@@ -37,14 +37,13 @@ Caveats
 =======
 
 Currently, the binding doesn't work correctly when built straight from
-the Git repo, see this forum post:
-http://en.sfml-dev.org/forums/index.php?topic=5311.msg52943#msg52943
-If you want to build from the source, you're encouraged to use the
-latest source release. See :ref:`building_without_cython`.
+the Git repo. See :ref:`building_with_cython` for more information.
 
-Windows programs crash just before exiting. My guess is that it's
-related to the destruction of static objects; I'll try to fix it for
-the next minor release.
+Windows programs sometimes crash just before exiting. Starting from
+pySFML 0.2.1, the default font has been removed, which should solve a
+lot of deallocation problems. Christoph Gohlke's installers also seem
+to generally be more reliable, so as far as I know, newer installers
+shouldn't have this bug.
 
 A current limitation is that :class:`Texture` objects won't work as
 expected unless they are created after your :class:`RenderWindow`. It
