@@ -42,7 +42,7 @@ If you're on Windows, you can download the current binary release and
 ignore most of this section.
 
 Official releases are at
-https://github.com/bastienleonard/pysfml2-cython/downloads. The
+https://github.com/bastienleonard/pysfml-cython/downloads. The
 installer contains the module itself, and the required DLLs (SFML and
 dependencies). The DLLs are dropped in Python's folder,
 e.g. ``C:\Python27``. If you haven't already, make sure that this
@@ -143,7 +143,7 @@ Building without Cython
 -----------------------
 
 If you download a source release at the `download page
-<https://github.com/bastienleonard/pysfml2-cython/downloads>`_, you
+<https://github.com/bastienleonard/pysfml-cython/downloads>`_, you
 don't need to install Cython, since the release already contains the
 files that Cython would generate.
 

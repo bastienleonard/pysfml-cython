@@ -28,11 +28,11 @@
    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-==========
- Graphics
-==========
-
 .. module:: sfml
+
+
+Graphics
+========
 
 
 .. toctree::

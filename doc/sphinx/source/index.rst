@@ -45,7 +45,7 @@ but this is still a work in progress. Feel free to report any issue
 you encounter.
 
 You can find the source code, downloads and the issue tracker here:
-https://github.com/bastienleonard/pysfml2-cython.
+https://github.com/bastienleonard/pysfml-cython.
 
 There is also a thread on the official forums:
 http://en.sfml-dev.org/forums/index.php?topic=5311.0. I use it to make

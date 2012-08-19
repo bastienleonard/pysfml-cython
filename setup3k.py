@@ -35,7 +35,7 @@
 # Set to False if you don't have Cython installed. The script will
 # then build the extension module from the sf.cpp file, like a regular
 # extension.
-USE_CYTHON = True
+USE_CYTHON = False
 
 
 import glob
@@ -76,11 +76,11 @@ kwargs = dict(name='pySFML',
               long_description=long_description,
               author='Bastien Léonard',
               author_email='bastien.leonard@gmail.com',
-              url='https://github.com/bastienleonard/pysfml2-cython',
+              url='https://github.com/bastienleonard/pysfml-cython',
               license='BSD',
               data_files=[
                   ('', glob.glob('*.dll')),
-                  (os.path.join('lib', 'site-packages', 'pysfml2-cython'),
+                  (os.path.join('lib', 'site-packages', 'pysfml-cython'),
                    ['LICENSE.txt', 'SFML-LICENSE.txt'])],
               classifiers=[
                   'Development Status :: 4 - Beta',

@@ -42,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pySFML 2 - Cython'
+project = u'pySFML - Cython'
 copyright = u'2011, 2012 Bastien Léonard'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -169,7 +169,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'pySFML2-Cythondoc'
+htmlhelp_basename = 'pySFML-Cythondoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -183,7 +183,7 @@ htmlhelp_basename = 'pySFML2-Cythondoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'pySFML2-Cython.tex', u'pySFML 2 - Cython Documentation',
+  ('index', 'pySFML-Cython.tex', u'pySFML - Cython Documentation',
    u'Bastien Léonard', 'manual'),
 ]
 
@@ -216,6 +216,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pysfml2-cython', u'pySFML 2 - Cython Documentation',
+    ('index', 'pysfml-cython', u'pySFML - Cython Documentation',
      [u'Bastien Léonard'], 1)
 ]

@@ -79,7 +79,7 @@ the full listing::
        main()
 
 You can get the ``python-logo.png`` file `here
-<https://github.com/bastienleonard/pysfml2-cython/raw/master/examples/python-logo.png>`_,
+<https://github.com/bastienleonard/pysfml-cython/raw/master/examples/python-logo.png>`_,
 or use any other image file supported: bmp, dds, jpg, png, tga, or
 psd.
 

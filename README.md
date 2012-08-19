@@ -7,7 +7,7 @@ a simple Python API.
 
 Go to the project page if you're looking for the source code,
 downloads or the bug tracker:
-https://github.com/bastienleonard/pysfml2-cython
+https://github.com/bastienleonard/pysfml-cython
 
 Please read doc/sphinx/source/introduction.rst for more information.
 You can also read the generated HTML documentation at
