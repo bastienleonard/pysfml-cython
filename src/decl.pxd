@@ -567,6 +567,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void create(VideoMode, char*)
         void create(VideoMode, char*, unsigned long)
         void create(VideoMode, char*, unsigned long, ContextSettings&)
+        void create(WindowHandle)
+        void create(WindowHandle, ContextSettings&)
         void display() nogil
         void enableVerticalSync(bint)
         Vector2i getPosition()
