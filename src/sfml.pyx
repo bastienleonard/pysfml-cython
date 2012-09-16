@@ -293,7 +293,7 @@ cdef class Keyboard:
     DASH = declkey.Dash
     SPACE = declkey.Space
     RETURN = declkey.Return
-    BACK_SPACE = declkey.Back
+    BACK_SPACE = declkey.BackSpace
     TAB = declkey.Tab
     PAGE_UP = declkey.PageUp
     PAGE_DOWN = declkey.PageDown
