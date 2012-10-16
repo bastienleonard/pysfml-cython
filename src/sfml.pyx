@@ -3171,7 +3171,7 @@ cdef class RenderStates:
         self.texture = texture
 
         if blend_mode != -1:
-            self.p_this.blendMode = <decl.BlendMode>blend_mode
+            self.blend_mode = blend_mode
 
         if transform is None:
             self.transform = Transform()
@@ -3180,6 +3180,9 @@ cdef class RenderStates:
 
     def __dealloc__(self):
         del self.p_this
+
+    def __repr__(self):
+        return 'RenderStates({0.blend_mode}, {0.shader}, {0.texture}, {0.transform})'.format(self)
 
     property blend_mode:
         def __get__(self):
@@ -3219,12 +3222,12 @@ cdef public object wrap_render_states_instance(decl.RenderStates *p):
     ret.p_this = p
 
     if p.shader == NULL:
-        ret.shader = None
+        ret.m_shader = None
     else:
         ret.shader = wrap_shader_instance(<decl.Shader*>p.shader, False)
 
     if p.texture == NULL:
-        ret.texture = None
+        ret.m_texture = None
     else:
         ret.texture = wrap_texture_instance(<decl.Texture*>p.texture, None,
                                             False)
