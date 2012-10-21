@@ -3078,9 +3078,6 @@ cdef class Shader:
         else:
             self.p_this.setParameter(name, x, y, z, w)
 
-    def unbind(self):
-        self.p_this.unbind()
-
 
 cdef Shader wrap_shader_instance(decl.Shader *p_cpp_instance, bint delete_this):
     cdef Shader ret = Shader.__new__(Shader)

@@ -487,7 +487,6 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void setParameter(char*, Transform&)
         void setParameter(char*, Texture&)
         void setParameter(char*, declshader.CurrentTexture)
-        void unbind()
 
     cdef cppclass ContextSettings:
         ContextSettings()
