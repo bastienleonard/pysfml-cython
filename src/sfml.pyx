@@ -3197,7 +3197,11 @@ cdef class RenderStates:
 
         def __set__(self, Shader value):
             self.m_shader = value
-            self.p_this.shader = value.p_this
+
+            if value is None:
+                self.p_this.shader = NULL
+            else:
+                self.p_this.shader = value.p_this
 
     property texture:
         def __get__(self):
@@ -3205,7 +3209,11 @@ cdef class RenderStates:
 
         def __set__(self, Texture value):
             self.m_texture = value
-            self.p_this.texture = value.p_this
+
+            if value is None:
+                self.p_this.texture = NULL
+            else:
+                self.p_this.texture = value.p_this
 
     property transform:
         def __get__(self):
