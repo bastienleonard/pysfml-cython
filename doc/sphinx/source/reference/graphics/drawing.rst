@@ -198,17 +198,38 @@ Drawing
       usually called once every frame, to clear the previous contents
       of the target. The default is black.
 
-   .. method:: convert_coords(int x, int y[, view=None])
+   .. method:: map_coords_to_pixel(int x, int y[, view=None])
 
-      Convert a point from target coordinates to view
-      coordinates. Initially, a unit of the 2D world matches a pixel
-      of the render target. But if you define a custom view, this
-      assertion is not true anymore, e.g. a point located at (10, 50)
-      in your render target (for example a window) may map to the
-      point (150, 75) in your 2D world --- for example if the view is
-      translated by (140, 25). For render windows, this method is
-      typically used to find which point (or object) is located below
-      the mouse cursor.
+      Convert a point from view coordinates to target coordinates, as
+      a tuple of ints. This method finds the pixel of the render
+      target that matches the given 2D point. In other words, it goes
+      through the same process as the graphics card, to compute the
+      final position of a rendered point.
+    
+      Initially, both coordinate systems (world units and target
+      pixels) match perfectly. But if you define a custom view or
+      resize your render-target, this assertion is not true anymore,
+      ie. a point located at (150, 75) in your 2D world may map to the
+      pixel (10, 50) of your render-target -- if the view is
+      translated by (140, 25).
+
+      When the *view* argument isn't provided, the current view of the
+      render target is used.
+
+   .. method:: map_pixel_to_coords(int x, int y[, view=None])
+
+      Convert a point from target coordinates to view coordinates, as
+      a tuple of floats. This is typically used when the user clicked
+      on a pixel and you want to know the corresponding world
+      coordinates.
+
+      Initially, a unit of the 2D world matches a pixel of the render
+      target. But if you define a custom view, this isn't true
+      anymore, e.g. a point located at (10, 50) in your render target
+      (for example a window) may map to the point (150, 75) in your 2D
+      world --- for example if the view is translated by (140,
+      25). For render windows, this method is typically used to find
+      which point (or object) is located below the mouse cursor.
 
       When the *view* argument isn't provided, the current view of the
       render target is used.

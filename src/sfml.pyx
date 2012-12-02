@@ -3292,13 +3292,26 @@ cdef class RenderTarget:
         else:
             self.p_this.clear(color.p_this[0])
 
-    def convert_coords(self, unsigned int x, unsigned int y, View view=None):
+    def map_coords_to_pixel(self, int x, int y, View view=None):
+        cdef decl.Vector2i res
+
+        if view is None:
+            res = self.p_this.mapCoordsToPixel(decl.Vector2f(x, y))
+        else:
+            res = self.p_this.mapCoordsToPixel(decl.Vector2f(x, y),
+                                               view.p_this[0])
+
+        return (res.x, res.y)
+
+    def map_pixel_to_coords(self, unsigned int x, unsigned int y,
+                            View view=None):
         cdef decl.Vector2f res
 
         if view is None:
-            res = self.p_this.convertCoords(decl.Vector2i(x, y))
+            res = self.p_this.mapPixelToCoords(decl.Vector2i(x, y))
         else:
-            res = self.p_this.convertCoords(decl.Vector2i(x, y), view.p_this[0])
+            res = self.p_this.mapPixelToCoords(decl.Vector2i(x, y),
+                                               view.p_this[0])
 
         return (res.x, res.y)
 
