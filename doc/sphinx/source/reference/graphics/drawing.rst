@@ -479,7 +479,6 @@ Drawing
       window.active = True
       shader.bind()
       # render OpenGL geometry ...
-      shader.unbind()
 
    .. attribute:: IS_AVAILABLE
 
@@ -578,7 +577,6 @@ Drawing
          window.active = True
          shader.bind()
          # ... render OpenGL geometry ...
-         shader.unbind()
 
    .. method:: set_parameter(str name, ...)
 
@@ -601,12 +599,6 @@ Drawing
       :attr:`CURRENT_TEXTURE`::
 
          shader.set_parameter('the_texture', sfml.Shader.CURRENT_TEXTURE)
-
-   .. method:: unbind()
-
-      Unbind the shader (deactivate it). This method is normally for
-      internal use only, unless you want to use the shader with a
-      custom OpenGL rendering instead of a SFML drawable.
 
 
 .. class:: Transform([float a00, float a01, float a02,\
