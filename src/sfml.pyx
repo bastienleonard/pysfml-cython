@@ -1867,10 +1867,17 @@ cdef class Image:
             return self.size[0]
 
     @classmethod
-    def load_from_file(cls, char *filename):
+    def load_from_file(cls, filename):
         cdef decl.Image *p_cpp_instance = new decl.Image()
+        cdef char *c_filename
 
-        if p_cpp_instance.loadFromFile(filename):
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
+
+        if p_cpp_instance.loadFromFile(c_filename):
             return wrap_image_instance(p_cpp_instance, True)
 
         raise PySFMLException()
