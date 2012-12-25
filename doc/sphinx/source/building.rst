@@ -39,25 +39,14 @@ Binary releases
 ---------------
 
 If you're on Windows, you can download the current binary release and
-ignore most of this section.
-
-Official releases are at
-https://github.com/bastienleonard/pysfml-cython/downloads. The
-installer contains the module itself, and the required DLLs (SFML and
-dependencies). The DLLs are dropped in Python's folder,
-e.g. ``C:\Python27``. If you haven't already, make sure that this
-folder has been added to the ``PATH`` environment variable.
-
-Christoph Gohlke also provides installers which are currently more
-up-to-date, with support for Python 2.6 as well as native 64 bits
-installers on his website:
+ignore most of this page. Some older installers are available on
+Github, but you should really get the more recent installers that
+Christoph Gohlke provides on his website:
 http://www.lfd.uci.edu/~gohlke/pythonlibs/#pysfml
 
-You should be able to use pySFML 2 without installing anything
-else. Feedback is welcome.
-
 On other platforms, there may still be easier ways to build the
-module. Someone has written AUR scripts for Arch Linux users:
+module. For example, someone has written AUR scripts for Arch Linux
+users:
 
 * https://aur.archlinux.org/packages.php?ID=50841
 
@@ -68,9 +57,11 @@ Getting SFML 2
 --------------
 
 The first thing you should do is get `SFML 2
-<https://github.com/LaurentGomila/SFML>`_ and make sure it
-works. Please refer to the official tutorial:
-http://sfml-dev.org/tutorials/2.0/compile-with-cmake.php
+<https://github.com/LaurentGomila/SFML>`_ and make sure it works. If
+you want the latest version, please refer to the official tutorial:
+http://sfml-dev.org/tutorials/2.0/compile-with-cmake.php There is also
+a slightly older RC binary release that is mainly used by Windows
+users: http://www.sfml-dev.org/download.php#2.0-rc
 
 Some platforms may make it easier to install it, for example Arch
 Linux users can get it from the AUR.
@@ -142,6 +133,14 @@ In the end, the command will look something like this::
 Building without Cython
 -----------------------
 
+.. warning::
+
+   Github has removed the downloads feature, so I don't plan to
+   package source releases anymore. Windows users can use the
+   installers, and it should be easier for other users to build the
+   module now that recent versions of Cython correctly build the
+   module out of the box.
+
 If you download a source release at the `download page
 <https://github.com/bastienleonard/pysfml-cython/downloads>`_, you
 don't need to install Cython, since the release already contains the
@@ -161,13 +160,12 @@ Building with Cython installed
 
 .. warning::
 
-   Currently, the binding doesn't work correctly when built straight
-   from the Git repo. I explained the problem here:
-   https://groups.google.com/forum/?fromgroups#!topic/cython-users/W8hMcjsFfDU
-   If you want to build from the source, you're encouraged to use the
-   latest source release. See :ref:`building_without_cython`.  If you
-   really want to build from Git, you need to modify the generated
-   sfml.cpp file.  You need all these declarations::
+   With older versions of Cython, the binding won't work correctly
+   when built straight from the Git repo. If you want to build from
+   the source, you're encouraged to use the latest source release. See
+   :ref:`building_without_cython`.  If you really want to build from
+   Git, you need to modify the generated sfml.cpp file.  You need all
+   these declarations::
 
     __PYX_EXTERN_C DL_EXPORT(PyObject) *wrap_time_instance(sf::Time *);
     __PYX_EXTERN_C DL_EXPORT(PyObject) *wrap_render_target_instance(sf::RenderTarget *);

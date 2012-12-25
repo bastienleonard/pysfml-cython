@@ -36,8 +36,9 @@
 Caveats
 =======
 
-Currently, the binding doesn't work correctly when built straight from
-the Git repo. See :ref:`building_with_cython` for more information.
+With older versions of Cython, the binding won't work correctly when
+built straight from the Git repo. See :ref:`building_with_cython` for
+more information.
 
 Windows programs sometimes crash just before exiting. Starting from
 pySFML 0.2.1, the default font has been removed, which should solve a
