@@ -101,7 +101,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf::Keyboard":
     int Dash
     int Space
     int Return
-    int Back
+    int BackSpace
     int Tab
     int PageUp
     int PageDown

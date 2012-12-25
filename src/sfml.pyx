@@ -293,7 +293,7 @@ cdef class Keyboard:
     DASH = declkey.Dash
     SPACE = declkey.Space
     RETURN = declkey.Return
-    BACK_SPACE = declkey.Back
+    BACK_SPACE = declkey.BackSpace
     TAB = declkey.Tab
     PAGE_UP = declkey.PageUp
     PAGE_DOWN = declkey.PageDown
@@ -1868,10 +1868,17 @@ cdef class Image:
             return self.size[0]
 
     @classmethod
-    def load_from_file(cls, char *filename):
+    def load_from_file(cls, filename):
         cdef decl.Image *p_cpp_instance = new decl.Image()
+        cdef char *c_filename
 
-        if p_cpp_instance.loadFromFile(filename):
+        if isinstance(filename, str):
+            py_filename = filename.encode(default_encoding)
+            c_filename = py_filename
+        else:
+            c_filename = <bytes?>filename
+
+        if p_cpp_instance.loadFromFile(c_filename):
             return wrap_image_instance(p_cpp_instance, True)
 
         raise PySFMLException()
@@ -3079,9 +3086,6 @@ cdef class Shader:
         else:
             self.p_this.setParameter(name, x, y, z, w)
 
-    def unbind(self):
-        self.p_this.unbind()
-
 
 cdef Shader wrap_shader_instance(decl.Shader *p_cpp_instance, bint delete_this):
     cdef Shader ret = Shader.__new__(Shader)
@@ -3296,13 +3300,26 @@ cdef class RenderTarget:
         else:
             self.p_this.clear(color.p_this[0])
 
-    def convert_coords(self, unsigned int x, unsigned int y, View view=None):
+    def map_coords_to_pixel(self, int x, int y, View view=None):
+        cdef decl.Vector2i res
+
+        if view is None:
+            res = self.p_this.mapCoordsToPixel(decl.Vector2f(x, y))
+        else:
+            res = self.p_this.mapCoordsToPixel(decl.Vector2f(x, y),
+                                               view.p_this[0])
+
+        return (res.x, res.y)
+
+    def map_pixel_to_coords(self, unsigned int x, unsigned int y,
+                            View view=None):
         cdef decl.Vector2f res
 
         if view is None:
-            res = self.p_this.convertCoords(decl.Vector2i(x, y))
+            res = self.p_this.mapPixelToCoords(decl.Vector2i(x, y))
         else:
-            res = self.p_this.convertCoords(decl.Vector2i(x, y), view.p_this[0])
+            res = self.p_this.mapPixelToCoords(decl.Vector2i(x, y),
+                                               view.p_this[0])
 
         return (res.x, res.y)
 

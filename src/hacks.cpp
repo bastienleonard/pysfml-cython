@@ -40,6 +40,7 @@
 
 // For some users, compilation seems to fail because the compiler
 // doesn't know about sf::Transformable. This might fix it.
+// TODO: this is most likely useless, remove it at some point
 #include <SFML/Graphics/Transformable.hpp>
 
 

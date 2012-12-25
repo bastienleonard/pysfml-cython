@@ -487,7 +487,6 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void setParameter(char*, Transform&)
         void setParameter(char*, Texture&)
         void setParameter(char*, declshader.CurrentTexture)
-        void unbind()
 
     cdef cppclass ContextSettings:
         ContextSettings()
@@ -550,8 +549,10 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         View& getView()
         View& getDefaultView()
         IntRect getViewport(View&)
-        Vector2f convertCoords(Vector2i&)
-        Vector2f convertCoords(Vector2i&, View&)
+        Vector2f mapPixelToCoords(Vector2i&)
+        Vector2f mapPixelToCoords(Vector2i&, View&)
+        Vector2i mapCoordsToPixel(Vector2f&)
+        Vector2i mapCoordsToPixel(Vector2f&, View&)
         void popGLStates()
         void pushGLStates()
         void resetGLStates()
@@ -567,6 +568,8 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void create(VideoMode, char*)
         void create(VideoMode, char*, unsigned long)
         void create(VideoMode, char*, unsigned long, ContextSettings&)
+        void create(WindowHandle)
+        void create(WindowHandle, ContextSettings&)
         void display() nogil
         void enableVerticalSync(bint)
         Vector2i getPosition()
