@@ -1827,6 +1827,7 @@ cdef Font wrap_font_instance(decl.Font *p_cpp_instance, InputStream stream,
 cdef class Image:
     cdef decl.Image *p_this
     cdef bint delete_this
+    cdef InputStream stream
 
     def __init__(self, int width, int height, Color color=None):
         self.p_this = new decl.Image()
