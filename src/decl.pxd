@@ -324,8 +324,6 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass Texture:
         Texture()
         Texture(Texture&)
-        void bind()
-        void bind(CoordinateType)
         Image copyToImage()
         bint create(unsigned int, unsigned int)
         Vector2u getSize()
@@ -467,7 +465,6 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
     cdef cppclass Shader:
         Shader()
         Shader(Shader)
-        void bind()
         bint loadFromFile(char*, declshader.Type)
         bint loadFromFile(char*, char*)
         bint loadFromMemory(char*, declshader.Type)
@@ -675,9 +672,11 @@ cdef extern from "SFML/Graphics.hpp":
     RenderStates RenderStates_Default "sf::RenderStates::Default"
     cdef VideoMode& VideoMode_getDesktopMode "sf::VideoMode::getDesktopMode" ()
     cdef vector[VideoMode]& getFullscreenModes "sf::VideoMode::getFullscreenModes" ()
+    cdef void Texture_bind "sf::Texture::bind" (Texture*, CoordinateType)
     cdef int Texture_Normalized "sf::Texture::Normalized"
     cdef int Texture_Pixels "sf::Texture::Pixels"
     cdef Transform Transform_Identity "sf::Transform::Identity"
     cdef unsigned int Texture_getMaximumSize "sf::Texture::getMaximumSize"()
     cdef Font& Font_getDefaultFont "sf::Font::getDefaultFont" ()
+    cdef void Shader_bind "sf::Shader::bind" (Shader*)
     cdef bint Shader_isAvailable "sf::Shader::isAvailable" ()

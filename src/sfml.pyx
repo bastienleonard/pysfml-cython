@@ -2117,7 +2117,8 @@ cdef class Texture:
         raise PySFMLException()
 
     def bind(self, int coordinate_type=Texture.NORMALIZED):
-        self.p_this.bind(<decl.CoordinateType>coordinate_type)
+        # self.p_this.bind(<decl.CoordinateType>coordinate_type)
+        decl.Texture_bind(self.p_this, <decl.CoordinateType>coordinate_type)
 
     def copy_to_image(self):
         return wrap_image_instance(new decl.Image(self.p_this.copyToImage()),
@@ -3059,7 +3060,7 @@ cdef class Shader:
         raise PySFMLException()
 
     def bind(self):
-        self.p_this.bind()
+        decl.Shader_bind(self.p_this)
 
     def set_parameter(self, char *name, x, y=None, z=None, w=None):
         if y is None:
