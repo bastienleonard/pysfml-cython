@@ -3432,25 +3432,17 @@ cdef public object wrap_render_target_instance(decl.RenderTarget
 
 
 cdef class RenderWindow(RenderTarget):
-    def __init__(self, VideoMode mode=None, title=None, int style=Style.DEFAULT,
+    def __init__(self, VideoMode mode=None, title='', int style=Style.DEFAULT,
                   ContextSettings settings=None):
-        cdef char *c_title
-
         if mode is None:
             self.p_this = <decl.RenderTarget*>new decl.RenderWindow()
         else:
-            if isinstance(title, str):
-                py_title = title.encode(default_encoding)
-                c_title = py_title
-            else:
-                c_title = <bytes?>title
-
             if settings is None:
                 self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
-                    mode.p_this[0], c_title, style)
+                    mode.p_this[0], wrap_sf_string(title), style)
             else:
                 self.p_this = <decl.RenderTarget*>new decl.RenderWindow(
-                    mode.p_this[0], c_title, style, settings.p_this[0])
+                    mode.p_this[0], wrap_sf_string(title), style, settings.p_this[0])
 
     def __dealloc__(self):
         del self.p_this
@@ -3537,15 +3529,7 @@ cdef class RenderWindow(RenderTarget):
 
     property title:
         def __set__(self, value):
-            cdef char *c_title
-
-            if isinstance(value, str):
-                py_title = value.encode(default_encoding)
-                c_title = py_title
-            else:
-                c_title = <bytes?>value
-
-            (<decl.RenderWindow*>self.p_this).setTitle(c_title)
+            (<decl.RenderWindow*>self.p_this).setTitle(wrap_sf_string(value))
 
     property vertical_sync_enabled:
         def __set__(self, bint value):
@@ -3688,3 +3672,19 @@ cdef class InputStream:
 
     def tell(self):
         raise NotImplementedError("tell() is abstract")
+
+
+cdef decl.String wrap_sf_string(input):
+    cdef char* cbytes
+
+    # Python 3 shenanigans.
+    if not hasattr(__builtins__, 'unicode'):
+        unicode = type
+
+    if isinstance(input, bytes):
+        cbytes = input
+        return decl.String(<decl.Uint32 *>cbytes)
+    elif isinstance(input, str) or isinstance(input, unicode):
+        return wrap_sf_string(input.encode('utf-32-le'))
+    else:
+        raise ValueError('Could not wrap value into sf::String: unknown type.')
