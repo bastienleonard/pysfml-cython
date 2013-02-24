@@ -556,9 +556,9 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
 
     cdef cppclass RenderWindow:
         RenderWindow()
-        RenderWindow(VideoMode, char*)
-        RenderWindow(VideoMode, char*, unsigned long)
-        RenderWindow(VideoMode, char*, unsigned long, ContextSettings&)
+        RenderWindow(VideoMode, String)
+        RenderWindow(VideoMode, String, unsigned long)
+        RenderWindow(VideoMode, String, unsigned long, ContextSettings&)
         RenderWindow(WindowHandle window_handle)
         RenderWindow(WindowHandle window_handle, ContextSettings&)
         void close()
@@ -583,7 +583,7 @@ cdef extern from "SFML/Graphics.hpp" namespace "sf":
         void setMouseCursorVisible(bint)
         void setPosition(Vector2i&)
         void setSize(Vector2u)
-        void setTitle(char*)
+        void setTitle(String)
         void setVerticalSyncEnabled(bint)
         void setVisible(bint)
         bint waitEvent(Event&)
